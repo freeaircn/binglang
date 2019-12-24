@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2019-12-24 09:56:03
+ * @LastEditors: freeair
+ * @LastEditTime: 2019-12-24 21:26:11
+ */
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
@@ -8,7 +15,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
+const whiteList = ['/login', '/signup', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar

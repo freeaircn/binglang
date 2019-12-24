@@ -1,2 +1,0 @@
-1.  修改生产环境账号密码后，build prod
-    CI数据库连接config文件

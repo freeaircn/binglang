@@ -1,11 +1,18 @@
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2019-12-24 09:56:03
+ * @LastEditors  : freeair
+ * @LastEditTime : 2019-12-24 18:52:24
+ */
 module.exports = {
-  title: 'Vue Element Admin',
+  title: 'BE Admin',
 
   /**
    * @type {boolean} true | false
    * @description Whether show the settings right-panel
    */
-  showSettings: true,
+  showSettings: false,
 
   /**
    * @type {boolean} true | false

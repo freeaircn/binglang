@@ -1,4 +1,11 @@
 <?php
+/*
+ * @Description: 
+ * @Author: freeair
+ * @Date: 2019-12-24 10:00:39
+ * @LastEditors  : freeair
+ * @LastEditTime : 2019-12-24 21:33:19
+ */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
@@ -50,6 +57,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'home';
+$route['test'] = 'test';
+
+/*
+* 前端单页面，路由 history模式
+*/
+$route['(:any)'] = 'home';
+// $route['(:any)/(:any)'] = 'home';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

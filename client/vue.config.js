@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Element Admin' // page title
+const name = defaultSettings.title || 'BE Admin' // page title
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, Mac: sudo npm run
@@ -21,6 +21,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
+  // by freeair
   publicPath: '/resource/dist/',
   outputDir: 'D:/www/binglang/server/resource/dist',
   assetsDir: 'static',
@@ -75,6 +76,23 @@ module.exports = {
       .loader('svg-sprite-loader')
       .options({
         symbolId: 'icon-[name]'
+      })
+      .end()
+
+    // for logo svg by freeair
+    config.module
+      .rule('svg')
+      .exclude.add(resolve('src/logos'))
+      .end()
+    config.module
+      .rule('logos')
+      .test(/\.svg$/)
+      .include.add(resolve('src/logos'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'logo-[name]'
       })
       .end()
 
@@ -133,5 +151,16 @@ module.exports = {
           config.optimization.runtimeChunk('single')
         }
       )
+  },
+  // by freeair
+  css: {
+    loaderOptions: {
+      sass: {
+        data: `
+          @import "~@/styles/app-variables.scss";
+          @import "~@/styles/app-layout.scss";
+        `
+      }
+    }
   }
 }

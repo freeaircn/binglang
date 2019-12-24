@@ -1,0 +1,157 @@
+//== Colors
+//
+//## Gray and brand colors for use across Bootstrap.
+
+$gray-base:              #000 !default;
+$gray-darker:            #222 !default; // #222
+$gray-dark:              #303133 !default;   // #333
+$gray:                   #606266 !default; // #555
+$gray-light:             #909399 !default; // #777
+$gray-lighter:           #C0C4CC !default; // #eee
+
+$border-gray-dark:              #DCDFE6 !default;
+$border-gray:                   #E4E7ED !default;
+$border-gray-light:             #EBEEF5 !default;
+$border-gray-lighter:           #F2F6FC !default;
+
+$brand-primary:         #2b85e4;
+$brand-success:         #19be6b !default;
+$brand-info:            #909399 !default;
+$brand-warning:         #E6A23C !default;
+$brand-danger:          #ed4014 !default;
+
+$blue-base:   #2d8cf0 !default;
+$blue-light:  #5cadff !default;
+$blue-dark:   #2b85e4 !default;
+
+$title-color:       #17233d !default;
+$text-dark-color:   #303133 !default;
+$text-color:        #606266 !default;
+$text-light-color:  #909399 !default;
+
+$bg-gray-light:   #f8f8f9 !default;
+$bg-blue-light:   #5cadff !default;
+
+$divider-color:   #e8eaec !default;
+
+//** Background color for `<body>`.
+$body-bg:               #fff !default;
+//** Global text color on `<body>`.
+$text-color:            $gray !default;
+
+//** Global textual link color.
+$link-color:            $brand-primary !default;
+//** Link hover color set via `darken()` function.
+$link-hover-color:      darken($link-color, 15%) !default;
+//** Link hover decoration.
+$link-hover-decoration: underline !default;
+
+//## Font, line-height, and color for body text, headings, and more.
+
+$font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+$font-family-base:        "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+
+$font-size-base:          14px !default;
+$font-size-large:         ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)) !default; // ~12px
+
+$font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
+$font-size-h2:            floor(($font-size-base * 2.15)) !default; // ~30px
+$font-size-h3:            ceil(($font-size-base * 1.7)) !default; // ~24px
+$font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-h5:            $font-size-base !default;
+$font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.428571429 !default; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+
+//== Components
+//
+//## Define common padding and border radius sizes and more. Values based on 14px text and 1.428 line-height (~20px to start).
+
+$padding-y:     6px !default;
+$padding-x:   12px !default;
+
+$padding-y-large:    10px !default;
+$padding-x-large:  16px !default;
+
+$padding-y-small:    5px !default;
+$padding-x-small:  10px !default;
+
+$padding-y-xs:       1px !default;
+$padding-x-xs:     5px !default;
+
+$line-height-large:         1.3333333 !default; // extra decimals for Win 8.1 Chrome
+$line-height-small:         1.5 !default;
+
+$border-radius-base:        4px !default;
+$border-radius-large:       6px !default;
+$border-radius-small:       3px !default;
+
+//** Padding between columns. Gets divided in half for the left and right.
+$grid-gutter-width:         30px !default;
+
+//-- Z-index master list
+
+$zindex-navbar:            1000 !default;
+// $zindex-dropdown:          1000 !default;
+// $zindex-popover:           1060 !default;
+// $zindex-tooltip:           1070 !default;
+$zindex-navbar-fixed:      1030 !default;
+$zindex-splash:            1010 !default;
+$zindex-content:           1020 !default;
+
+$zindex-modal-background:  1040 !default;
+$zindex-modal:             1050 !default;
+
+//== Navbar
+//
+//##
+
+// Basics of a navbar
+$navbar-height:                    60px !default;
+$navbar-margin-bottom:             $line-height-computed !default;
+$navbar-border-radius:             $border-radius-base !default;
+$navbar-padding-horizontal:        floor(($grid-gutter-width / 2)) !default;
+$navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2) !default;
+// $navbar-collapse-max-height:       340px !default;
+
+$navbar-default-color:              $text-color;
+$navbar-default-bg:                 $bg-gray-light;
+$navbar-default-border:             darken($navbar-default-bg, 6.5%) !default;
+
+// Navbar links
+$navbar-default-link-color:                $text-color;
+$navbar-default-link-hover-color:          $blue-dark;
+$navbar-default-link-hover-bg:             transparent !default;
+$navbar-default-link-active-color:         #555 !default;
+$navbar-default-link-active-bg:            darken($navbar-default-bg, 6.5%) !default;
+$navbar-default-link-disabled-color:       #ccc !default;
+$navbar-default-link-disabled-bg:          transparent !default;
+
+// Navbar brand label
+$navbar-default-brand-color:               $text-color;
+$navbar-default-brand-hover-color:         darken($navbar-default-brand-color, 6.5%) !default;
+$navbar-default-brand-hover-bg:            transparent !default;
+
+// Navbar toggle
+// $navbar-default-toggle-hover-bg:           #ddd !default;
+// $navbar-default-toggle-icon-bar-bg:        #888 !default;
+// $navbar-default-toggle-border-color:       #ddd !default;
+$navbar-icon-height:  ($navbar-height / 2) !default;
+
+//== breadcrumb
+//
+//##
+$breadcrumb-height:                    35px !default;
+$breadcrumb-default-color:              $text-color;
+$breadcrumb-default-bg:                 $bg-gray-light;
+
+//== jumbotron
+$jumbotron-bg:  lighten($bg-gray-light, 1.5%);
+
+//== footer
+$footer-default-bg:                 $bg-gray-light;

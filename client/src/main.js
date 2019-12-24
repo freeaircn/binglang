@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2019-12-24 09:56:03
+ * @LastEditors  : freeair
+ * @LastEditTime : 2019-12-24 21:22:46
+ */
 import Vue from 'vue'
 
 import Cookies from 'js-cookie'
@@ -14,6 +21,7 @@ import store from './store'
 import router from './router'
 
 import './icons' // icon
+import './logos' // logo by freeair
 import './permission' // permission control
 import './utils/error-log' // error log
 
@@ -27,10 +35,10 @@ import * as filters from './filters' // global filters
  * Currently MockJs will be used in the production environment,
  * please remove it before going online! ! !
  */
-import { mockXHR } from '../mock'
-if (process.env.NODE_ENV === 'production') {
-  mockXHR()
-}
+// import { mockXHR } from '../mock'
+// if (process.env.NODE_ENV === 'production') {
+//   mockXHR()
+// }
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
