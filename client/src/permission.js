@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
- * @LastEditors: freeair
- * @LastEditTime: 2019-12-24 21:26:11
+ * @LastEditors  : freeair
+ * @LastEditTime : 2019-12-25 16:19:30
  */
 import router from './router'
 import store from './store'
@@ -15,7 +15,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/signup', '/auth-redirect'] // no redirect whitelist
+const whiteList = ['/login', '/signup', '/admin', '/admin/dict', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar

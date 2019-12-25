@@ -141,9 +141,15 @@
 3. 制定后台数据库字典
   
 ---
-### 2019-12-
+### 2019-12-25  
 ```
-  1 x
+  1 编写字典管理功能
+    1.1 [vue]新建dict view，位置：client\src\views\app\admin\dict\index.vue
+    1.2 [vue]新建系统管理（admin）路由，字典管理（dict）子路由，位置：client\src\router\app\admin.js
+        client\src\router\index.js中 import
+        // by freeair
+        import adminRouter from './app/admin'
+    
   
 ```
 ***TODO:***  
