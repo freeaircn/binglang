@@ -18,3 +18,7 @@ CREATE TABLE `be_dict_item` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_dict_item_type` FOREIGN KEY (`dict_id`) REFERENCES `be_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+

@@ -1,157 +1,256 @@
 <template>
-  <div class="app-container">
-    <!--表单组件-->
-    <eForm ref="form" :is-add="isAdd"/>
-    <el-row :gutter="10">
-      <el-col :xs="24" :sm="24" :md="10" :lg="10" :xl="10" style="margin-bottom: 10px">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>字典列表</span>
-            <el-button
-              v-permission="['ADMIN','DICT_ALL','DICT_CREATE']"
-              class="filter-item"
-              size="mini"
-              style="float: right;padding: 4px 10px"
-              type="primary"
-              icon="el-icon-plus"
-              @click="$refs.form.dialog = true;isAdd = true">新增</el-button>
-          </div>
-          <!--工具栏-->
-          <div class="head-container">
-            <!-- 搜索 -->
-            <el-input v-model="query.value" clearable placeholder="输入名称或者描述搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="toQuery"/>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
-          </div>
-          <!--表格渲染-->
-          <el-table v-loading="loading" :data="data" size="small" highlight-current-row style="width: 100%;" @current-change="handleCurrentChange">
-            <el-table-column :show-overflow-tooltip="true" prop="name" label="名称"/>
-            <el-table-column :show-overflow-tooltip="true" prop="remark" label="描述"/>
-            <el-table-column v-if="checkPermission(['ADMIN','DICT_ALL','DICT_EDIT','DICT_DELETE'])" label="操作" width="130px" align="center" fixed="right">
-              <template slot-scope="scope">
-                <el-button v-permission="['ADMIN','DICT_ALL','DICT_EDIT']" size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row)"/>
-                <el-popover
-                  v-permission="['ADMIN','DICT_ALL','DICT_DELETE']"
-                  :ref="scope.row.id"
-                  placement="top"
-                  width="180">
-                  <p>此操作将删除字典与对应的字典详情，确定要删除吗？</p>
-                  <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="$refs[scope.row.id].doClose()">取消</el-button>
-                    <el-button :loading="delLoading" type="primary" size="mini" @click="subDelete(scope.row.id)">确定</el-button>
-                  </div>
-                  <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini"/>
-                </el-popover>
-              </template>
-            </el-table-column>
-          </el-table>
-          <!--分页组件-->
-          <el-pagination
-            :total="total"
-            :current-page="page + 1"
-            style="margin-top: 8px;"
-            layout="total, prev, pager, next, sizes"
-            @size-change="sizeChange"
-            @current-change="pageChange"/>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="14" :lg="14" :xl="14">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>字典详情</span>
-            <el-button
-              v-if="checkPermission(['ADMIN','DICT_ALL','DICT_CREATE']) && this.$refs.dictDetail && this.$refs.dictDetail.dictName"
-              class="filter-item"
-              size="mini"
-              style="float: right;padding: 4px 10px"
-              type="primary"
-              icon="el-icon-plus"
-              @click="$refs.dictDetail.$refs.form.dialog = true;$refs.dictDetail.isAdd = true">新增</el-button>
-          </div>
-          <dictDetail ref="dictDetail"/>
-        </el-card>
-      </el-col>
-    </el-row>
+  <div>
+    <div class="filter-container">
+      <el-input v-model="queryDictCond.keyWord" placeholder="搜索字典" style="width: 200px;" class="filter-item" @keyup.enter.native="eventQueryDict" />
+      <el-button class="filter-item" type="primary" size="mini" icon="el-icon-search" @click="eventQueryDict">
+        搜索
+      </el-button>
+      <el-button class="filter-item" style="margin-left: 5px;" type="primary" size="mini" icon="el-icon-plus" @click="eventCreateDict">
+        新增
+      </el-button>
+      <el-checkbox v-model="showInnerId" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">内部ID</el-checkbox>
+    </div>
+
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="showList"
+      border
+      size="small"
+      style="width: 100%;"
+    >
+      <el-table-column label="序号" type="index" :index="1" width="80px" align="center"></el-table-column>
+      <el-table-column v-if="showInnerId" label="ID" prop="id" sortable="custom" width="80px" align="center">
+        <template slot-scope="scope">
+          <span style="color:red;">{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="字典名" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.label }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="启用状态" class-name="status-col" >
+        <template slot-scope="{row}">
+          <span :style="row.status | statusColorFilter">{{ row.status | statusFilter }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button type="text" size="mini" style="color:#409EFF;" @click="eventUpdateDict(row)">编辑</el-button>
+          <el-button type="text" size="mini" style="color:#F56C6C;" @click="eventDelDict(row,'deleted')">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-pagination
+      :page-sizes = "[5, 10, 30, 50, 100]"
+      :page-size="pageSize"
+      :current-page="queryDictCond.pageId"
+      layout="total, prev, pager, next, sizes"
+      :total="total"
+      @size-change="pageSizeChange"
+      @current-change="pageIdChange"/>
+
+    <el-dialog :title="dialogActionMap[dialogAction]" :visible.sync="dialogFormVisible">
+      <el-form ref="form" :rules="rules" :model="tempDict" label-position="right" label-width="100px" >
+        <el-form-item label="字典名" prop="label">
+          <el-input v-model="tempDict.label" />
+        </el-form-item>
+        <el-form-item label="是否启用" prop="status">
+          <el-radio-group v-model="tempDict.status">
+              <el-radio label="1">启用</el-radio>
+              <el-radio label="0">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="dialogAction==='create'?createDict():updateDict()">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import checkPermission from '@/utils/permission'
-import initData from '@/mixins/initData'
-import { del } from '@/api/dict'
-import dictDetail from '../dictDetail/index'
-import eForm from './form'
+// Import API
+
+// Import validator
+import { validQueryKey, validLabel } from '@/utils/app/validator/dict_form'
+
 export default {
-  name: 'Dict',
-  components: { dictDetail, eForm },
-  mixins: [initData],
+  name: 'dict',
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        '0': '禁用',
+        '1': '启用'
+      }
+      return statusMap[status]
+    },
+    statusColorFilter(status) {
+      const colorMap = {
+        '0': 'color:#E6A23C',
+        '1': 'color:#67C23A'
+      }
+      return colorMap[status]
+    }
+  },
   data() {
     return {
-      delLoading: false,
-      queryTypeOptions: [
-        { key: 'name', display_name: '字典名称' },
-        { key: 'remark', display_name: '描述' }
-      ]
+      showInnerId: false,
+      tableKey: 0,
+      listLoading: false,
+      dict_list: [
+        {id: 1, label: '用户状态', status: '1'},
+        {id: 2, label: '部门级别', status: '1'},
+        {id: 3, label: 'c', status: '1'},
+        {id: 4, label: 'd', status: '0'},
+        {id: 5, label: 'e', status: '1'},
+        {id: 6, label: 'f', status: '1'},
+        {id: 7, label: 'g', status: '0'}
+      ],
+      tempDict: {
+        id: 0,
+        label: '',
+        status: ''
+      },
+
+      total: 0,
+      pageSize: 5,
+      dictPageId: 1,
+
+      queryDictCond: {
+        pageId: 1,
+        keyWord: ''
+      },
+
+      dialogFormVisible: false,
+      dialogAction: '',
+      dialogActionMap: {
+        update: '编辑字典',
+        create: '新增字典'
+      },
+
+      rules: {
+        label: [{ required: true, validator: validLabel, trigger: 'change' }],
+        status: [{ required: true, message: '请选择一项', trigger: 'change' }]
+      }   
+    }
+  },
+  computed: {
+    //showList计算属性通过slice方法计算表格当前应显示的数据
+    showList() {
+      if(this.dict_list !== null) {
+        return this.dict_list.slice(
+          (this.dictPageId - 1) * this.pageSize, this.dictPageId * this.pageSize)
+      } else {
+        return null
+      }
+
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.getDictList()
   },
   methods: {
-    checkPermission,
-    beforeInit() {
-      this.url = 'api/dict'
-      const sort = 'id,desc'
-      this.params = { page: this.page, size: this.size, sort: sort }
-      const query = this.query
-      const value = query.value
-      if (value) { this.params['blurry'] = value }
-      if (this.$refs.dictDetail) {
-        this.$refs.dictDetail.data = []
-        this.$refs.dictDetail.dictName = ''
-      }
-      return true
+    getDictList() {
+      this.listLoading = true
+      // TODO: API read param - this.queryDictCond.keyWord，输入检验
+      this.total = 7
+
+      // Just to simulate the time of the request
+      setTimeout(() => {
+        this.listLoading = false
+      }, 1.5 * 1000)
     },
-    subDelete(id) {
-      this.delLoading = true
-      del(id).then(res => {
-        this.delLoading = false
-        this.$refs[id].doClose()
-        this.dleChangePage()
-        this.init()
-        this.$notify({
-          title: '删除成功',
-          type: 'success',
-          duration: 2500
+    eventQueryDict() {
+      if (validQueryKey(this.queryDictItemCond.keyWord)) {
+        this.queryDictItemCond.pageId = 1
+      } else {
+        this.$notify.error({
+          title: '错误',
+          message: '只允许输入中文，数字，字母，长度2~20！',
+          duration: 2000
         })
-      }).catch(err => {
-        this.delLoading = false
-        this.$refs[id].doClose()
-        console.log(err.response.data.message)
+      }
+      // TODO:
+      // this.getDictList()
+    },
+
+    //
+    pageSizeChange(val) {
+      this.pageSize = val
+    },
+    pageIdChange(val) {
+      this.dictPageId = val
+    },
+    // 新增Dict Type按钮事件
+    eventCreateDict() {
+      this.tempDict = {
+        id: 0,
+        label: '',
+        status: ''
+      }
+      this.dialogAction = 'create'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
       })
     },
-    handleCurrentChange(val) {
-      if (val) {
-        this.$refs.dictDetail.dictName = val.name
-        this.$refs.dictDetail.dictId = val.id
-        this.$refs.dictDetail.init()
-      }
+    // 提交新增Dict Type
+    createDict() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          console.log(this.tempDict)
+
+          // TODO: API create
+          this.dict_list.unshift(this.tempDict)
+          this.dialogFormVisible = false
+          this.dialogAction = ''
+        }
+      })
     },
-    edit(data) {
-      this.isAdd = false
-      const _this = this.$refs.form
-      _this.form = {
-        id: data.id,
-        name: data.name,
-        remark: data.remark
-      }
-      _this.dialog = true
+    // 编辑Dict Type按钮事件
+    eventUpdateDict(row) {
+      this.tempDict = Object.assign({}, row) // copy obj
+      this.dialogAction = 'update'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
+    },
+    // 提交编辑Dict Type
+    updateDict() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.tempDict)
+          console.log(tempData)
+
+          // TODO: API update
+          for (const v of this.dict_list) {
+            if (v.id === this.tempDict.id) {
+              const index = this.dict_list.indexOf(v)
+              this.dict_list.splice(index, 1, this.tempDict)
+              break
+            }
+          }
+          this.dialogFormVisible = false
+          this.dialogAction = ''
+          this.$notify({
+            title: 'Success',
+            message: '更新成功！',
+            type: 'success',
+            duration: 2000
+          })
+        }
+      })
+    },
+    // 删除Dict type按钮事件
+    eventDelDict(row) {
+      // TODO: API delete
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

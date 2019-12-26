@@ -136,22 +136,35 @@
       import { appCode } from '@/app_settings'
 ```
 ***TODO:***
-1. 统一API风格
+1. 规范API
 2. 定义用户信息数据表
-3. 制定后台数据库字典
+3. 编写数据库字典管理功能
   
 ---
-### 2019-12-25  
+### 2019-12-26  
 ```
   1 编写字典管理功能
-    1.1 [vue]新建dict view，位置：client\src\views\app\admin\dict\index.vue
+    1.1 [vue]新建dict view，位置：client\src\views\app\admin\dict\
     1.2 [vue]新建系统管理（admin）路由，字典管理（dict）子路由，位置：client\src\router\app\admin.js
         client\src\router\index.js中 import
         // by freeair
         import adminRouter from './app/admin'
-    
-  
+    1.3 [vue]页面包含：字典检索区 和 词条检索区两个子页面。
+        子页面功能相似，考虑单个子页面采用component方式编写，见dict.vue和dict-item.vue。
+        在index页面import 子页面component，组合为整体页面。
+    1.4 [vue][全局]新建表单输入validator汇总文件目录，见client\src\utils\app\validator\
+        已编写字典管理页面中表单的validator，见dict_form.js
+```
+***TODO:***  
+1. 编写页面路由管理功能
+2. 规范API
+3. 编写字典管理功能API
+4. 定义用户信息数据表
+
+---
+### 2019-12-
+```
+  1 a
 ```
 ***TODO:***  
 1. x
-
