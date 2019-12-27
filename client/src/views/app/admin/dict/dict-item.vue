@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="filter-container">
-      <el-input v-model="queryDictItemCond.keyWord" placeholder="搜索词条" style="width: 200px;" class="filter-item" @keyup.enter.native="eventQueryDictItem" />
+      <el-input v-model="queryDictItemCond.keyWord" placeholder="搜索词条" clearable size="small" style="width: 200px;" class="filter-item" @keyup.enter.native="eventQueryDictItem" />
       <el-button class="filter-item" type="primary" size="mini" icon="el-icon-search" @click="eventQueryDictItem">
         搜索
       </el-button>

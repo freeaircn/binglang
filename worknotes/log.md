@@ -162,6 +162,16 @@
 4. 定义用户信息数据表
 
 ---
+### 2019-12-27
+```
+  1 编写菜单管理功能
+    1.1 [vue]新建menu view，位置：client\src\views\app\admin\menu\
+    1.2 [vue]系统管理（admin）路由，添加菜单管理（dict）子路由，见：client\src\router\app\admin.js
+```
+***TODO:***  
+1. x
+
+---
 ### 2019-12-
 ```
   1 a
