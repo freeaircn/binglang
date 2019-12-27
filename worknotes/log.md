@@ -154,6 +154,14 @@
         在index页面import 子页面component，组合为整体页面。
     1.4 [vue][全局]新建表单输入validator汇总文件目录，见client\src\utils\app\validator\
         已编写字典管理页面中表单的validator，见dict_form.js
+  
+  2 [全局]页面操作顺序：
+    2.0 查询数据表，首次显示，刷新，或点击搜索按钮，获取数据更细数据显示区。
+    2.1 新增1条记录，点击新增按钮，弹出对话框表单。
+        对话框表单，提交create。
+    2.2 修改1条记录，点击修改按钮，弹出对话框表单。
+        对话框表单，提交update。
+    2.3 删除1条记录，点击删除按钮，提示信息，确认提交delete
 ```
 ***TODO:***  
 1. 编写页面路由管理功能
@@ -165,8 +173,18 @@
 ### 2019-12-27
 ```
   1 编写菜单管理功能
-    1.1 [vue]新建menu view，位置：client\src\views\app\admin\menu\
+    1.1 [vue]新建菜单管理 view，位置：client\src\views\app\admin\menu\
     1.2 [vue]系统管理（admin）路由，添加菜单管理（dict）子路由，见：client\src\router\app\admin.js
+    1.3 [全局]在client\src\component\新建app文件，存放自用的组件。
+        存放了第三方icon select 组件
+        修改icon路径（requireIcons.js）：require.context('@/icons/svg', false, /\.svg$/)
+    1.4 从github添加第三方组件 vue-tree
+        npm install --save @riophae/vue-treeselect
+        
+        // import the component
+        import Treeselect from '@riophae/vue-treeselect'
+        // import the styles
+        import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 ```
 ***TODO:***  
 1. x

@@ -2,7 +2,7 @@
   <div>
     <div class="filter-container">
       <el-input v-model="queryDictItemCond.keyWord" placeholder="搜索词条" clearable size="small" style="width: 200px;" class="filter-item" @keyup.enter.native="eventQueryDictItem" />
-      <el-button class="filter-item" type="primary" size="mini" icon="el-icon-search" @click="eventQueryDictItem">
+      <el-button class="filter-item" type="success" size="mini" icon="el-icon-search" @click="eventQueryDictItem">
         搜索
       </el-button>
       <el-button class="filter-item" style="margin-left: 5px;" type="primary" size="mini" icon="el-icon-plus" @click="eventCreateDictItem">
@@ -19,8 +19,7 @@
       size="small"
       style="width: 100%;"
     >
-      <el-table-column label="序号" type="index" :index="1" width="80px" align="center">
-      </el-table-column>
+      <el-table-column label="序号" type="index" :index="1" width="80px" align="center" />
       <el-table-column v-if="showInnerId" label="ID" prop="innerId" sortable="custom" width="80px" align="center">
         <template slot-scope="scope">
           <span style="color:red;">{{ scope.row.id }}</span>
@@ -46,7 +45,7 @@
           <span>{{ scope.row.pid }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="启用状态" class-name="status-col" >
+      <el-table-column label="启用状态" class-name="status-col">
         <template slot-scope="{row}">
           <span :style="row.status | statusColorFilter">{{ row.status | statusFilter }}</span>
         </template>
@@ -54,28 +53,29 @@
 
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="text" size="mini" style="color:#409EFF;" @click="eventUpdateDictItem(row)">编辑</el-button>
-          <el-button type="text" size="mini" style="color:#F56C6C;" @click="eventDelDictItem(row,'deleted')">删除</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="eventUpdateDictItem(row)" />
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="eventDelDictItem(row,'deleted')" />
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-      :page-sizes = "[5, 10, 30, 50, 100]"
+      :page-sizes="[5, 10, 30, 50, 100]"
       :page-size="pageSize"
       :current-page="queryDictItemCond.pageId"
       layout="total, prev, pager, next, sizes"
       :total="total"
       @size-change="pageSizeChange"
-      @current-change="pageIdChange"/>
+      @current-change="pageIdChange"
+    />
 
     <el-dialog :title="dialogActionMap[dialogAction]" :visible.sync="dialogFormVisible">
-      <el-form ref="form" :rules="rules" :model="tempItem" label-position="right" label-width="100px" >
+      <el-form ref="form" :rules="rules" :model="tempItem" label-position="right" label-width="100px">
         <el-form-item v-if="dialogAction === 'create'" label="所属字典" prop="dict">
           <el-select v-model="tempItem.dict" class="filter-item" placeholder="请选择">
             <el-option v-for="item in dictTypes" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
-        </el-form-item>  
+        </el-form-item>
         <el-form-item label="词条名" prop="label">
           <el-input v-model="tempItem.label" />
         </el-form-item>
@@ -109,7 +109,7 @@
 import { validQueryKey, validLabel, validCode } from '@/utils/app/validator/dict_form'
 
 export default {
-  name: 'dictItem',
+  name: 'DictItem',
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -132,9 +132,9 @@ export default {
       tableKey: 0,
       listLoading: false,
       item_list: [
-        {id: 1, dictId: 1, dict: '用户状态', label: '已激活', code: '1', pid: '', status: '1'},
-        {id: 2, dictId: 1, dict: '用户状态', label: '未激活', code: '0', pid: '', status: '1'},
-        {id: 3, dictId: 2, dict: '部门级别', label: '一级部门', code: '', pid: '', status: '1'},
+        { id: 1, dictId: 1, dict: '用户状态', label: '已激活', code: '1', pid: '', status: '1' },
+        { id: 2, dictId: 1, dict: '用户状态', label: '未激活', code: '0', pid: '', status: '1' },
+        { id: 3, dictId: 2, dict: '部门级别', label: '一级部门', code: '', pid: '', status: '1' }
       ],
       dictTypes: [
         { key: '1', display_name: '用户状态' },
@@ -173,19 +173,18 @@ export default {
         code: [{ required: false, validator: validCode, trigger: 'change' }],
         pid: [{ required: false, validator: validCode, trigger: 'change' }],
         status: [{ required: true, message: '请选择一项', trigger: 'change' }]
-      } 
+      }
     }
   },
   computed: {
-    //showList计算属性通过slice方法计算表格当前应显示的数据
+    // showList计算属性通过slice方法计算表格当前应显示的数据
     showList() {
-      if(this.item_list !== null) {
+      if (this.item_list !== null) {
         return this.item_list.slice(
           (this.pageId - 1) * this.pageSize, this.pageId * this.pageSize)
       } else {
         return null
       }
-
     }
   },
   created() {
@@ -212,7 +211,7 @@ export default {
           duration: 2000
         })
       }
-      
+
       // TODO:
       // this.getDictItemList()
     },
@@ -233,7 +232,7 @@ export default {
         code: '',
         pid: '',
         status: ''
-      },
+      }
       // TODO: 获取字典集合
 
       this.dialogAction = 'create'

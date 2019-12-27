@@ -41,6 +41,11 @@ $cfg['Servers'][$i]['password'] = 'B@123456';
     Require all granted
   </Directory>
 </VirtualHost>  
+
+4. 系统环境变量添加PHP
+wamp集合多个php版本，选定PHP 版本.
+将对应路径C:\wamp64\bin\php\php7.2.18\添加至系统环境PATH变量
+CMD验证：php -v
 ```
 ---
 
@@ -49,6 +54,17 @@ $cfg['Servers'][$i]['password'] = 'B@123456';
 ***1. 安装nodejs, webpack, vue-cli***
 ```
 # 安装nodejs
+
+# 修改npm模块路径和cache路径
+将global模块和cache缓存路径修改到D盘目录下，手动创建文件加node_cache和node_global  
+执行命令：
+npm config set prefix "D:\nodejs\node_global"
+npm config set cache "D:\nodejs\node_cache"
+系统变量，新建"NODE_PATH"，输入D:\nodejs\node_global\node_modules
+用户变量，PAHT添加D:\nodejs\node_global
+
+# 修改国内 镜像地址
+npm config set registry http://registry.npm.taobao.org
 
 # npm全局安装webpack，4.0版本后还需要webpack-cli
 npm install -g webpack
@@ -86,6 +102,7 @@ npm run build:prod
 ---
 
 ### 初始化CI
+***0. 安装php***[跳过]
 ```
   # 安装php  http://www.php.net/downloads.php
   # 解压至C:\Program Files\php
@@ -97,7 +114,7 @@ npm run build:prod
 # 设置国内镜像
 composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
-# 修改composer.bat指定WAMP使用的PHP版本
+# [跳过，设置PHP环境变量解决]修改composer.bat指定WAMP使用的PHP版本
   # C:\ProgramData\ComposerSetup\bin\composer.bat
   @C:\wamp64\bin\php\php7.2.18\php.exe "%~dp0composer.phar" %*
 ```

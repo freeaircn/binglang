@@ -2,7 +2,7 @@
   <div>
     <div class="filter-container">
       <el-input v-model="queryDictCond.keyWord" placeholder="搜索字典" clearable size="small" style="width: 200px;" class="filter-item" @keyup.enter.native="eventQueryDict" />
-      <el-button class="filter-item" type="primary" size="mini" icon="el-icon-search" @click="eventQueryDict">
+      <el-button class="filter-item" type="success" size="mini" icon="el-icon-search" @click="eventQueryDict">
         搜索
       </el-button>
       <el-button class="filter-item" style="margin-left: 5px;" type="primary" size="mini" icon="el-icon-plus" @click="eventCreateDict">
@@ -19,7 +19,7 @@
       size="small"
       style="width: 100%;"
     >
-      <el-table-column label="序号" type="index" :index="1" width="80px" align="center"></el-table-column>
+      <el-table-column label="序号" type="index" :index="1" width="80px" align="center" />
       <el-table-column v-if="showInnerId" label="ID" prop="id" sortable="custom" width="80px" align="center">
         <template slot-scope="scope">
           <span style="color:red;">{{ scope.row.id }}</span>
@@ -30,37 +30,38 @@
           <span>{{ scope.row.label }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="启用状态" class-name="status-col" >
+      <el-table-column label="启用状态" class-name="status-col">
         <template slot-scope="{row}">
           <span :style="row.status | statusColorFilter">{{ row.status | statusFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="text" size="mini" style="color:#409EFF;" @click="eventUpdateDict(row)">编辑</el-button>
-          <el-button type="text" size="mini" style="color:#F56C6C;" @click="eventDelDict(row,'deleted')">删除</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="eventUpdateDict(row)" />
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="eventDelDict(row,'deleted')" />
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-      :page-sizes = "[5, 10, 30, 50, 100]"
+      :page-sizes="[5, 10, 30, 50, 100]"
       :page-size="pageSize"
       :current-page="queryDictCond.pageId"
       layout="total, prev, pager, next, sizes"
       :total="total"
       @size-change="pageSizeChange"
-      @current-change="pageIdChange"/>
+      @current-change="pageIdChange"
+    />
 
     <el-dialog :title="dialogActionMap[dialogAction]" :visible.sync="dialogFormVisible">
-      <el-form ref="form" :rules="rules" :model="tempDict" label-position="right" label-width="100px" >
+      <el-form ref="form" :rules="rules" :model="tempDict" label-position="right" label-width="100px">
         <el-form-item label="字典名" prop="label">
           <el-input v-model="tempDict.label" />
         </el-form-item>
         <el-form-item label="是否启用" prop="status">
           <el-radio-group v-model="tempDict.status">
-              <el-radio label="1">启用</el-radio>
-              <el-radio label="0">禁用</el-radio>
+            <el-radio label="1">启用</el-radio>
+            <el-radio label="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -80,7 +81,7 @@
 import { validQueryKey, validLabel } from '@/utils/app/validator/dict_form'
 
 export default {
-  name: 'dict',
+  name: 'Dict',
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -103,13 +104,13 @@ export default {
       tableKey: 0,
       listLoading: false,
       dict_list: [
-        {id: 1, label: '用户状态', status: '1'},
-        {id: 2, label: '部门级别', status: '1'},
-        {id: 3, label: 'c', status: '1'},
-        {id: 4, label: 'd', status: '0'},
-        {id: 5, label: 'e', status: '1'},
-        {id: 6, label: 'f', status: '1'},
-        {id: 7, label: 'g', status: '0'}
+        { id: 1, label: '用户状态', status: '1' },
+        { id: 2, label: '部门级别', status: '1' },
+        { id: 3, label: 'c', status: '1' },
+        { id: 4, label: 'd', status: '0' },
+        { id: 5, label: 'e', status: '1' },
+        { id: 6, label: 'f', status: '1' },
+        { id: 7, label: 'g', status: '0' }
       ],
       tempDict: {
         id: 0,
@@ -129,26 +130,25 @@ export default {
       dialogFormVisible: false,
       dialogAction: '',
       dialogActionMap: {
-        update: '编辑字典',
-        create: '新增字典'
+        update: '编辑',
+        create: '新建'
       },
 
       rules: {
         label: [{ required: true, validator: validLabel, trigger: 'change' }],
         status: [{ required: true, message: '请选择一项', trigger: 'change' }]
-      }   
+      }
     }
   },
   computed: {
-    //showList计算属性通过slice方法计算表格当前应显示的数据
+    // showList计算属性通过slice方法计算表格当前应显示的数据
     showList() {
-      if(this.dict_list !== null) {
+      if (this.dict_list !== null) {
         return this.dict_list.slice(
           (this.dictPageId - 1) * this.pageSize, this.dictPageId * this.pageSize)
       } else {
         return null
       }
-
     }
   },
   created() {
