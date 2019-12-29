@@ -10,7 +10,10 @@
         <el-button class="filter-item" size="mini" type="info" icon="el-icon-download" @click="handleExport">导出</el-button>
       </div>
     </div>
-
+    <div>
+      <el-button class="filter-item" size="mini" type="primary" @click="handleAPI">API</el-button>
+      <el-button class="filter-item" size="mini" type="success" @click="handleRestAPI">RestAPI</el-button>
+    </div>
     <!--表格渲染-->
     <el-table
       ref="table"
@@ -128,9 +131,9 @@
         <el-form-item v-show="!formData.outlink && formData.type.toString() === '1'" label="组件路径" prop="component">
           <el-input v-model="formData.component" style="width: 178px;" placeholder="组件路径" />
         </el-form-item>
-        <!-- <el-form-item label="上级类目" prop="pid">
-          <treeselect v-model="formData.pid" :options="menus" style="width: 450px;" placeholder="选择上级类目" />
-        </el-form-item> -->
+        <el-form-item label="上级类目" prop="pid">
+          <treeSelect v-model="formData.pid" :options="treeData" style="width: 450px;" placeholder="选择上级类目" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -143,15 +146,18 @@
 <script>
 // import 第三方组件
 import IconSelect from '@/components/app/IconSelect'
-// import Treeselect from '@riophae/vue-treeselect'
-// import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import treeSelect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import 公共method
 import { parseTime } from '@/utils/index'
 
+// import api
+import { apiGetMenus, apiCreateMenus, apiUpdateMenus, apiDelMenus, testApi, testRestApi } from '@/api/app/admin/menu'
+
 export default {
   name: 'AdminMenu',
-  components: { IconSelect },
+  components: { IconSelect, treeSelect },
   data() {
     return {
       query: {
@@ -167,50 +173,66 @@ export default {
         create: '新建'
       },
       formData: {
+        id: null,
         type: 0,
-        icon: '',
+        icon: null,
         outlink: false,
         cache: false,
         hidden: false,
-        name: '',
-        permission: '',
-        path: '',
+        name: null,
+        permission: null,
+        path: null,
         sort: 999,
-        componentName: '',
-        component: '',
-        pid: ''
+        componentName: null,
+        component: null,
+        pid: 0,
+        children: null,
+        createTime: null
       },
-      //
+
+      // 测试数据
       tableData: [{
         id: 1,
-        outlink: 0,
+        outlink: false,
         name: '系统管理',
-        component: '',
+        component: null,
         pid: 0,
         sort: 1,
         icon: 'system',
         path: 'system',
-        cache: 0,
-        hidden: 0,
-        component_name: '',
+        cache: false,
+        hidden: false,
+        component_name: null,
         create_time: '',
-        permission: '',
+        permission: null,
         type: 0,
         children: [{
           id: 5,
-          outlink: 0,
+          outlink: false,
           name: '菜单管理',
           component: 'system/menu/index',
           pid: 1,
           sort: 5,
           icon: 'menu',
           path: 'menu',
-          cache: 0,
-          hidden: 0,
+          cache: false,
+          hidden: false,
           component_name: 'Menu',
           create_time: '',
           permission: 'menu:list',
           type: 1
+        }]
+      }],
+      treeData: [{
+        id: 0,
+        label: '顶级类目',
+        children: [{
+          id: 1,
+          label: '系统管理',
+          children: [{
+            id: 5,
+            label: '菜单管理'
+          }]
         }]
       }]
     }
@@ -224,7 +246,7 @@ export default {
     // CRUD core
     getTableData() {
       this.tableLoading = true
-      // TODO: API read param - this.queryDictCond.keyWord，输入检验
+      // TODO: API read param - this.word，输入检验
 
       // Just to simulate the time of the request
       setTimeout(() => {
@@ -232,8 +254,12 @@ export default {
       }, 1.5 * 1000)
     },
     handleQuery() {
-
+      this.getTableData()
     },
+
+    // 请求后台menu tree，组装tree数据结构
+    // 表单formData清空
+    // 显示dialog
     preCreateRow() {
       this.rstFormData()
       this.dialogAction = 'create'
@@ -242,17 +268,29 @@ export default {
         this.$refs['form'].clearValidate()
       })
     },
+    // validate 表单输入，请求后台
+    // 接收response，更新显示
     handleCreateRow() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           console.log(this.formData)
 
           // TODO: API create
+          const id = 201
+          apiCreateMenus(id)
+            .then(function(data) {
+              console.log(data)
+            }).catch(function(err) {
+              console.log(err)
+            })
           this.dialogAction = ''
           this.dialogVisible = false
         }
       })
     },
+    // 请求后台menu tree，组装tree数据结构
+    // 取row 填写表单formData
+    // 显示dialog
     preUpdateRow(row) {
       this.dialogVisible = true
 
@@ -264,6 +302,8 @@ export default {
         this.$refs['form'].clearValidate()
       })
     },
+    // validate 表单输入，请求后台
+    // 接收response，更新显示
     handleUpdateRow() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
@@ -271,6 +311,13 @@ export default {
           console.log(tempData)
 
           // TODO: API update
+          const id = 301
+          apiUpdateMenus(id)
+            .then(function(data) {
+              console.log(data)
+            }).catch(function(err) {
+              console.log(err)
+            })
 
           this.dialogAction = ''
           this.dialogFormVisible = false
@@ -284,7 +331,13 @@ export default {
       })
     },
     handelDelRow() {
-
+      const id = 401
+      apiDelMenus(id)
+        .then(function(data) {
+          console.log(data)
+        }).catch(function(err) {
+          console.log(err)
+        })
     },
 
     // 其他
@@ -296,19 +349,40 @@ export default {
     },
     rstFormData() {
       this.formData = {
+        id: null,
         type: 0,
-        icon: '',
+        icon: null,
         outlink: false,
         cache: false,
         hidden: false,
-        name: '',
-        permission: '',
-        path: '',
+        name: null,
+        permission: null,
+        path: null,
         sort: 999,
-        componentName: '',
-        component: '',
-        pid: ''
+        componentName: null,
+        component: null,
+        pid: 0,
+        children: null,
+        createTime: null
       }
+    },
+    handleAPI() {
+      const msg = 'test API'
+      testApi(msg)
+        .then(function(data) {
+          console.log('test API response received')
+        }).catch(function(err) {
+          console.log(err)
+        })
+    },
+    handleRestAPI() {
+      const msg = 'test Rest API'
+      testRestApi(msg)
+        .then(function(data) {
+          console.log('test Rest API response received')
+        }).catch(function(err) {
+          console.log(err)
+        })
     }
   }
 }

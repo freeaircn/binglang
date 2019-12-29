@@ -4,43 +4,28 @@
 ### 摘要  
 1. 按时间线记录
 2. 包含前台和后台的代码编写
-3. 关键字: [全局] [vue] [ci]
+3. 关键字: [G]-global  [v]-vue  [c]-ci
 
 ---
 ### 2019-12-24
 ```
-  1 [全局][vue]修改vue.config.js文件
+  1 [v]修改vue.config.js文件
     # title
     const name = defaultSettings.title || 'BE' // page title
-    
-    # [全局]引入自定义scss样式变量
-      [参考贴子](https://stackoverflow.com/questions/49086021/using-sass-resources-loader-with-vue-cli-v3-x)
-      # vue.config.js文件：
-        # 文件末尾添加
-          css: {
-            loaderOptions: {
-              sass: {
-                data: `
-                  @import "~@/styles/app-variables.scss";
-                  @import "~@/styles/app-layout.scss";
-                `
-              }
-            }
-          }
-          
-  2 [全局][vue]修改setting.js文件
+              
+  2 [v]修改setting.js文件
     title: 'BE',
     showSettings: false,
     
-  3 [全局][vue][ci][路由]
-    [ci]路由application\config\routes.php文件，添加
+  3 [G][v][c][路由]
+    [c]路由application\config\routes.php文件，添加
     /*
     * 前端单页面，路由 history模式
     */
     $route['(:any)'] = 'home';
     // $route['(:any)/(:any)'] = 'home';
     
-    [vue]路由router/index.js文件
+    [v]路由router/index.js文件
     mode: 'history', // require service support
     
     VUE路由配置生效机制：
@@ -57,24 +42,20 @@
     
     c) main.js中，引入a)和b)
     
-       
-  4 [全局]
-    新建client\src\views\app文件夹，存放app视图
-    新建client\src\api\app文件夹，存放app的API
-    新建client\src\utils\app文件夹，存放app的公共模块
-      # 在client\src\utils\app\validate.js文件中，新加方法
+  4 [v]
+    # 在client\src\utils\app\validate.js文件中，新加方法
       validPhone
       validEmail
       validVerificationCode
       validPassword
       validChineseName
-    新建自己所需的配置文件，src/app_settings.js文件
+    # src/app_settings.js文件
       # 加入后端response code定义码
       # 加入正则表达式定义，常用url链接
       # 业务相关的常量定义
       # 文件开头位置，增加：/* eslint-disable */，取消eslint检查
 
-  5 [全局]src/utils/validate.js文件，添加
+  5 [v]src/utils/validate.js文件，添加
     import { appConfig } from '@/app_settings'
     /**
      * @param {string} str
@@ -85,30 +66,6 @@
       const reg = appConfig.REGEX_POHONE
       return reg.test(str)
     }
-  
-  6 [全局]添加logo-svg组件，模仿icons组件 https://juejin.im/post/59bb864b5188257e7a427c09
-    # src/components/，加入SvgLogo/
-    # src/，加入logos/
-    # src/main.js文件
-      import './logos' // logo
-    # vue.config.js文件：
-      // for logo svg
-      config.module
-        .rule('svg')
-        .exclude.add(resolve('src/logos'))
-        .end()
-      config.module
-        .rule('logos')
-        .test(/\.svg$/)
-        .include.add(resolve('src/logos'))
-        .end()
-        .use('svg-sprite-loader')
-        .loader('svg-sprite-loader')
-        .options({
-          symbolId: 'logo-[name]'
-        })
-        .end()
-    # 在src/logos/中，存放自定义svg图片
 
   7 login页面
     # router/index.js文件
@@ -144,23 +101,23 @@
 ### 2019-12-26  
 ```
   1 编写字典管理功能
-    1.1 [vue]新建dict view，位置：client\src\views\app\admin\dict\
-    1.2 [vue]新建系统管理（admin）路由，字典管理（dict）子路由，位置：client\src\router\app\admin.js
+    1.1 [v]新建dict view，位置：client\src\views\app\admin\dict\
+    1.2 [v]新建系统管理（admin）路由，字典管理（dict）子路由，位置：client\src\router\app\admin.js
         client\src\router\index.js中 import
         // by freeair
         import adminRouter from './app/admin'
-    1.3 [vue]页面包含：字典检索区 和 词条检索区两个子页面。
+    1.3 [v]页面包含：字典检索区 和 词条检索区两个子页面。
         子页面功能相似，考虑单个子页面采用component方式编写，见dict.vue和dict-item.vue。
         在index页面import 子页面component，组合为整体页面。
-    1.4 [vue][全局]新建表单输入validator汇总文件目录，见client\src\utils\app\validator\
+    1.4 [v][G]新建表单输入validator汇总文件目录，见client\src\utils\app\validator\
         已编写字典管理页面中表单的validator，见dict_form.js
   
-  2 [全局]页面操作顺序：
+  2 [G]页面操作顺序：
     2.0 查询数据表，首次显示，刷新，或点击搜索按钮，获取数据更细数据显示区。
     2.1 新增1条记录，点击新增按钮，弹出对话框表单。
-        对话框表单，提交create。
+        对话框表单，提交create。返回新增记录，更新显示。
     2.2 修改1条记录，点击修改按钮，弹出对话框表单。
-        对话框表单，提交update。
+        对话框表单，提交update。不返回修改记录，更新显示。
     2.3 删除1条记录，点击删除按钮，提示信息，确认提交delete
 ```
 ***TODO:***  
@@ -173,9 +130,9 @@
 ### 2019-12-27
 ```
   1 编写菜单管理功能
-    1.1 [vue]新建菜单管理 view，位置：client\src\views\app\admin\menu\
-    1.2 [vue]系统管理（admin）路由，添加菜单管理（dict）子路由，见：client\src\router\app\admin.js
-    1.3 [全局]在client\src\component\新建app文件，存放自用的组件。
+    1.1 [v]新建菜单管理 view，位置：client\src\views\app\admin\menu\
+    1.2 [v]系统管理（admin）路由，添加菜单管理（dict）子路由，见：client\src\router\app\admin.js
+    1.3 [G]在client\src\component\新建app文件，存放自用的组件。
         存放了第三方icon select 组件
         修改icon路径（requireIcons.js）：require.context('@/icons/svg', false, /\.svg$/)
     1.4 从github添加第三方组件 vue-tree
@@ -185,6 +142,26 @@
         import Treeselect from '@riophae/vue-treeselect'
         // import the styles
         import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+```
+***TODO:***  
+1. x
+
+---
+### 2019-12-29
+```
+  1 编写restful api模块。
+    [c]composer 引入
+    composer require chriskacerguis/codeigniter-restserver
+    Note that you will need to copy rest.php to your config directory (e.g. application/config)
+    1.1 打算不用put 和 delete方法，用post方法模拟
+    POST的form, 通过隐藏的input传， 比如rails里就是
+    input name=\"_method\" type=\"hidden\" value=\"put\"
+    网络服务器默认没有开启PUT和DELETE，我们可以在header中使用X-HTTP-Method-Override，通过POST来发送PUT请求。这样的话，服务器会把它当做一个POST请求，而REST服务器会把它作为PUT操作处理。
+    
+  2 [v]编写菜单管理功能的api。
+    [G]按照view文件结构，创建api文件结构。
+    client\source\api\app目录，创建admin\menu目录，存放菜单管理的api文件。
+    
 ```
 ***TODO:***  
 1. x
