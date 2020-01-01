@@ -4,7 +4,7 @@
 ### 摘要  
 1. 按时间线记录
 2. 包含前台和后台的代码编写
-3. 关键字: [G]-global  [v]-vue  [c]-ci
+3. 缩略字: [G]-global  [v]-vue [c]-ci @-框架根目录
 
 ---
 ### 2019-12-24
@@ -164,10 +164,58 @@
     
 ```
 ***TODO:***  
-1. x
+1. 规范API 
+
 
 ---
-### 2019-12-
+### 2020-01-01
+```
+  1 编写API模块，先编写menu管理的api。
+    # 前端页面路由，根据页面目录菜单的层级，定义前端路由，例如：
+    系统管理目录(admin)，包含：词典管理(dict)，菜单管理页面(menu)。
+    url：
+    //site/admin/dict
+    //site/admin/menu
+    # 前后端API接口，根据后端存储的资源类型定义api名，url路径中统一加入api子路径，可与前端路由的区分开来，例如：
+    菜单管理页面，与后端的api接口，url：//site/api/menu
+    
+    1.1 [v][G]按照view文件结构，创建api文件结构。
+        # @\src\api\app目录，创建admin\menu目录，存放菜单管理的api文件。
+        # api函数命名加前缀api，例如apiGetXXX()
+          export function apiGetMenu(id) {
+            return request({
+              url: '/api/menu',
+              method: 'get',
+              params: {
+                id
+              }
+            })
+          }
+    
+    1.2 [c]@\application\controllers目录下新建api文件夹，统一存放api接口文件。
+        # 每一类资源单独建一个controller文件，基于restful。例如，菜单-Menu.php等。
+        # routes.php中，定义路由控制器映射：$route['api/menu'] = 'api/menu'
+        # @\application\controllers\api\Menu.php编写控制器
+          public function index_post()
+          {
+            $id = $this->post( 'id' );
+
+            $data = ['id' => $id];
+            $this->response( $data, 201 );
+          }
+          
+  2 编写menu数据表，用户用api从后端获取，返回更新页面。
+    [G]数据库：
+    # 创建数据库binglang
+    # 创建数据表，加前缀app_
+  
+```
+***TODO:***  
+1. x
+
+
+---
+### 2020-01-
 ```
   1 a
 ```

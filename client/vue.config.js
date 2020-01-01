@@ -25,7 +25,7 @@ module.exports = {
   publicPath: '/resource/dist/',
   outputDir: 'D:/www/binglang/server/resource/dist',
   assetsDir: 'static',
-  indexPath: 'D:/www/binglang/server/application/views/home.html',
+  indexPath: 'D:/www/binglang/server/application/app/views/home.html',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {

@@ -10,9 +10,13 @@
         <el-button class="filter-item" size="mini" type="info" icon="el-icon-download" @click="handleExport">导出</el-button>
       </div>
     </div>
+    <el-divider><i class="el-icon-download">API测试区</i></el-divider>
     <div>
-      <el-button class="filter-item" size="mini" type="primary" @click="handleAPI">API</el-button>
-      <el-button class="filter-item" size="mini" type="success" @click="handleRestAPI">RestAPI</el-button>
+      <el-button class="filter-item" size="mini" type="primary" @click="handleGet">Get</el-button>
+      <el-button class="filter-item" size="mini" type="primary" @click="handlePost">Post</el-button>
+      <el-button class="filter-item" size="mini" type="primary" @click="handleUpdate">Update</el-button>
+      <el-button class="filter-item" size="mini" type="primary" @click="handleDel">Delete</el-button>
+
     </div>
     <!--表格渲染-->
     <el-table
@@ -63,7 +67,7 @@
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="preUpdateRow(row)" />
-          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handelDelRow(row)" />
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="doDelRow(row)" />
         </template>
       </el-table-column>
     </el-table>
@@ -137,7 +141,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogAction==='create'?handleCreateRow():handleUpdateRow()">提交</el-button>
+        <el-button type="primary" @click="dialogAction==='create'?doCreateRow():doUpdateRow()">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -153,7 +157,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { parseTime } from '@/utils/index'
 
 // import api
-import { apiGetMenus, apiCreateMenus, apiUpdateMenus, apiDelMenus, testApi, testRestApi } from '@/api/app/admin/menu'
+import { apiGetMenu, apiCreateMenu, apiUpdateMenu, apiDelMenu } from '@/api/app/admin/menu'
 
 export default {
   name: 'AdminMenu',
@@ -165,6 +169,7 @@ export default {
       },
 
       tableLoading: false,
+      tableData: [],
 
       dialogVisible: false,
       dialogAction: '',
@@ -191,38 +196,38 @@ export default {
       },
 
       // 测试数据
-      tableData: [{
-        id: 1,
-        outlink: false,
-        name: '系统管理',
-        component: null,
-        pid: 0,
-        sort: 1,
-        icon: 'system',
-        path: 'system',
-        cache: false,
-        hidden: false,
-        component_name: null,
-        create_time: '',
-        permission: null,
-        type: 0,
-        children: [{
-          id: 5,
-          outlink: false,
-          name: '菜单管理',
-          component: 'system/menu/index',
-          pid: 1,
-          sort: 5,
-          icon: 'menu',
-          path: 'menu',
-          cache: false,
-          hidden: false,
-          component_name: 'Menu',
-          create_time: '',
-          permission: 'menu:list',
-          type: 1
-        }]
-      }],
+      // tableData: [{
+      //   id: 1,
+      //   outlink: false,
+      //   name: '系统管理',
+      //   component: null,
+      //   pid: 0,
+      //   sort: 1,
+      //   icon: 'system',
+      //   path: 'system',
+      //   cache: false,
+      //   hidden: false,
+      //   component_name: null,
+      //   create_time: '',
+      //   permission: null,
+      //   type: 0,
+      //   children: [{
+      //     id: 5,
+      //     outlink: false,
+      //     name: '菜单管理',
+      //     component: 'system/menu/index',
+      //     pid: 1,
+      //     sort: 5,
+      //     icon: 'menu',
+      //     path: 'menu',
+      //     cache: false,
+      //     hidden: false,
+      //     component_name: 'Menu',
+      //     create_time: '',
+      //     permission: 'menu:list',
+      //     type: 1
+      //   }]
+      // }],
       treeData: [{
         id: 0,
         label: '顶级类目',
@@ -238,23 +243,34 @@ export default {
     }
   },
   created() {
-    this.getTableData()
+    this.queryRow()
   },
   methods: {
     parseTime,
 
     // CRUD core
-    getTableData() {
+    queryRow(key) {
       this.tableLoading = true
       // TODO: API read param - this.word，输入检验
 
+      apiGetMenu(key)
+        .then(function(data) {
+          console.log(data)
+          this.tableData = []
+          this.tableData = data.slice()
+          this.tableLoading = false
+        }.bind(this)).catch(function(err) {
+          console.log(err)
+          // this.tableLoading = false
+        })
+
       // Just to simulate the time of the request
-      setTimeout(() => {
-        this.tableLoading = false
-      }, 1.5 * 1000)
+      // setTimeout(() => {
+      //   this.tableLoading = false
+      // }, 1.5 * 1000)
     },
     handleQuery() {
-      this.getTableData()
+      this.queryRow()
     },
 
     // 请求后台menu tree，组装tree数据结构
@@ -270,14 +286,14 @@ export default {
     },
     // validate 表单输入，请求后台
     // 接收response，更新显示
-    handleCreateRow() {
+    doCreateRow() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           console.log(this.formData)
 
           // TODO: API create
           const id = 201
-          apiCreateMenus(id)
+          apiCreateMenu(id)
             .then(function(data) {
               console.log(data)
             }).catch(function(err) {
@@ -304,7 +320,7 @@ export default {
     },
     // validate 表单输入，请求后台
     // 接收response，更新显示
-    handleUpdateRow() {
+    doUpdateRow() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.formData)
@@ -312,7 +328,7 @@ export default {
 
           // TODO: API update
           const id = 301
-          apiUpdateMenus(id)
+          apiUpdateMenu(id)
             .then(function(data) {
               console.log(data)
             }).catch(function(err) {
@@ -330,9 +346,9 @@ export default {
         }
       })
     },
-    handelDelRow() {
+    doDelRow() {
       const id = 401
-      apiDelMenus(id)
+      apiDelMenu(id)
         .then(function(data) {
           console.log(data)
         }).catch(function(err) {
@@ -366,20 +382,40 @@ export default {
         createTime: null
       }
     },
-    handleAPI() {
-      const msg = 'test API'
-      testApi(msg)
+
+    // 测试API
+    handleGet() {
+      const msg = 'Method: Get'
+      apiGetMenu(msg)
         .then(function(data) {
-          console.log('test API response received')
+          console.log('Get response received')
         }).catch(function(err) {
           console.log(err)
         })
     },
-    handleRestAPI() {
-      const msg = 'test Rest API'
-      testRestApi(msg)
+    handlePost() {
+      const msg = 'Method: Post'
+      apiCreateMenu(msg)
         .then(function(data) {
-          console.log('test Rest API response received')
+          console.log('Post response received')
+        }).catch(function(err) {
+          console.log(err)
+        })
+    },
+    handleUpdate() {
+      const msg = 'Method: Update'
+      apiUpdateMenu(msg)
+        .then(function(data) {
+          console.log('Update response received')
+        }).catch(function(err) {
+          console.log(err)
+        })
+    },
+    handleDel() {
+      const msg = 'Method: Delete'
+      apiDelMenu(msg)
+        .then(function(data) {
+          console.log('Delete response received')
         }).catch(function(err) {
           console.log(err)
         })

@@ -281,13 +281,37 @@ CI的index.php入口文件，末尾
 require_once './vendor/autoload.php';
 ```
 
-##### 5.3 控制器文件夹下开加子文件夹
+##### 5.3 在一个 CodeIgniter 下运行多个应用程序
 ```
-controllers下再细分子文件夹。例如：controllers/pj,controllers/xxk等。
-1.在controllers下添加相关的子文件夹，例如pj。
-2.在application/config/routes.php中添加一条路由规则：
-3.$route['pj/(^/)(^/)'] = "pj/$1/$2";
+例如，你要创建两个应用程序："foo" 和 "bar"，你可以像下面这样组织你的目录结构
+applications/foo/
+applications/foo/config/
+applications/foo/controllers/
+applications/foo/libraries/
+applications/foo/models/
+applications/foo/views/
 
+applications/bar/
+applications/bar/config/
+applications/bar/controllers/
+applications/bar/libraries/
+applications/bar/models/
+applications/bar/views/
+
+要选择使用某个应用程序时，你需要打开 index.php 文件然后设置 $application_folder 变量。例如，选择使用 "foo" 这个应用，你可以这样
+$application_folder = 'applications/foo';
+```
+
+##### 5.4 将控制器放入子目录中
+```
+如果你正在构建一个比较大的应用，那么将控制器放到子目录下进行组织可能会方便一点。CodeIgniter 也可以实现这一点。
+
+你只需要简单的在 application/controllers/ 目录下创建新的目录，并将控制器文件放到子目录下
+当使用该功能时，URI 的第一段必须指定目录，例如，假设你在如下位置有一个控制器:
+application/controllers/products/Shoes.php
+
+为了调用该控制器，你的 URI 应该像下面这样:
+example.com/index.php/products/shoes/show/123
 
 ```
 

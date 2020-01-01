@@ -3,23 +3,23 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2019-12-29 20:22:16
+ * @LastEditTime : 2020-01-01 20:34:53
  */
 import request from '@/utils/request'
 
-export function apiGetMenus(id) {
+export function apiGetMenu(key) {
   return request({
-    url: '/menus_api/get',
+    url: '/api/menu',
     method: 'get',
-    data: {
-      id
+    params: {
+      key
     }
   })
 }
 
-export function apiCreateMenus(id) {
+export function apiCreateMenu(id) {
   return request({
-    url: '/menus_api/post',
+    url: '/api/menu',
     method: 'post',
     data: {
       id
@@ -27,32 +27,20 @@ export function apiCreateMenus(id) {
   })
 }
 
-export function apiUpdateMenus(id) {
+export function apiUpdateMenu(id) {
   return request({
-    url: '/menus_api2',
-    method: 'post',
+    url: '/api/menu',
+    method: 'put',
     data: {
       id
     }
   })
 }
 
-export function testApi(msg) {
-  return request({
-    url: '/menus_api/post',
-    method: 'post',
+export function apiDelMenu(id) {
+  return request.delete('/api/menu', {
     data: {
-      msg
-    }
-  })
-}
-
-export function testRestApi(msg) {
-  return request({
-    url: '/api/menus',
-    method: 'post',
-    data: {
-      msg
+      id
     }
   })
 }
