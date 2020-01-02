@@ -4,7 +4,7 @@
     <div class="head-container">
       <div>
         <!-- 搜索 -->
-        <el-input v-model="query.words" clearable size="small" placeholder="搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
+        <el-input v-model="query.words" clearable size="small" placeholder="搜索菜单名" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
         <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
         <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreateRow">新增</el-button>
         <el-button class="filter-item" size="mini" type="info" icon="el-icon-download" @click="handleExport">导出</el-button>
@@ -59,9 +59,9 @@
           <span v-else>是</span>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建日期" width="135px">
+      <el-table-column prop="create_time" label="创建日期" width="135px">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ scope.row.create_time }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="130px" align="center" fixed="right">
@@ -154,7 +154,7 @@ import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import 公共method
-import { parseTime } from '@/utils/index'
+import { validQueryWords } from '@/utils/app/validator/common'
 
 // import api
 import { apiGetMenu, apiCreateMenu, apiUpdateMenu, apiDelMenu } from '@/api/app/admin/menu'
@@ -188,11 +188,11 @@ export default {
         permission: null,
         path: null,
         sort: 999,
-        componentName: null,
+        component_name: null,
         component: null,
         pid: 0,
         children: null,
-        createTime: null
+        create_time: null
       },
 
       // 测试数据
@@ -246,31 +246,37 @@ export default {
     this.queryRow()
   },
   methods: {
-    parseTime,
-
     // CRUD core
-    queryRow(key) {
+    queryRow(words = null) {
       this.tableLoading = true
-      // TODO: API read param - this.word，输入检验
 
-      apiGetMenu(key)
+      apiGetMenu(words)
         .then(function(data) {
           console.log(data)
-          this.tableData = []
-          this.tableData = data.slice()
+          this.tableData.splice(0, this.tableData.length)
+          this.tableData = data.slice(0)
           this.tableLoading = false
         }.bind(this)).catch(function(err) {
           console.log(err)
-          // this.tableLoading = false
-        })
-
-      // Just to simulate the time of the request
-      // setTimeout(() => {
-      //   this.tableLoading = false
-      // }, 1.5 * 1000)
+          this.tableLoading = false
+        }.bind(this))
     },
     handleQuery() {
-      this.queryRow()
+      // API param - this.word，输入检验
+      if (this.query.words === '') {
+        this.queryRow()
+      } else {
+        const res = validQueryWords(this.query.words)
+        if (res === true) {
+          this.queryRow(this.query.words)
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: res,
+            duration: 2000
+          })
+        }
+      }
     },
 
     // 请求后台menu tree，组装tree数据结构
@@ -375,11 +381,11 @@ export default {
         permission: null,
         path: null,
         sort: 999,
-        componentName: null,
+        component_name: null,
         component: null,
         pid: 0,
         children: null,
-        createTime: null
+        create_time: null
       }
     },
 

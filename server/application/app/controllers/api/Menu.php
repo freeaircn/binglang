@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-01 20:45:48
+ * @LastEditTime : 2020-01-02 13:37:59
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -22,17 +22,17 @@ class Menu extends RestController {
 
 	public function index_get()
 	{
-		$key = $this->get( 'key' );
+		$words = $this->get( 'words' );
 
-		$list = $this->menu_model->tree_list();
+		$list = $this->menu_model->tree_list($words);
 
-		if($list)
+		if(empty($list))
 		{
-			$this->response( $list, 200 );
+			$this->response( [], 404 );
 		}
 		else
 		{
-			$this->response( [], 404 );
+			$this->response( $list, 200 );
 		}
 		
 	}

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-01 20:09:06
+ * @LastEditTime : 2020-01-02 13:36:12
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -46,13 +46,25 @@ class Menu_model extends CI_Model {
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function tree_list()
+    public function tree_list($words=null)
     {
 		$this->db->order_by('sort', 'DESC');
 		$this->db->order_by('id', 'ASC');
-		$query = $this->db->get($this->tables['menu']);
+		if($words === null)
+		{
+			$query = $this->db->get($this->tables['menu']);
+		}
+		else
+		{
+			$this->db->like('name', $words);
+			$query = $this->db->get($this->tables['menu']);
+		}
 		
 		$list = $query->result_array();
+		if(empty($list))
+		{
+			return $list;
+		}
         if ($list) {
             foreach ($list as &$item) {
                 $item['cache'] = !!$item['cache'];

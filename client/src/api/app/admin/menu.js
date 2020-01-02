@@ -3,16 +3,16 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-01 20:34:53
+ * @LastEditTime : 2020-01-02 11:06:09
  */
 import request from '@/utils/request'
 
-export function apiGetMenu(key) {
+export function apiGetMenu(words) {
   return request({
     url: '/api/menu',
     method: 'get',
     params: {
-      key
+      words
     }
   })
 }
