@@ -1,4 +1,11 @@
 <?php
+/*
+ * @Description: 
+ * @Author: freeair
+ * @Date: 2020-01-01 17:59:33
+ * @LastEditors  : freeair
+ * @LastEditTime : 2020-01-06 19:04:44
+ */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Test extends CI_Controller {
@@ -20,8 +27,11 @@ class Test extends CI_Controller {
 	 */
 	public function index()
 	{
-    $this->data['a'] = 'Hello World';
-    $this->data['b'] = '';
+		$this->data['a'] = 'Hello World';
+		$t = time();
+		$d = date("Y-m-d H:i:s",$t);
+		$this->data['t'] = $t;
+		$this->data['d'] = $d;
 		$this->load->view('test_message', $this->data);
 	}
 }

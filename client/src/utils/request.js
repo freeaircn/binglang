@@ -3,10 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-01 21:34:29
+ * @LastEditTime : 2020-01-06 21:44:06
  */
 import axios from 'axios'
-import { Message } from 'element-ui'
+// import { Message } from 'element-ui'
+import { Notification } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -48,25 +49,70 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
+  // Any status code that lie within the range of 2xx cause this function to trigger
   response => {
-    const code = response.status
-    if (code < 200 || code > 300) {
-      Notification.error({
-        title: response.message
-      })
-      return Promise.reject('error')
-    } else {
-      return response.data
-    }
+    console.log(response.data)
+    return response.data
   },
+  // Any status codes that falls outside the range of 2xx cause this function to trigger
   error => {
-    console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    let code = 0
+    try {
+      code = error.response.data.status
+    } catch (e) {
+      if (error.toString().indexOf('Error: timeout') !== -1) {
+        Notification.error({
+          title: '请求超时',
+          duration: 2500
+        })
+        return Promise.reject(error)
+      }
+      if (error.toString().indexOf('Error: Network Error') !== -1) {
+        Notification.error({
+          title: '网络错误',
+          duration: 2500
+        })
+        return Promise.reject(error)
+      }
+    }
+    switch (code) {
+      case 401:
+        console.log('#2 ' + '401登录状态已过期')
+        break
+      case 403:
+        console.log('#3 ' + '403')
+        // router.push({ path: '/401' })
+        break
+      default:
+        console.log('#4 ' + '其他')
+    }
     return Promise.reject(error)
+    // if (code === 401) {
+    //   MessageBox.confirm(
+    //     '登录状态已过期，您可以继续留在该页面，或者重新登录',
+    //     '系统提示',
+    //     {
+    //       confirmButtonText: '重新登录',
+    //       cancelButtonText: '取消',
+    //       type: 'warning'
+    //     }
+    //   ).then(() => {
+    //     store.dispatch('LogOut').then(() => {
+    //       location.reload() // 为了重新实例化vue-router对象 避免bug
+    //     })
+    //   })
+    // } else if (code === 403) {
+    //   router.push({ path: '/401' })
+    // } else {
+    //   const errorMsg = error.response.data.message
+    //   if (errorMsg !== undefined) {
+    //     Notification.error({
+    //       title: errorMsg,
+    //       duration: 3000
+    //     })
+    //   }
+    // }
+    // return Promise.reject(error)
   }
 )
 

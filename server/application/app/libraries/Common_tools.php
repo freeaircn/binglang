@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-01 20:06:39
+ * @LastEditTime : 2020-01-06 14:25:51
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -42,5 +42,5 @@ class Common_tools
         }
         unset($map);
         return $tree;
-    }
+	}
 }

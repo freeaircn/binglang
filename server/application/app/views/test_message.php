@@ -1,4 +1,11 @@
 <?php
+/*
+ * @Description: 
+ * @Author: freeair
+ * @Date: 2020-01-01 17:59:33
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-01-06 19:05:13
+ */
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
 <html lang="en">
@@ -73,6 +80,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div id="body">
 		<p>No index.php in url.</p>
 		<p><?php echo $a; ?></p>
+		<p><?php echo $t; ?></p>
+		<p><?php echo $d; ?></p>
 	</div>
 
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>

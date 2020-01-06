@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-02 13:36:12
+ * @LastEditTime : 2020-01-06 20:33:36
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -31,7 +31,6 @@ class Menu_model extends CI_Model {
 		{
 			$this->db = $this->load->database($db_name, TRUE, TRUE);
 		}
-		$this->load->library('common_tools');
 	}
 	
 	public function db()
@@ -46,9 +45,9 @@ class Menu_model extends CI_Model {
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function tree_list($words=null)
+    public function read_all($words=null)
     {
-		$this->db->order_by('sort', 'DESC');
+		$this->db->order_by('sort', 'ASC');
 		$this->db->order_by('id', 'ASC');
 		if($words === null)
 		{
@@ -60,21 +59,25 @@ class Menu_model extends CI_Model {
 			$query = $this->db->get($this->tables['menu']);
 		}
 		
-		$list = $query->result_array();
-		if(empty($list))
-		{
-			return $list;
-		}
-        if ($list) {
-            foreach ($list as &$item) {
+		$result = $query->result_array();
+        if($result) {
+            foreach ($result as &$item) {
                 $item['cache'] = !!$item['cache'];
 				$item['hidden'] = !!$item['hidden'];
 				$item['outlink'] = !!$item['outlink'];
+				// riophae/vue-treeselect组件，识别字段id,label,children
+				$item['label'] = $item['name'];
                 unset($item);
             }
         }
-		$list = $this->common_tools->arr2tree($list);
-        return $list;
-    }
+        return $result;
+	}
+	
+	public function create_one($data)
+    {
+		$this->db->insert($this->tables['menu'], $data);
+		$id = $this->db->insert_id($this->tables['menu'] . '_id_seq');
 
+		return (isset($id)) ? $id : FALSE;
+    }
 }

@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-02 11:06:09
+ * @LastEditTime : 2020-01-05 14:01:00
  */
 import request from '@/utils/request'
 
@@ -17,12 +17,25 @@ export function apiGetMenu(words) {
   })
 }
 
-export function apiCreateMenu(id) {
+export function apiCreateMenu(formData) {
   return request({
     url: '/api/menu',
     method: 'post',
     data: {
-      id
+      id: formData.id,
+      name: formData.name,
+      type: formData.type,
+      pid: formData.pid,
+      sort: formData.sort,
+      permission: formData.permission,
+      component: formData.component,
+      component_name: formData.component_name,
+      path: formData.path,
+      icon: formData.icon,
+      cache: formData.cache,
+      hidden: formData.hidden,
+      outlink: formData.outlink,
+      create_time: formData.create_time
     }
   })
 }

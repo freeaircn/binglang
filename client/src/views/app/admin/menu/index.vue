@@ -129,8 +129,8 @@
         <el-form-item label="菜单排序" prop="sort">
           <el-input-number v-model.number="formData.sort" :min="0" :max="999" controls-position="right" style="width: 178px;" />
         </el-form-item>
-        <el-form-item v-show="!formData.outlink && formData.type.toString() === '1'" label="组件名称" prop="componentName">
-          <el-input v-model="formData.componentName" style="width: 178px;" placeholder="匹配组件内Name字段" />
+        <el-form-item v-show="!formData.outlink && formData.type.toString() === '1'" label="组件名称" prop="component_name">
+          <el-input v-model="formData.component_name" style="width: 178px;" placeholder="匹配组件内Name字段" />
         </el-form-item>
         <el-form-item v-show="!formData.outlink && formData.type.toString() === '1'" label="组件路径" prop="component">
           <el-input v-model="formData.component" style="width: 178px;" placeholder="组件路径" />
@@ -159,6 +159,9 @@ import { validQueryWords } from '@/utils/app/validator/common'
 // import api
 import { apiGetMenu, apiCreateMenu, apiUpdateMenu, apiDelMenu } from '@/api/app/admin/menu'
 
+// Import validator
+import { validName, validPath } from '@/utils/app/validator/menu_form'
+
 export default {
   name: 'AdminMenu',
   components: { IconSelect, treeSelect },
@@ -170,6 +173,11 @@ export default {
 
       tableLoading: false,
       tableData: [],
+      treeData: [{
+        id: 0,
+        label: '顶级类目',
+        children: []
+      }],
 
       dialogVisible: false,
       dialogAction: '',
@@ -191,9 +199,15 @@ export default {
         component_name: null,
         component: null,
         pid: 0,
-        children: null,
         create_time: null
       },
+      rules: {
+        name: [{ required: true, validator: validName, trigger: 'change' }],
+        path: [{ required: true, validator: validPath, trigger: 'change' }],
+        permission: [{ validator: validName, trigger: 'change' }],
+        component_name: [{ validator: validName, trigger: 'change' }],
+        component: [{ validator: validName, trigger: 'change' }]
+      }
 
       // 测试数据
       // tableData: [{
@@ -228,18 +242,18 @@ export default {
       //     type: 1
       //   }]
       // }],
-      treeData: [{
-        id: 0,
-        label: '顶级类目',
-        children: [{
-          id: 1,
-          label: '系统管理',
-          children: [{
-            id: 5,
-            label: '菜单管理'
-          }]
-        }]
-      }]
+      // treeData: [{
+      //   id: 0,
+      //   label: '顶级类目',
+      //   children: [{
+      //     id: 1,
+      //     label: '系统管理',
+      //     children: [{
+      //       id: 5,
+      //       label: '菜单管理'
+      //     }]
+      //   }]
+      // }]
     }
   },
   created() {
@@ -252,12 +266,13 @@ export default {
 
       apiGetMenu(words)
         .then(function(data) {
-          console.log(data)
           this.tableData.splice(0, this.tableData.length)
           this.tableData = data.slice(0)
-          this.tableLoading = false
-        }.bind(this)).catch(function(err) {
+        }.bind(this))
+        .catch(function(err) {
           console.log(err)
+        })
+        .finally(function() {
           this.tableLoading = false
         }.bind(this))
     },
@@ -284,29 +299,43 @@ export default {
     // 显示dialog
     preCreateRow() {
       this.rstFormData()
-      this.dialogAction = 'create'
-      this.dialogVisible = true
-      this.$nextTick(() => {
-        this.$refs['form'].clearValidate()
-      })
+      apiGetMenu(null)
+        .then(function(data) {
+          this.treeData[0].children.splice(0, this.treeData[0].children.length)
+          this.treeData[0].children = data.slice(0)
+          //
+          this.dialogAction = 'create'
+          this.dialogVisible = true
+          this.$nextTick(() => {
+            this.$refs['form'].clearValidate()
+          })
+        }.bind(this))
+        .catch(function(err) {
+          console.log(err)
+        })
+      // this.dialogAction = 'create'
+      // this.dialogVisible = true
+      // this.$nextTick(() => {
+      //   this.$refs['form'].clearValidate()
+      // })
     },
     // validate 表单输入，请求后台
-    // 接收response，更新显示
+    // 接收response
+    // 200，获取整个数据表，更新显示
     doCreateRow() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           console.log(this.formData)
-
           // TODO: API create
-          const id = 201
-          apiCreateMenu(id)
+          apiCreateMenu(this.formData)
             .then(function(data) {
-              console.log(data)
-            }).catch(function(err) {
+              this.dialogAction = ''
+              this.dialogVisible = false
+              this.queryRow()
+            }.bind(this))
+            .catch(function(err) {
               console.log(err)
             })
-          this.dialogAction = ''
-          this.dialogVisible = false
         }
       })
     },
@@ -384,7 +413,6 @@ export default {
         component_name: null,
         component: null,
         pid: 0,
-        children: null,
         create_time: null
       }
     },

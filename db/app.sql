@@ -22,7 +22,8 @@ CREATE TABLE `app_menu`  (
 
 INSERT INTO `app_menu` (`id`, `name`, `type`, `pid`, `sort`, `permission`, `component`, `component_name`, `path`, `icon`, `cache`, `hidden`, `outlink`, `create_time`)
 VALUES (1, '系统管理', 0, 0, 1, NULL, NULL, NULL, 'admin', 'system', b'0', b'0', b'0', '2020-01-01 00:00:00');
-INSERT INTO `app_menu` VALUES (2, '菜单管理', 1, 1, 10, NULL, 'admin/menu/index', 'Menu', 'menu', 'system', b'0', b'0', b'0', '2020-01-01 00:00:00');
+INSERT INTO `app_menu` VALUES (2, '运维管理', 0, 0, 2, NULL, NULL, NULL, 'admin', 'system', b'0', b'0', b'0', '2020-01-06 00:00:00');
+INSERT INTO `app_menu` VALUES (3, '菜单管理', 1, 1, 10, NULL, 'admin/menu/index', 'Menu', 'menu', 'system', b'0', b'0', b'0', '2020-01-01 00:00:00');
 
 
 

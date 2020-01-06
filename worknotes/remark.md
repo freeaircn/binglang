@@ -244,44 +244,23 @@ const service = axios.create({
 新建client\src\api\app文件夹，存放app的API
 新建client\src\utils\app文件夹，存放app的公共模块
 
-
 ```
 
 ---
-### 4. axios
-##### 4.1 概念
-```
-https://jingyan.baidu.com/article/a501d80cb60400ac630f5ed6.html
-1 GET一般是从服务器上获取数据，POST是向服务器提交数据。
-2 GET通过URL提交数据，数据在URL中可以看到，POST则是在HEADER内提交。
-3 GET提交的数据不能大于2KB，而POST不受限制。
-4 请求头 Content-Type: application/x-www-form-urlencoded，传参前将数据处理成键值对形式
-    service.defaults.transformRequest = [function(data) {
-    let ret = ''
-    let it = ''
-    for (it in data) {
-      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-    }
-    return ret
-  }]
-
-```
-
----
-### 5. codeigniter   
-##### 5.1 设置时区
+### 4. codeigniter   
+##### 4.1 设置时区
 ```
 设置时区 \index.php文件开头
 date_default_timezone_set('Asia/Shanghai');
 ````
 
-##### 5.2 Autoloader
+##### 4.2 Autoloader
 ```
 CI的index.php入口文件，末尾
 require_once './vendor/autoload.php';
 ```
 
-##### 5.3 在一个 CodeIgniter 下运行多个应用程序
+##### 4.3 在一个 CodeIgniter 下运行多个应用程序
 ```
 例如，你要创建两个应用程序："foo" 和 "bar"，你可以像下面这样组织你的目录结构
 applications/foo/
@@ -302,7 +281,7 @@ applications/bar/views/
 $application_folder = 'applications/foo';
 ```
 
-##### 5.4 将控制器放入子目录中
+##### 4.4 将控制器放入子目录中
 ```
 如果你正在构建一个比较大的应用，那么将控制器放到子目录下进行组织可能会方便一点。CodeIgniter 也可以实现这一点。
 
@@ -316,12 +295,167 @@ example.com/index.php/products/shoes/show/123
 ```
 
 ---
-### 6. codeigniter-restserver   
-##### 6.1 引入
+### 5. codeigniter-restserver   
+##### 5.1 URL Methods
 ```
 composer require chriskacerguis/codeigniter-restserver
 Note that you will need to copy rest.php to your config directory (e.g. application/config)
 
+# GET：读取（Read）
+# POST：新建（Create）
+# PUT：更新（Update）
+# PATCH：更新（Update），通常是部分更新
+# DELETE：删除（Delete）
+```
+##### 5.2 Http状态码
+```
+200状态码
+表示操作成功，但是不同的方法可以返回更精确的状态码。
+GET: 200 OK
+POST: 201 Created
+PUT: 200 OK
+PATCH: 200 OK
+DELETE: 204 No Content
+上面代码中，POST返回201状态码，表示生成了新的资源；DELETE返回204状态码，表示资源已经不存在。
+此外，202 Accepted状态码表示服务器已经收到请求，但还未进行处理，会在未来再处理，通常用于异步操作
 
+300状态码
+API 用不到301状态码（永久重定向）和302状态码（暂时重定向，307也是这个含义），因为它们可以由应用级别返回，浏览器会直接跳转，API 级别可以不考虑这两种情况。
+API 用到的3xx状态码，主要是303 See Other，表示参考另一个 URL。它与302和307的含义一样，也是"暂时重定向"，区别在于302和307用于GET请求，而303用于POST、PUT和DELETE请求。收到303以后，浏览器不会自动跳转，而会让用户自己决定下一步怎么办。
+
+4xx状态码
+表示客户端错误，主要有下面几种。
+400 Bad Request：服务器不理解客户端的请求，未做任何处理。
+401 Unauthorized：用户未提供身份验证凭据，或者没有通过身份验证。
+403 Forbidden：用户通过了身份验证，但是不具有访问资源所需的权限。
+404 Not Found：所请求的资源不存在，或不可用。
+405 Method Not Allowed：用户已经通过身份验证，但是所用的 HTTP 方法不在他的权限之内。
+410 Gone：所请求的资源已从这个地址转移，不再可用。
+415 Unsupported Media Type：客户端要求的返回格式不支持。比如，API 只能返回 JSON 格式，但是客户端要求返回 XML 格式。
+422 Unprocessable Entity ：客户端上传的附件无法处理，导致请求失败。
+429 Too Many Requests：客户端的请求次数超过限额。
+
+5xx状态码
+表示服务端错误。一般来说，API 不会向用户透露服务器的详细信息，所以只要两个状态码就够了。
+500 Internal Server Error：客户端请求有效，服务器处理时发生了意外。
+503 Service Unavailable：服务器无法处理请求，一般用于网站维护状态。
 ```
 
+---
+### 6. Axios  
+##### 6.1 Interceptors
+```
+You can intercept requests or responses before they are handled by then or catch.
+
+// Add a request interceptor
+axios.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+
+// Add a response interceptor
+axios.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+  });
+  
+4 请求头 Content-Type: application/x-www-form-urlencoded，传参前将数据处理成键值对形式
+  service.defaults.transformRequest = [function(data) {
+    let ret = ''
+    let it = ''
+    for (it in data) {
+      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+    }
+    return ret
+  }]
+```
+
+##### 6.2 Repsponse
+```
+{
+  // `data` is the response that was provided by the server
+  data: {},
+
+  // `status` is the HTTP status code from the server response
+  status: 200,
+
+  // `statusText` is the HTTP status message from the server response
+  statusText: 'OK',
+
+  // `headers` the headers that the server responded with
+  // All header names are lower cased
+  headers: {},
+
+  // `config` is the config that was provided to `axios` for the request
+  config: {},
+
+  // `request` is the request that generated this response
+  // It is the last ClientRequest instance in node.js (in redirects)
+  // and an XMLHttpRequest instance in the browser
+  request: {}
+}
+```
+
+##### 6.3 Repsponse error
+```
+.catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', error.message);
+    }
+    console.log(error.config);
+  });
+```
+
+##### 6.4 Repsponse处理
+```
+1 client发送http请求后，可遇到的情况有：
+  # server未运行，不处理http request  --  Error: Network Error
+  # server响应超时  --  Error: timeout
+  # server响应http 状态码非2xx
+  # server响应http 状态码2xx
+  
+2 使用axios的.interceptors.response预处理
+  # 收到状态码2xx，执行response => {
+  # 其他情况，执行error => {
+    在error中，细分失败原因，执行失败后处理
+    try {
+      code = error.response.data.status
+    } catch (e) {
+      console.log('#1 ' + error.toString())
+      if (error.toString().indexOf('Error: timeout') !== -1) {
+        Notification.error({
+          title: '请求超时',
+          duration: 2500
+        })
+      }
+      if (error.toString().indexOf('Error: Network Error') !== -1) {
+        Notification.error({
+          title: '网络错误',
+          duration: 2500
+        })
+      }
+    }
+    switch(code) {
+      case 401:
+
+```
