@@ -10,14 +10,7 @@
         <el-button class="filter-item" size="mini" type="info" icon="el-icon-download" @click="handleExport">导出</el-button>
       </div>
     </div>
-    <el-divider><i class="el-icon-download">API测试区</i></el-divider>
-    <div>
-      <el-button class="filter-item" size="mini" type="primary" @click="handleGet">Get</el-button>
-      <el-button class="filter-item" size="mini" type="primary" @click="handlePost">Post</el-button>
-      <el-button class="filter-item" size="mini" type="primary" @click="handleUpdate">Update</el-button>
-      <el-button class="filter-item" size="mini" type="primary" @click="handleDel">Delete</el-button>
-
-    </div>
+    <el-divider><i class="el-icon-download" /></el-divider>
     <!--表格渲染-->
     <el-table
       ref="table"
@@ -160,7 +153,7 @@ import { validQueryWords } from '@/utils/app/validator/common'
 import { apiGetMenu, apiCreateMenu, apiUpdateMenu, apiDelMenu } from '@/api/app/admin/menu'
 
 // Import validator
-import { validName, validPath } from '@/utils/app/validator/menu_form'
+import { validName, validPath } from '@/utils/app/validator/menu-form'
 
 export default {
   name: 'AdminMenu',

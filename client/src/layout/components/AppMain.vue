@@ -1,9 +1,16 @@
+<!--
+ * @Description:
+ * @Author: freeair
+ * @Date: 2020-01-01 12:00:42
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-01-07 17:14:34
+ -->
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
-        <router-view :key="key" />
-      </keep-alive>
+      <!-- <keep-alive :include="cachedViews"> -->
+      <router-view :key="key" />
+      <!-- </keep-alive> -->
     </transition>
   </section>
 </template>

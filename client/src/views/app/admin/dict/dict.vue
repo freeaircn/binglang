@@ -78,7 +78,7 @@
 // Import API
 
 // Import validator
-import { validQueryKey, validLabel } from '@/utils/app/validator/dict_form'
+import { validQueryKey, validLabel } from '@/utils/app/validator/dict-form'
 
 export default {
   name: 'Dict',
