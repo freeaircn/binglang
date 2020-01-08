@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-06 20:33:36
+ * @LastEditTime : 2020-01-08 22:34:10
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -45,39 +45,71 @@ class Menu_model extends CI_Model {
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function read_all($words=null)
+    public function read_all()
     {
 		$this->db->order_by('sort', 'ASC');
 		$this->db->order_by('id', 'ASC');
-		if($words === null)
+		$query = $this->db->get($this->tables['menu']);
+		
+		$result = $query->result_array();
+        if ($result) {
+            foreach ($result as &$item) {
+				$item['hidden'] = !!$item['hidden'];
+				$item['alwaysShow'] = !!$item['alwaysShow'];
+				$item['noCache'] = !!$item['noCache'];
+				$item['breadcrumb'] = !!$item['breadcrumb'];
+				// riophae/vue-treeselect组件，识别字段id,label,children
+				$item['label'] = $item['title'];
+                unset($item);
+            }
+        }
+        return $result;
+	}
+
+	public function read_by_col($col, $words)
+    {
+		$this->db->order_by('sort', 'ASC');
+		$this->db->order_by('id', 'ASC');
+
+		if ($col === 'title')
 		{
+			$this->db->like('title', $words);
 			$query = $this->db->get($this->tables['menu']);
 		}
-		else
+
+		if ($col === 'id')
 		{
-			$this->db->like('name', $words);
+			$this->db->where('id', $words);
 			$query = $this->db->get($this->tables['menu']);
 		}
 		
 		$result = $query->result_array();
         if($result) {
             foreach ($result as &$item) {
-                $item['cache'] = !!$item['cache'];
 				$item['hidden'] = !!$item['hidden'];
-				$item['outlink'] = !!$item['outlink'];
-				// riophae/vue-treeselect组件，识别字段id,label,children
-				$item['label'] = $item['name'];
+				$item['alwaysShow'] = !!$item['alwaysShow'];
+				$item['noCache'] = !!$item['noCache'];
+				$item['breadcrumb'] = !!$item['breadcrumb'];
                 unset($item);
             }
         }
         return $result;
 	}
 	
-	public function create_one($data)
+	public function create($data)
     {
 		$this->db->insert($this->tables['menu'], $data);
 		$id = $this->db->insert_id($this->tables['menu'] . '_id_seq');
 
 		return (isset($id)) ? $id : FALSE;
+	}
+	
+	public function update($id, $data)
+    {
+		$this->db->where('id', $id);
+		$this->db->update($this->tables['menu'], $data);
+
+		$res = $this->db->affected_rows();
+		return ($res > 0) ? TRUE : FALSE;
     }
 }

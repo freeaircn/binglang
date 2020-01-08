@@ -3,27 +3,27 @@ CREATE DATABASE binglang CHARACTER SET utf8;
 DROP TABLE IF EXISTS `app_menu`;
 CREATE TABLE `app_menu`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单名称',
-  `type` int(11) NULL DEFAULT NULL COMMENT '顶级-0，次级菜单-1，按钮-2',
-  `pid` bigint(20) NOT NULL COMMENT '上级菜单ID',
-  `sort` bigint(20) NULL DEFAULT NULL COMMENT '排序',
-  `permission` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `component` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '组件',
-  `component_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '-',
-  `path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '链接地址',
+  `type` int(11) NULL DEFAULT NULL COMMENT '菜单-1，按钮-2',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '路由/组件名称',
+  `path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '路由Path',
+  `component` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '组件懒加载',
+  `redirect` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '重定向',
+  `hidden` bit(1) NULL DEFAULT b'0' COMMENT '侧边栏隐藏',
+  `alwaysShow` bit(1) NULL DEFAULT b'0' COMMENT '侧边栏显示顶级目录',
+  `title` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单标题',
   `icon` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '图标',
-  `cache` bit(1) NULL DEFAULT b'0',
-  `hidden` bit(1) NULL DEFAULT b'0',
-  `outlink` bit(1) NULL DEFAULT NULL COMMENT '是否外链',
+  `noCache` bit(1) NULL DEFAULT b'1' COMMENT '页面缓存',
+  `breadcrumb` bit(1) NULL DEFAULT b'1' COMMENT '面包屑显示',
+  `roles` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限',
+  `sort` bigint(20) NULL DEFAULT NULL COMMENT '排序',
+  `pid` bigint(20) NOT NULL COMMENT '上级菜单ID',  
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
   PRIMARY KEY (`id`) USING BTREE,
+  CONSTRAINT `uc_name` UNIQUE (`name`),
   INDEX `FKqcf9gem97gqa5qjm4d3elcqt5`(`pid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 81 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
-INSERT INTO `app_menu` (`id`, `name`, `type`, `pid`, `sort`, `permission`, `component`, `component_name`, `path`, `icon`, `cache`, `hidden`, `outlink`, `create_time`)
-VALUES (1, '系统管理', 0, 0, 1, NULL, NULL, NULL, 'admin', 'system', b'0', b'0', b'0', '2020-01-01 00:00:00');
-INSERT INTO `app_menu` VALUES (2, '运维管理', 0, 0, 2, NULL, NULL, NULL, 'admin', 'system', b'0', b'0', b'0', '2020-01-06 00:00:00');
-INSERT INTO `app_menu` VALUES (3, '菜单管理', 1, 1, 10, NULL, 'admin/menu/index', 'Menu', 'menu', 'system', b'0', b'0', b'0', '2020-01-01 00:00:00');
+INSERT INTO `app_menu` VALUES (1, 1, 'SysAdmin', 'sys-admin', 'src/layout', 'noRedirect', b'0', b'0', '系统管理', 'system', b'1', b'1', NULL, 1, 0, '2020-01-01 00:00:00');
 
 
 

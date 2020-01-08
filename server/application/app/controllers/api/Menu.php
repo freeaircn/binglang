@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-06 20:39:53
+ * @LastEditTime : 2020-01-08 22:36:17
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -23,55 +23,47 @@ class Menu extends RestController {
 
 	public function index_get()
 	{
+		$col = $this->get( 'col' );
 		$words = $this->get( 'words' );
 
-		$result = $this->menu_model->read_all($words);
-
-		if(empty($result))
+		if($col === null && $words === null)
 		{
-			$this->response( [], 404 );
+			$result = $this->menu_model->read_all();
 		}
-		else
+
+		if($col !== null && $words !== null)
 		{
-			$res = $this->common_tools->arr2tree($result);
-			$this->response( $res, 200 );
+			$result = $this->menu_model->read_by_col($col, $words);
 		}
 		
+		$res = $this->common_tools->arr2tree($result);
+		$this->response( $res, 200 );
 	}
 
 	public function index_post()
 	{
-		$data['name'] = $this->post( 'name' );
 		$data['type'] = $this->post( 'type' );
-		$data['pid'] = $this->post( 'pid' );
-		$data['sort'] = $this->post( 'sort' );
-		$data['permission'] = $this->post( 'permission' );
-		$data['component'] = $this->post( 'component' );
-		$data['component_name'] = $this->post( 'component_name' );
+		$data['name'] = $this->post( 'name' );
 		$data['path'] = $this->post( 'path' );
-		$data['icon'] = $this->post( 'icon' );
-		$data['cache'] = $this->post( 'cache' );
+		$data['component'] = $this->post( 'component' );
+		$data['redirect'] = $this->post( 'redirect' );
 		$data['hidden'] = $this->post( 'hidden' );
-		$data['outlink'] = $this->post( 'outlink' );
+		$data['alwaysShow'] = $this->post( 'alwaysShow' );
+		$data['title'] = $this->post( 'title' );
+		$data['icon'] = $this->post( 'icon' );
+		$data['noCache'] = $this->post( 'noCache' );
+		$data['breadcrumb'] = $this->post( 'breadcrumb' );
+		$data['roles'] = $this->post( 'roles' );
+		$data['sort'] = $this->post( 'sort' );
+		$data['pid'] = $this->post( 'pid' );
 
-		if ($data['cache'] == 'true') {
-            $data['cache'] = 1;
-        } else {
-            $data['cache'] = 0;
-		}
-		if ($data['hidden'] == 'true') {
-            $data['hidden'] = 1;
-        } else {
-            $data['hidden'] = 0;
-		}
-		if ($data['outlink'] == 'true') {
-            $data['outlink'] = 1;
-        } else {
-            $data['outlink'] = 0;
-		}
+		$data['hidden'] = ($data['hidden'] == 'true') ? 1 : 0;
+		$data['alwaysShow'] = ($data['alwaysShow'] == 'true') ? 1 : 0;
+		$data['noCache'] = ($data['noCache'] == 'true') ? 1 : 0;
+		$data['breadcrumb'] = ($data['breadcrumb'] == 'true') ? 1 : 0;
 
 		$data['create_time'] = date("Y-m-d H:i:s", time());
-		$result = $this->menu_model->create_one($data);
+		$result = $this->menu_model->create($data);
 
 		if ($result === FALSE) {
 			$this->response( [], 500 );
@@ -84,9 +76,29 @@ class Menu extends RestController {
 	public function index_put()
 	{
 		$id = $this->put( 'id' );
+		$data['type'] = $this->put( 'type' );
+		$data['name'] = $this->put( 'name' );
+		$data['path'] = $this->put( 'path' );
+		$data['component'] = $this->put( 'component' );
+		$data['redirect'] = $this->put( 'redirect' );
+		$data['hidden'] = $this->put( 'hidden' );
+		$data['alwaysShow'] = $this->put( 'alwaysShow' );
+		$data['title'] = $this->put( 'title' );
+		$data['icon'] = $this->put( 'icon' );
+		$data['noCache'] = $this->put( 'noCache' );
+		$data['breadcrumb'] = $this->put( 'breadcrumb' );
+		$data['roles'] = $this->put( 'roles' );
+		$data['sort'] = $this->put( 'sort' );
+		$data['pid'] = $this->put( 'pid' );
 
-		$data = ['id' => $id];
-		$this->response( $data, 200 );
+		$data['create_time'] = date("Y-m-d H:i:s", time());
+		$result = $this->menu_model->update($id, $data);
+
+		if ($result === FALSE) {
+			$this->response( [], 500 );
+		} else {
+			$this->response( $result, 200 );
+		}
 	}
 
 	public function index_delete()
