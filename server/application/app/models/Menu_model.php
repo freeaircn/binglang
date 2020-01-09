@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-08 22:34:10
+ * @LastEditTime : 2020-01-09 13:00:57
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -52,8 +52,10 @@ class Menu_model extends CI_Model {
 		$query = $this->db->get($this->tables['menu']);
 		
 		$result = $query->result_array();
-        if ($result) {
-            foreach ($result as &$item) {
+		if ($result)
+		{
+			foreach ($result as &$item)
+			{
 				$item['hidden'] = !!$item['hidden'];
 				$item['alwaysShow'] = !!$item['alwaysShow'];
 				$item['noCache'] = !!$item['noCache'];
@@ -84,8 +86,10 @@ class Menu_model extends CI_Model {
 		}
 		
 		$result = $query->result_array();
-        if($result) {
-            foreach ($result as &$item) {
+		if ($result) 
+		{
+			foreach ($result as &$item) 
+			{
 				$item['hidden'] = !!$item['hidden'];
 				$item['alwaysShow'] = !!$item['alwaysShow'];
 				$item['noCache'] = !!$item['noCache'];
@@ -111,5 +115,44 @@ class Menu_model extends CI_Model {
 
 		$res = $this->db->affected_rows();
 		return ($res > 0) ? TRUE : FALSE;
-    }
+	}
+
+	/**
+     * 
+     * @param array string $ids
+     * @return array
+     */
+	public function delete($ids)
+    {
+		$result = $this->db->where_in('id', $ids)->delete($this->tables['menu']);
+		
+		return $result;
+	}
+	
+	/**
+     * 根据id便利数据表，输出包括输入id的所有子节点id
+     * @param int $id
+     * @return array string
+     */
+	function get_all_children_ids($id)
+	{
+		$array[] = (string)$id;
+		$temp_arr[] = (string)$id;
+		do
+		{
+			$this->db->select('id');
+			$this->db->where_in('pid', $temp_arr);
+			$query = $this->db->get($this->tables['menu']);
+			$res = $query->result_array();
+			unset($temp_arr);
+			foreach ($res as $k=>$v)
+			{
+				$array[] = (string)$v['id'];
+				$temp_arr[] = (string)$v['id'];
+			}
+		}
+		while (!empty($res));
+
+		return $array;
+	}
 }

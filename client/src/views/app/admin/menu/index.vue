@@ -382,11 +382,26 @@ export default {
     // 子节点删除处理
     // 接收response，更新显示
     doDelete(id) {
-      apiDelMenu(id)
-        .then(function(data) {
-          console.log(data)
-        }).catch(function(err) {
-          console.log(err)
+      this.$confirm('确定删除吗？子菜单会同时删除，此操作不能撤销！', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      })
+        .then(() => {
+          apiDelMenu(id)
+            .then(function(data) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.doRead()
+            }.bind(this))
+            .catch(function(err) {
+              console.log(err)
+            })
+        })
+        .catch(() => {
         })
     },
 

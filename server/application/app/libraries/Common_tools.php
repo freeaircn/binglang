@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-06 14:25:51
+ * @LastEditTime : 2020-01-09 12:37:47
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -30,13 +30,18 @@ class Common_tools
     public static function arr2tree($list, $id = 'id', $pid = 'pid', $son = 'children')
     {
         list($tree, $map) = [[], []];
-        foreach ($list as $item) {
+		foreach ($list as $item)
+		{
             $map[$item[$id]] = $item;
         }
-        foreach ($list as $item) {
-            if (isset($item[$pid]) && isset($map[$item[$pid]])) {
+		foreach ($list as $item)
+		{
+			if (isset($item[$pid]) && isset($map[$item[$pid]]))
+			{
                 $map[$item[$pid]][$son][] = &$map[$item[$id]];
-            } else {
+			}
+			else
+			{
                 $tree[] = &$map[$item[$id]];
             }
         }
