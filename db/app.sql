@@ -44,6 +44,25 @@ CREATE TABLE `app_dept`  (
 
 INSERT INTO `app_dept` VALUES (1, 'FreeAir Studio', 0, b'1', '2020-01-01 09:14:05');
 
+--
+-- 表的结构 `app_job`
+--
+DROP TABLE IF EXISTS `app_job`;
+CREATE TABLE `app_job`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '中文名称',
+  `enabled` bit(1) NOT NULL,
+  `sort` bigint(20) NOT NULL,
+  `dept_id` bigint(20) NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `FKmvhj0rogastlctflsxf1d6k3i`(`dept_id`) USING BTREE,
+  CONSTRAINT `FKmvhj0rogastlctflsxf1d6k3i` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+INSERT INTO `app_job` VALUES (1, '开发员1', b'1', 1, 10, '2020-01-01 09:14:05');
+INSERT INTO `app_job` VALUES (2, '开发员2', b'1', 2, 10, '2020-01-01 09:14:05');
+
 
 --
 -- 表的结构 `app_dept`

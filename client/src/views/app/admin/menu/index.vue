@@ -343,7 +343,6 @@ export default {
     doCreate() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          console.log(this.formData)
           // API create
           apiCreateMenu(this.formData)
             .then(function(data) {

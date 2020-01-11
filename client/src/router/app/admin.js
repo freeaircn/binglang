@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-25 16:09:53
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-09 14:16:51
+ * @LastEditTime : 2020-01-11 17:45:31
  */
 /** When your routing table is too long, you can split it into small modules **/
 
@@ -30,6 +30,12 @@ const adminRouter = {
       component: () => import('@/views/app/admin/dept/index'),
       name: 'AdminDept',
       meta: { title: '部门管理' }
+    },
+    {
+      path: 'job',
+      component: () => import('@/views/app/admin/job/index'),
+      name: 'AdminJob',
+      meta: { title: '岗位管理' }
     },
     {
       path: 'dict',

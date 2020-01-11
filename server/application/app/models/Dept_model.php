@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 14:24:54
+ * @LastEditTime : 2020-01-11 23:17:49
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -100,7 +100,7 @@ class Dept_model extends CI_Model {
 	}
 	
 	/**
-     * 根据id便利数据表，输出包括输入id的所有子节点id
+     * 根据id遍历数据表，输出包括输入id的所有子节点id
      * @param int $id
      * @return array string
      */
@@ -119,6 +119,34 @@ class Dept_model extends CI_Model {
 			{
 				$array[] = (string)$v['id'];
 				$temp_arr[] = (string)$v['id'];
+			}
+		}
+		while (!empty($res));
+
+		return $array;
+	}
+
+	/**
+     * 根据id遍历数据表，输出包括输入id的所有父节点label
+     * @param int $id
+     * @return array string
+     */
+	function get_all_parents_label($id)
+	{
+		// $array[] = (string)$id;
+		$array = [];
+		$temp_arr[] = (string)$id;
+		do
+		{
+			$this->db->select('label, pid');
+			$this->db->where_in('id', $temp_arr);
+			$query = $this->db->get($this->tables['dept']);
+			$res = $query->result_array();
+			unset($temp_arr);
+			foreach ($res as $k=>$v)
+			{
+				$array[] = $v['label'];
+				$temp_arr[] = (string)$v['pid'];
 			}
 		}
 		while (!empty($res));
