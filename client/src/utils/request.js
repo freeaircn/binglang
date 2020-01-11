@@ -3,9 +3,10 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-06 21:44:06
+ * @LastEditTime : 2020-01-11 15:51:18
  */
 import axios from 'axios'
+import qs from 'qs'
 // import { Message } from 'element-ui'
 import { Notification } from 'element-ui'
 import store from '@/store'
@@ -26,6 +27,10 @@ service.defaults.transformRequest = [function(data) {
   }
   return ret
 }]
+
+service.defaults.paramsSerializer = function(params) {
+  return qs.stringify(params, { arrayFormat: 'indices' })
+}
 
 // request interceptor
 service.interceptors.request.use(

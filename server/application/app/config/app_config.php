@@ -1,4 +1,11 @@
 <?php
+/*
+ * @Description: 
+ * @Author: freeair
+ * @Date: 2020-01-01 19:25:12
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-01-09 14:57:53
+ */
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -12,6 +19,7 @@ $config['db_name'] = 'binglang';
 | Database table names.
 */
 $config['tables']['menu'] = 'app_menu';
+$config['tables']['dept'] = 'app_dept';
 
 /*
  | Users table column and Group table column you want to join WITH.

@@ -33,35 +33,35 @@
 
       <el-table-column prop="hidden" label="侧边可见" width="75px">
         <template slot-scope="scope">
-          <span v-if="scope.row.hidden">否</span>
-          <span v-else>是</span>
+          <span v-if="scope.row.hidden == '0'">是</span>
+          <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column prop="alwaysShow" label="顶级可见" width="75px">
         <template slot-scope="scope">
-          <span v-if="scope.row.alwaysShow">是</span>
+          <span v-if="scope.row.alwaysShow == '1'">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column prop="noCache" label="页面缓存" width="75px">
         <template slot-scope="scope">
-          <span v-if="scope.row.noCache">否</span>
-          <span v-else>是</span>
+          <span v-if="scope.row.noCache == '0'">是</span>
+          <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column prop="breadcrumb" label="面包屑" width="75px">
         <template slot-scope="scope">
-          <span v-if="scope.row.breadcrumb">是</span>
+          <span v-if="scope.row.breadcrumb == '1'">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
 
       <el-table-column :show-overflow-tooltip="true" prop="roles" label="权限标识" />
-      <el-table-column prop="create_time" label="创建日期" width="135px" />
+      <el-table-column prop="update_time" label="创建日期" width="135px" />
 
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="{row}">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="preUpdate(row)" />
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="preUpdate(row.id)" />
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="doDelete(row.id)" />
         </template>
       </el-table-column>
@@ -119,16 +119,16 @@
           <el-col :span="12">
             <el-form-item v-show="formData.type.toString() === '1'" label="侧边可见" prop="hidden">
               <el-radio-group v-model="formData.hidden" size="mini">
-                <el-radio-button label="false">是</el-radio-button>
-                <el-radio-button label="true">否</el-radio-button>
+                <el-radio-button label="0">是</el-radio-button>
+                <el-radio-button label="1">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-show="formData.type.toString() === '1'" label="顶级可见" prop="alwaysShow">
               <el-radio-group v-model="formData.alwaysShow" size="mini">
-                <el-radio-button label="true">是</el-radio-button>
-                <el-radio-button label="false">否</el-radio-button>
+                <el-radio-button label="1">是</el-radio-button>
+                <el-radio-button label="0">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -138,16 +138,16 @@
           <el-col :span="12">
             <el-form-item v-show="formData.type.toString() === '1'" label="页面缓存" prop="noCache">
               <el-radio-group v-model="formData.noCache" size="mini">
-                <el-radio-button label="false">是</el-radio-button>
-                <el-radio-button label="true">否</el-radio-button>
+                <el-radio-button label="0">是</el-radio-button>
+                <el-radio-button label="1">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-show="formData.type.toString() === '1'" label="面包屑" prop="breadcrumb">
               <el-radio-group v-model="formData.breadcrumb" size="mini">
-                <el-radio-button label="true">是</el-radio-button>
-                <el-radio-button label="false">否</el-radio-button>
+                <el-radio-button label="1">是</el-radio-button>
+                <el-radio-button label="0">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -196,7 +196,6 @@
 
 <script>
 // import 第三方组件
-import axios from 'axios'
 import IconSelect from '@/components/app/IconSelect'
 import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -240,16 +239,16 @@ export default {
         path: null,
         component: null,
         redirect: null,
-        hidden: false,
-        alwaysShow: false,
+        hidden: '0',
+        alwaysShow: '0',
         title: null,
         icon: null,
-        noCache: true,
-        breadcrumb: true,
+        noCache: '1',
+        breadcrumb: '1',
         roles: null,
         sort: 999,
         pid: 0,
-        create_time: null
+        update_time: null
       }
       // rules: {
       //   name: [{ required: true, validator: validName, trigger: 'change' }],
@@ -261,14 +260,22 @@ export default {
     }
   },
   created() {
-    this.doRead()
+    this.updateTbl(null)
   },
   methods: {
     // CRUD core
-    doRead(col = null, words = null) {
+    updateTbl(params) {
       this.tableLoading = true
 
-      apiGetMenu(col, words)
+      if (params === null) {
+        params = {
+          select_col: null,
+          method: null,
+          cond: null,
+          cond_col: null
+        }
+      }
+      apiGetMenu(params)
         .then(function(data) {
           this.tableData.splice(0, this.tableData.length)
           this.tableData = data.slice(0)
@@ -283,11 +290,17 @@ export default {
     handleQuery() {
       // API param - this.word，输入检验
       if (this.query.words === '') {
-        this.doRead()
+        this.updateTbl(null)
       } else {
         const res = validQueryWords(this.query.words)
         if (res === true) {
-          this.doRead('title', this.query.words)
+          var params = {
+            select_col: null,
+            method: 'like',
+            cond: { 'title': this.query.words },
+            cond_col: null
+          }
+          this.updateTbl(params)
         } else {
           this.$notify.error({
             title: '错误',
@@ -303,7 +316,13 @@ export default {
     // 显示dialog
     preCreate() {
       this.rstFormData()
-      apiGetMenu(null, null)
+      var params = {
+        select_col: 'id, title, pid',
+        method: null,
+        cond: null,
+        cond_col: null
+      }
+      apiGetMenu(params)
         .then(function(data) {
           this.treeData[0].children.splice(0, this.treeData[0].children.length)
           this.treeData[0].children = data.slice(0)
@@ -330,7 +349,7 @@ export default {
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.doRead()
+              this.updateTbl(null)
             }.bind(this))
             .catch(function(err) {
               console.log(err)
@@ -342,19 +361,31 @@ export default {
     // 请求后台menu tree，组装tree数据结构
     // 取row.id，请求后台，填写表单formData
     // 显示dialog
-    preUpdate(row) {
-      axios.all([apiGetMenu(null, null), apiGetMenu('id', row.id)])
-        .then(axios.spread(function(treeData, tableRow) {
+    preUpdate(rowID) {
+      var params1 = {
+        select_col: 'id, title, pid',
+        method: null,
+        cond: null,
+        cond_col: null
+      }
+      var params2 = {
+        select_col: null,
+        method: 'where',
+        cond: { 'id': rowID },
+        cond_col: null
+      }
+      Promise.all([apiGetMenu(params1), apiGetMenu(params2)])
+        .then(function(res) {
           this.treeData[0].children.splice(0, this.treeData[0].children.length)
-          this.treeData[0].children = treeData.slice(0)
+          this.treeData[0].children = res[0].slice(0)
           //
-          this.copyFormData(tableRow[0])
+          this.copyFormData(res[1][0])
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
             this.$refs['form'].clearValidate()
           })
-        }.bind(this)))
+        }.bind(this))
         .catch(function(err) {
           console.log(err)
         })
@@ -370,7 +401,7 @@ export default {
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.doRead()
+              this.updateTbl(null)
             }.bind(this))
             .catch(function(err) {
               console.log(err)
@@ -382,7 +413,7 @@ export default {
     // 子节点删除处理
     // 接收response，更新显示
     doDelete(id) {
-      this.$confirm('确定删除吗？子菜单会同时删除，此操作不能撤销！', '提示', {
+      this.$confirm('确定删除吗？子节点会同时删除，此操作不能撤销！', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -395,7 +426,7 @@ export default {
                 type: 'success',
                 message: '删除成功!'
               })
-              this.doRead()
+              this.updateTbl(null)
             }.bind(this))
             .catch(function(err) {
               console.log(err)
@@ -419,16 +450,16 @@ export default {
       this.formData.path = null
       this.formData.component = null
       this.formData.redirect = null
-      this.formData.hidden = false
-      this.formData.alwaysShow = false
+      this.formData.hidden = '0'
+      this.formData.alwaysShow = '0'
       this.formData.title = null
       this.formData.icon = null
-      this.formData.noCache = true
-      this.formData.breadcrumb = true
+      this.formData.noCache = '1'
+      this.formData.breadcrumb = '1'
       this.formData.roles = null
       this.formData.sort = 999
       this.formData.pid = 0
-      this.formData.create_time = null
+      this.formData.update_time = null
     },
     copyFormData(data) {
       this.formData.id = data.id
@@ -446,7 +477,7 @@ export default {
       this.formData.roles = data.roles
       this.formData.sort = data.sort
       this.formData.pid = data.pid
-      this.formData.create_time = data.create_time
+      this.formData.update_time = data.update_time
     }
   }
 }

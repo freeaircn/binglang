@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-09 13:00:57
+ * @LastEditTime : 2020-01-11 16:51:13
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -38,6 +38,50 @@ class Menu_model extends CI_Model {
 		return $this->db;
 	}
 
+	public function read($select_col = NULL, $method = NULL, $cond = NULL, $cond_col = NULL)
+    {
+		$this->db->order_by('sort', 'ASC');
+		$this->db->order_by('id', 'ASC');
+
+		if ($select_col !== NULL)
+		{
+			$this->db->select($select_col);
+		}
+
+		if ($method !== NULL)
+		{
+			if ($method === 'where' && (!empty($cond)))
+			{
+				$this->db->where($cond);
+			}
+			if ($method === 'like' && (!empty($cond)))
+			{
+				$this->db->like($cond);
+			}
+			if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col)))
+			{
+				$this->db->where_in($cond_col, $cond);
+			}
+
+		}
+
+		$query = $this->db->get($this->tables['menu']);
+		$result = $query->result_array();
+		if ($result)
+		{
+			foreach ($result as &$item)
+			{
+				if (isset($item['title']))
+				{
+					// riophae/vue-treeselect组件，识别字段id,label,children
+					$item['label'] = $item['title'];
+				}			
+                unset($item);
+            }
+        }
+        return $result;
+	}
+
 	/**
      * 获取所有菜单列表
      * @return array|string|\think\Collection
@@ -45,60 +89,60 @@ class Menu_model extends CI_Model {
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function read_all()
-    {
-		$this->db->order_by('sort', 'ASC');
-		$this->db->order_by('id', 'ASC');
-		$query = $this->db->get($this->tables['menu']);
+    // public function read_all()
+    // {
+	// 	$this->db->order_by('sort', 'ASC');
+	// 	$this->db->order_by('id', 'ASC');
+	// 	$query = $this->db->get($this->tables['menu']);
 		
-		$result = $query->result_array();
-		if ($result)
-		{
-			foreach ($result as &$item)
-			{
-				$item['hidden'] = !!$item['hidden'];
-				$item['alwaysShow'] = !!$item['alwaysShow'];
-				$item['noCache'] = !!$item['noCache'];
-				$item['breadcrumb'] = !!$item['breadcrumb'];
-				// riophae/vue-treeselect组件，识别字段id,label,children
-				$item['label'] = $item['title'];
-                unset($item);
-            }
-        }
-        return $result;
-	}
+	// 	$result = $query->result_array();
+		// if ($result)
+		// {
+		// 	foreach ($result as &$item)
+		// 	{
+		// 		$item['hidden'] = !!$item['hidden'];
+		// 		$item['alwaysShow'] = !!$item['alwaysShow'];
+		// 		$item['noCache'] = !!$item['noCache'];
+		// 		$item['breadcrumb'] = !!$item['breadcrumb'];
+		// 		// riophae/vue-treeselect组件，识别字段id,label,children
+		// 		$item['label'] = $item['title'];
+        //         unset($item);
+        //     }
+        // }
+    //     return $result;
+	// }
 
-	public function read_by_col($col, $words)
-    {
-		$this->db->order_by('sort', 'ASC');
-		$this->db->order_by('id', 'ASC');
+	// public function read_by_col($col, $words)
+    // {
+	// 	$this->db->order_by('sort', 'ASC');
+	// 	$this->db->order_by('id', 'ASC');
 
-		if ($col === 'title')
-		{
-			$this->db->like('title', $words);
-			$query = $this->db->get($this->tables['menu']);
-		}
+	// 	if ($col === 'title')
+	// 	{
+	// 		$this->db->like('title', $words);
+	// 		$query = $this->db->get($this->tables['menu']);
+	// 	}
 
-		if ($col === 'id')
-		{
-			$this->db->where('id', $words);
-			$query = $this->db->get($this->tables['menu']);
-		}
+	// 	if ($col === 'id')
+	// 	{
+	// 		$this->db->where('id', $words);
+	// 		$query = $this->db->get($this->tables['menu']);
+	// 	}
 		
-		$result = $query->result_array();
-		if ($result) 
-		{
-			foreach ($result as &$item) 
-			{
-				$item['hidden'] = !!$item['hidden'];
-				$item['alwaysShow'] = !!$item['alwaysShow'];
-				$item['noCache'] = !!$item['noCache'];
-				$item['breadcrumb'] = !!$item['breadcrumb'];
-                unset($item);
-            }
-        }
-        return $result;
-	}
+	// 	$result = $query->result_array();
+	// 	if ($result) 
+	// 	{
+	// 		foreach ($result as &$item) 
+	// 		{
+	// 			$item['hidden'] = !!$item['hidden'];
+	// 			$item['alwaysShow'] = !!$item['alwaysShow'];
+	// 			$item['noCache'] = !!$item['noCache'];
+	// 			$item['breadcrumb'] = !!$item['breadcrumb'];
+    //             unset($item);
+    //         }
+    //     }
+    //     return $result;
+	// }
 	
 	public function create($data)
     {

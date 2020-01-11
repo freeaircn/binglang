@@ -459,3 +459,14 @@ axios.interceptors.response.use(function (response) {
       case 401:
 
 ```
+
+
+---
+### 7. Sql  
+##### 7.1 外键
+```
+student和grade，学生表中的gid是学生所在的班级id，是引入了班级表grade中的主键id。
+那么gid就可以作为表student表的外键。
+被引用的表，即表grade是主表，使用外键的表，即student，是从表。
+
+```

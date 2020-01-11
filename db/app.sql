@@ -1,5 +1,8 @@
 CREATE DATABASE binglang CHARACTER SET utf8;
 
+--
+-- 表的结构 `app_menu`
+--
 DROP TABLE IF EXISTS `app_menu`;
 CREATE TABLE `app_menu`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -17,7 +20,7 @@ CREATE TABLE `app_menu`  (
   `roles` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限',
   `sort` bigint(20) NULL DEFAULT NULL COMMENT '排序',
   `pid` bigint(20) NOT NULL COMMENT '上级菜单ID',  
-  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
   PRIMARY KEY (`id`) USING BTREE,
   CONSTRAINT `uc_name` UNIQUE (`name`),
   INDEX `FKqcf9gem97gqa5qjm4d3elcqt5`(`pid`) USING BTREE
@@ -26,6 +29,25 @@ CREATE TABLE `app_menu`  (
 INSERT INTO `app_menu` VALUES (1, 1, 'SysAdmin', 'sys-admin', 'src/layout', 'noRedirect', b'0', b'0', '系统管理', 'system', b'1', b'1', NULL, 1, 0, '2020-01-01 00:00:00');
 
 
+--
+-- 表的结构 `app_dept`
+--
+DROP TABLE IF EXISTS `app_dept`;
+CREATE TABLE `app_dept`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '名称',
+  `pid` bigint(20) NOT NULL COMMENT '上级节点',
+  `enabled` bit(1) NOT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+INSERT INTO `app_dept` VALUES (1, 'FreeAir Studio', 0, b'1', '2020-01-01 09:14:05');
+
+
+--
+-- 表的结构 `app_dept`
+--
 
 CREATE TABLE `app_dict` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
