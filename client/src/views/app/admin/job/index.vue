@@ -19,7 +19,6 @@
       size="small"
     >
       <el-table-column :show-overflow-tooltip="true" prop="label" label="名称" />
-      <el-table-column :show-overflow-tooltip="true" prop="dept" label="所属部门" />
       <el-table-column prop="sort" label="排序" />
 
       <el-table-column prop="enabled" label="是否启用" align="center">
@@ -56,9 +55,6 @@
           <el-input-number v-model.number="formData.sort" :min="0" :max="999" controls-position="right" style="" />
         </el-form-item>
 
-        <el-form-item label="所属部门" prop="dept_id">
-          <treeSelect v-model="formData.dept_id" :options="treeData" placeholder="选择部门" />
-        </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -71,19 +67,15 @@
 
 <script>
 // import 第三方组件
-import treeSelect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import 公共method
 import { validQueryWords, validLabel } from '@/utils/app/validator/common'
 
 // import api
 import { apiGetJob, apiCreateJob, apiUpdateJob, apiDelJob } from '@/api/app/admin/job'
-import { apiGetDept } from '@/api/app/admin/dept'
 
 export default {
   name: 'AdminJob',
-  components: { treeSelect },
   data() {
     return {
       query: {
@@ -92,7 +84,6 @@ export default {
 
       tableLoading: false,
       tableData: [],
-      treeData: [],
 
       dialogVisible: false,
       dialogAction: '',
@@ -104,8 +95,7 @@ export default {
         id: null,
         label: '',
         enabled: '1',
-        sort: 999,
-        dept_id: 1
+        sort: 999
       },
       rules: {
         label: [{ required: true, validator: validLabel, trigger: 'change' }]
@@ -164,31 +154,15 @@ export default {
       }
     },
 
-    // 请求后台menu tree，组装tree数据结构
     // 表单formData清空
     // 显示dialog
     preCreate() {
       this.rstFormData()
-      var params = {
-        select_col: 'id, label, pid',
-        method: null,
-        cond: null,
-        cond_col: null
-      }
-      apiGetJob(params)
-        .then(function(data) {
-          this.treeData.splice(0, this.treeData.length)
-          this.treeData = data.slice(0)
-          //
-          this.dialogAction = 'create'
-          this.dialogVisible = true
-          this.$nextTick(() => {
-            this.$refs['form'].clearValidate()
-          })
-        }.bind(this))
-        .catch(function(err) {
-          console.log(err)
-        })
+      this.dialogAction = 'create'
+      this.dialogVisible = true
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
     },
     // validate 表单输入，请求后台
     // 接收response
@@ -210,28 +184,18 @@ export default {
       })
     },
 
-    // 请求后台 tree，组装tree数据结构
     // 取row.id，请求后台，填写表单formData
     // 显示dialog
     preUpdate(rowID) {
-      var params1 = {
-        select_col: 'id, label, pid',
-        method: null,
-        cond: null,
-        cond_col: null
-      }
-      var params2 = {
+      var params = {
         select_col: null,
         method: 'where',
         cond: { 'id': rowID },
         cond_col: null
       }
-      Promise.all([apiGetDept(params1), apiGetDept(params2)])
+      apiGetJob(params)
         .then(function(res) {
-          this.treeData.splice(0, this.treeData.length)
-          this.treeData = res[0].slice(0)
-          //
-          this.copyFormData(res[1][0])
+          this.copyFormData(res[0])
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
@@ -294,14 +258,12 @@ export default {
       this.formData.label = ''
       this.formData.enabled = '1'
       this.formData.sort = 999
-      this.formData.dept_id = 1
     },
     copyFormData(data) {
       this.formData.id = data.id
       this.formData.label = data.label
       this.formData.enabled = data.enabled
-      this.formData.pid = data.pid
-      this.formData.update_time = data.update_time
+      this.formData.sort = data.sort
     }
   }
 }

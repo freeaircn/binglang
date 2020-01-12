@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 22:57:28
+ * @LastEditTime : 2020-01-12 13:38:38
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -105,25 +105,25 @@ class Job_model extends CI_Model {
      * @param int $id
      * @return array string
      */
-	function get_all_children_ids($id)
-	{
-		$array[] = (string)$id;
-		$temp_arr[] = (string)$id;
-		do
-		{
-			$this->db->select('id');
-			$this->db->where_in('pid', $temp_arr);
-			$query = $this->db->get($this->tables['job']);
-			$res = $query->result_array();
-			unset($temp_arr);
-			foreach ($res as $k=>$v)
-			{
-				$array[] = (string)$v['id'];
-				$temp_arr[] = (string)$v['id'];
-			}
-		}
-		while (!empty($res));
+	// function get_all_children_ids($id)
+	// {
+	// 	$array[] = (string)$id;
+	// 	$temp_arr[] = (string)$id;
+	// 	do
+	// 	{
+	// 		$this->db->select('id');
+	// 		$this->db->where_in('pid', $temp_arr);
+	// 		$query = $this->db->get($this->tables['job']);
+	// 		$res = $query->result_array();
+	// 		unset($temp_arr);
+	// 		foreach ($res as $k=>$v)
+	// 		{
+	// 			$array[] = (string)$v['id'];
+	// 			$temp_arr[] = (string)$v['id'];
+	// 		}
+	// 	}
+	// 	while (!empty($res));
 
-		return $array;
-	}
+	// 	return $array;
+	// }
 }
