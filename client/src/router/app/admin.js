@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-25 16:09:53
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 17:45:31
+ * @LastEditTime : 2020-01-13 17:11:21
  */
 /** When your routing table is too long, you can split it into small modules **/
 
@@ -40,7 +40,7 @@ const adminRouter = {
     {
       path: 'dict',
       component: () => import('@/views/app/admin/dict/index'),
-      name: 'adminDict',
+      name: 'AdminDict',
       meta: { title: '字典管理' }
     }
   ]

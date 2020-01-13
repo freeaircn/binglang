@@ -18,7 +18,7 @@ CREATE TABLE `app_menu`  (
   `noCache` bit(1) NULL DEFAULT b'1' COMMENT '页面缓存',
   `breadcrumb` bit(1) NULL DEFAULT b'1' COMMENT '面包屑显示',
   `roles` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限',
-  `sort` bigint(20) NULL DEFAULT NULL COMMENT '排序',
+  `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
   `pid` bigint(20) NOT NULL COMMENT '上级菜单ID',  
   `update_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
   PRIMARY KEY (`id`) USING BTREE,
@@ -68,7 +68,7 @@ CREATE TABLE `app_job`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '中文名称',
   `enabled` bit(1) NOT NULL,
-  `sort` bigint(20) NOT NULL,
+  `sort` int(11) NOT NULL,
   `update_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
@@ -79,26 +79,32 @@ INSERT INTO `app_job` VALUES (2, '测试员', b'1', 2, '2020-01-01 09:14:05');
 
 
 --
--- 表的结构 `app_dept`
+-- 表的结构 `app_dict`
 --
 
 CREATE TABLE `app_dict` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `label` varchar(50) NULL COMMENT '字典类型名',
-  `status` varchar(10) NOT NULL,
+  `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+  `label` varchar(50) NULL COMMENT '类型名',
+  `type` varchar(50) NULL COMMENT '字典类型',
+  `enabled` bit(1) NOT NULL,
+  `update_time` datetime NULL DEFAULT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `app_dict_item` (
+CREATE TABLE `app_dict_data` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `dict_id` int(11) unsigned NOT NULL COMMENT '字典类型id',
-  `pid` int(11) unsigned NULL COMMENT 'dict_item父节点',
+  `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+  `label` varchar(50) NULL COMMENT '词条名',
+  `name` varchar(50) NULL COMMENT '词条',
   `code` int(11) unsigned NULL COMMENT '代码编码',
-  `label` varchar(50) NULL COMMENT '字典条目名',
-  `status` varchar(10) NOT NULL,
+  `enabled` bit(1) NOT NULL,
+  `dict_id` int(11) unsigned NOT NULL COMMENT '所属字典id',
+  `update_time` datetime NULL DEFAULT NULL
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_dict_item_type` FOREIGN KEY (`dict_id`) REFERENCES `be_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  INDEX `FKmvhj0rogastlctflsxf1d6k3i`(`dict_id`) USING BTREE,
+  CONSTRAINT `fk_dict_type` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

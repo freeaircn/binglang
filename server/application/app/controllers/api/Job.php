@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-12 13:41:33
+ * @LastEditTime : 2020-01-12 14:29:11
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -89,10 +89,10 @@ class Job extends RestController {
 	public function index_delete()
 	{
 		$id = $this->delete('id');
-		$ids = (string)$id;
+		// $ids = (string)$id;
 
 		// $ids = $this->job_model->get_all_children_ids($id);
-		$result = $this->job_model->delete($ids);
+		$result = $this->job_model->delete($id);
 
 		$this->response($result, 200);
 	}

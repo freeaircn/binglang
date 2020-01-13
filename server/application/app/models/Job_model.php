@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-12 13:38:38
+ * @LastEditTime : 2020-01-12 14:29:00
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -90,12 +90,13 @@ class Job_model extends CI_Model {
 
 	/**
      * 
-     * @param array string $ids
+     * @param array $id
      * @return array
      */
-	public function delete($ids)
+	public function delete($id)
     {
-		$result = $this->db->where_in('id', $ids)->delete($this->tables['job']);
+		// $result = $this->db->where_in('id', $ids)->delete($this->tables['job']);
+		$result = $this->db->where('id', $id)->delete($this->tables['job']);
 		
 		return $result;
 	}
