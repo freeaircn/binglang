@@ -83,29 +83,29 @@ INSERT INTO `app_job` VALUES (2, '测试员', b'1', 2, '2020-01-01 09:14:05');
 --
 
 CREATE TABLE `app_dict` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
   `label` varchar(50) NULL COMMENT '类型名',
   `type` varchar(50) NULL COMMENT '字典类型',
   `enabled` bit(1) NOT NULL,
-  `update_time` datetime NULL DEFAULT NULL
+  `update_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '数据字典' ROW_FORMAT = Compact;
 
 
 CREATE TABLE `app_dict_data` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
   `label` varchar(50) NULL COMMENT '词条名',
   `name` varchar(50) NULL COMMENT '词条',
   `code` int(11) unsigned NULL COMMENT '代码编码',
   `enabled` bit(1) NOT NULL,
-  `dict_id` int(11) unsigned NOT NULL COMMENT '所属字典id',
-  `update_time` datetime NULL DEFAULT NULL
+  `dict_id` bigint(11) NOT NULL COMMENT '所属字典id',
+  `update_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  INDEX `FKmvhj0rogastlctflsxf1d6k3i`(`dict_id`) USING BTREE,
-  CONSTRAINT `fk_dict_type` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  INDEX `fk_dict_id`(`dict_id`) USING BTREE,
+  CONSTRAINT `fk_dict_id` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '数据字典详情' ROW_FORMAT = Compact;
 
 
 

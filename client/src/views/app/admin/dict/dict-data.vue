@@ -18,6 +18,7 @@
       border
       size="small"
       style="width: 100%;"
+      :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
       <el-table-column label="序号" type="index" :index="1" width="80px" align="center" />
       <el-table-column v-if="showInnerId" label="ID" prop="innerId" sortable="custom" width="80px" align="center">

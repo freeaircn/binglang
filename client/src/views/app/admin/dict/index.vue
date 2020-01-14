@@ -17,6 +17,7 @@
       :data="tableToPage"
       row-key="id"
       size="small"
+      :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
       <el-table-column prop="sort" label="排序" />
       <el-table-column :show-overflow-tooltip="true" prop="label" label="标签" />
@@ -40,7 +41,7 @@
 
     <!--分页-->
     <el-pagination
-      :page-sizes="[5, 10, 30, 50, 100]"
+      :page-sizes="[5, 10, 30, 50]"
       :page-size="pageSize"
       :current-page="pageIdx"
       layout="total, prev, pager, next, sizes"

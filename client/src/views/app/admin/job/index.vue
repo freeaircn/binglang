@@ -17,6 +17,7 @@
       :data="tableData"
       row-key="id"
       size="small"
+      :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
       <el-table-column :show-overflow-tooltip="true" prop="label" label="名称" />
       <el-table-column prop="sort" label="排序" />

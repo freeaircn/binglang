@@ -1,0 +1,130 @@
+<?php
+/*
+ * @Description: 
+ * @Author: freeair
+ * @Date: 2020-01-01 18:17:32
+ * @LastEditors  : freeair
+ * @LastEditTime : 2020-01-14 21:06:09
+ */
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Dict_model extends CI_Model {
+
+	protected $db;
+
+	public $tables = [];
+
+	public function __construct()
+    {
+        parent::__construct();
+		// Your own constructor code
+		$this->config->load('app_config', TRUE);
+		$db_name = $this->config->item('db_name', 'app_config');
+		$this->tables = $this->config->item('tables', 'app_config');
+
+		if (empty($db_name))
+		{
+			$CI =& get_instance();
+			$this->db = $CI->db;
+		}
+		else
+		{
+			$this->db = $this->load->database($db_name, TRUE, TRUE);
+		}
+	}
+	
+	public function db()
+	{
+		return $this->db;
+	}
+
+	public function read($select_col = NULL, $method = NULL, $cond = NULL, $cond_col = NULL)
+    {
+		$this->db->order_by('sort', 'ASC');
+		$this->db->order_by('id', 'ASC');
+
+		if ($select_col !== NULL)
+		{
+			$this->db->select($select_col);
+		}
+
+		if ($method !== NULL)
+		{
+			if ($method === 'where' && (!empty($cond)))
+			{
+				$this->db->where($cond);
+			}
+			if ($method === 'like' && (!empty($cond)))
+			{
+				$this->db->like($cond);
+			}
+			if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col)))
+			{
+				$this->db->where_in($cond_col, $cond);
+			}
+
+		}
+
+		$query = $this->db->get($this->tables['dict']);
+		$result = $query->result_array();
+		
+        return $result;
+	}
+	
+	public function create($data)
+    {
+		$this->db->insert($this->tables['dict'], $data);
+		$id = $this->db->insert_id($this->tables['dict'] . '_id_seq');
+
+		return (isset($id)) ? $id : FALSE;
+	}
+	
+	public function update($id, $data)
+    {
+		$this->db->where('id', $id);
+		$this->db->update($this->tables['dict'], $data);
+
+		$res = $this->db->affected_rows();
+		return ($res > 0) ? TRUE : FALSE;
+	}
+
+	/**
+     * 
+     * @param array $id
+     * @return array
+     */
+	public function delete($id)
+    {
+		// $result = $this->db->where_in('id', $ids)->delete($this->tables['dict']);
+		$result = $this->db->where('id', $id)->delete($this->tables['dict']);
+		
+		return $result;
+	}
+	
+	/**
+     * 根据id便利数据表，输出包括输入id的所有子节点id
+     * @param int $id
+     * @return array string
+     */
+	// function get_all_children_ids($id)
+	// {
+	// 	$array[] = (string)$id;
+	// 	$temp_arr[] = (string)$id;
+	// 	do
+	// 	{
+	// 		$this->db->select('id');
+	// 		$this->db->where_in('pid', $temp_arr);
+	// 		$query = $this->db->get($this->tables['dict']);
+	// 		$res = $query->result_array();
+	// 		unset($temp_arr);
+	// 		foreach ($res as $k=>$v)
+	// 		{
+	// 			$array[] = (string)$v['id'];
+	// 			$temp_arr[] = (string)$v['id'];
+	// 		}
+	// 	}
+	// 	while (!empty($res));
+
+	// 	return $array;
+	// }
+}

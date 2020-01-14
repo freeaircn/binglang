@@ -19,6 +19,7 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       row-key="id"
       size="small"
+      :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
       <el-table-column :show-overflow-tooltip="true" prop="title" label="标题" width="125px" />
       <el-table-column prop="sort" label="排序" align="center">
