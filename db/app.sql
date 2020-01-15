@@ -20,7 +20,7 @@ CREATE TABLE `app_menu`  (
   `roles` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限',
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
   `pid` bigint(20) NOT NULL COMMENT '上级菜单ID',  
-  `update_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   PRIMARY KEY (`id`) USING BTREE,
   CONSTRAINT `uc_name` UNIQUE (`name`),
   INDEX `FKqcf9gem97gqa5qjm4d3elcqt5`(`pid`) USING BTREE
@@ -81,24 +81,25 @@ INSERT INTO `app_job` VALUES (2, '测试员', b'1', 2, '2020-01-01 09:14:05');
 --
 -- 表的结构 `app_dict`
 --
-
 CREATE TABLE `app_dict` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
   `label` varchar(50) NULL COMMENT '类型名',
-  `type` varchar(50) NULL COMMENT '字典类型',
+  `name` varchar(50) NULL COMMENT '键名',
   `enabled` bit(1) NOT NULL,
   `update_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '数据字典' ROW_FORMAT = Compact;
+
+INSERT INTO `app_dict` VALUES (1, 1, '用户性别', 'sex', b'1', '2020-01-01 09:14:05');
 
 
 CREATE TABLE `app_dict_data` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
   `label` varchar(50) NULL COMMENT '词条名',
-  `name` varchar(50) NULL COMMENT '词条',
-  `code` int(11) unsigned NULL COMMENT '代码编码',
+  `name` varchar(50) NULL COMMENT '键名',
+  `code` int(11) unsigned NULL COMMENT '键值',
   `enabled` bit(1) NOT NULL,
   `dict_id` bigint(11) NOT NULL COMMENT '所属字典id',
   `update_time` datetime NULL DEFAULT NULL,
@@ -107,6 +108,75 @@ CREATE TABLE `app_dict_data` (
   CONSTRAINT `fk_dict_id` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '数据字典详情' ROW_FORMAT = Compact;
 
+INSERT INTO `app_dict_data` VALUES (1, 1, '男', 'male', 1, b'1', 1, '2020-01-01 09:14:05');
+INSERT INTO `app_dict_data` VALUES (2, 2, '女', 'female', 2, b'1', 1, '2020-01-01 09:14:05');
 
 
+-- ----------------------------
+-- Table structure for app_role
+-- ----------------------------
+DROP TABLE IF EXISTS `app_role`;
+CREATE TABLE `app_role`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '名称',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '键名',
+  `enabled` bit(1) NOT NULL,
+  `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色表' ROW_FORMAT = Compact;
 
+-- ----------------------------
+-- Records of role
+-- ----------------------------
+INSERT INTO `role` VALUES (1, 1, '管理员', 'role_admin', b'1', '-', '2020-01-01 09:14:05');
+INSERT INTO `role` VALUES (2, 2, '访客', 'role_guest', b'1', '-', '2020-01-01 09:14:05');
+
+
+-- ----------------------------
+-- Table structure for app_roles_menus
+-- ----------------------------
+DROP TABLE IF EXISTS `app_roles_menus`;
+CREATE TABLE `app_roles_menus`  (
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
+  PRIMARY KEY (`role_id`, `menu_id`) USING BTREE,
+  INDEX `FKcngg2qadojhi3a651a5adkvbq`(`role_id`) USING BTREE,
+  CONSTRAINT `FKtag324maketmxffly3pdyh193` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKo7wsmlrrxb2osfaoavp46rv2r` FOREIGN KEY (`menu_id`) REFERENCES `app_menu` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色菜单关联' ROW_FORMAT = Compact;
+
+
+-- ----------------------------
+-- Table structure for app_roles_depts
+-- ----------------------------
+DROP TABLE IF EXISTS `app_roles_depts`;
+CREATE TABLE `app_roles_depts`  (
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  `dept_id` bigint(20) NOT NULL COMMENT '部门ID',
+  PRIMARY KEY (`role_id`, `dept_id`) USING BTREE,
+  INDEX `FKcngg2qadojhi3a651a5adkvbq`(`role_id`) USING BTREE,
+  CONSTRAINT `FKtag324maketmxffly3pdyh193` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKo7wsmlrrxb2osfaoavp46rv2r` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色部门关联' ROW_FORMAT = Compact;
+
+
+-- ----------------------------
+-- Table structure for app_users_roles
+-- ----------------------------
+DROP TABLE IF EXISTS `app_users_roles`;
+CREATE TABLE `app_users_roles`  (
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`user_id`, `role_id`) USING BTREE,
+  INDEX `FKq4eq273l04bpu4efj0jd0jb98`(`role_id`) USING BTREE,
+  CONSTRAINT `FKgd3iendaoyh04b95ykqise6qh` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKt4v0rrweyk393bdgt107vdx0x` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户角色关联' ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of users_roles
+-- ----------------------------
+INSERT INTO `users_roles` VALUES (1, 1);
+INSERT INTO `users_roles` VALUES (3, 2);

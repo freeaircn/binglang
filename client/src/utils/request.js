@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 15:51:18
+ * @LastEditTime : 2020-01-15 21:58:59
  */
 import axios from 'axios'
 import qs from 'qs'
@@ -20,12 +20,13 @@ const service = axios.create({
 })
 
 service.defaults.transformRequest = [function(data) {
-  let ret = ''
-  let it = ''
-  for (it in data) {
-    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-  }
-  return ret
+  // let ret = ''
+  // let it = ''
+  // for (it in data) {
+  //   ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+  // }
+  // return ret
+  return qs.stringify(data, { arrayFormat: 'indices' })
 }]
 
 service.defaults.paramsSerializer = function(params) {

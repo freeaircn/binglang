@@ -29,10 +29,12 @@
           <span v-else>否</span>
         </template>
       </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" prop="remark" label="备注" />
       <el-table-column prop="update_time" label="更新日期" />
 
-      <el-table-column label="操作" width="130px" align="center" fixed="right">
+      <el-table-column label="操作" width="200px" align="center" fixed="right">
         <template slot-scope="{row}">
+          <el-button size="mini" type="success" icon="el-icon-document-checked" @click="preAssignPermission(row)" />
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="preUpdate(row.id)" />
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="doDelete(row.id)" />
         </template>
@@ -70,12 +72,34 @@
         <el-form-item label="排序" prop="sort">
           <el-input-number v-model.number="formData.sort" :min="0" :max="999" controls-position="right" style="" />
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="formData.remark" />
+        </el-form-item>
 
       </el-form>
 
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提交</el-button>
+      </div>
+    </el-dialog>
+
+    <!--指派权限-->
+    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisiblePermission" :title="titlePermissionTo" width="400px">
+      <el-tree
+        ref="treeSelect"
+        :data="treeData"
+        :default-checked-keys="checkedIds"
+        :props="{ children: 'children', label: 'label' }"
+        check-strictly
+        accordion
+        show-checkbox
+        node-key="id"
+      />
+
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="dialogVisiblePermission = false">取消</el-button>
+        <el-button type="primary" size="mini" @click="doAssignPermission()">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -85,13 +109,15 @@
 // import 第三方组件
 
 // import 公共method
-import { validQueryWords, validLabel } from '@/utils/app/validator/common'
+import { validQueryWords } from '@/utils/app/validator/common'
 
 // import api
-import { apiGetDict, apiCreateDict, apiUpdateDict, apiDelDict } from '@/api/app/admin/dict'
+import { apiGetRole, apiCreateRole, apiUpdateRole, apiDelRole } from '@/api/app/admin/role'
+import { apiGetRoleMenu, apiCreateRoleMenu } from '@/api/app/admin/role-menu'
+import { apiGetMenu } from '@/api/app/admin/menu'
 
 export default {
-  name: 'AdminDict',
+  name: 'AdminRole',
   data() {
     return {
       query: {
@@ -100,6 +126,11 @@ export default {
 
       tableLoading: false,
       tableData: [],
+      treeData: [],
+      checkedIds: [],
+      dialogVisiblePermission: false,
+      titlePermissionTo: '',
+      tempRoleId: null,
 
       pageTotalContent: 0,
       pageSize: 5,
@@ -116,10 +147,11 @@ export default {
         sort: 999,
         label: '',
         name: '',
-        enabled: '1'
+        enabled: '1',
+        remark: ''
       },
       rules: {
-        label: [{ required: true, validator: validLabel, trigger: 'change' }]
+        // label: [{ required: true, validator: validLabel, trigger: 'change' }]
       }
     }
   },
@@ -150,7 +182,7 @@ export default {
           cond_col: null
         }
       }
-      apiGetDict(params)
+      apiGetRole(params)
         .then(function(data) {
           this.tableData.splice(0, this.tableData.length)
           this.pageTotalContent = data.slice(0).length
@@ -204,7 +236,7 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // API create
-          apiCreateDict(this.formData)
+          apiCreateRole(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
@@ -226,7 +258,7 @@ export default {
         cond: { 'id': rowID },
         cond_col: null
       }
-      apiGetDict(params)
+      apiGetRole(params)
         .then(function(res) {
           this.copyFormData(res[0])
           this.dialogAction = 'update'
@@ -246,7 +278,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.formData)
           // API update
-          apiUpdateDict(tempData)
+          apiUpdateRole(tempData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
@@ -269,7 +301,7 @@ export default {
         center: true
       })
         .then(() => {
-          apiDelDict(id)
+          apiDelRole(id)
             .then(function(data) {
               this.$message({
                 type: 'success',
@@ -292,6 +324,7 @@ export default {
       this.formData.name = ''
       this.formData.enabled = '1'
       this.formData.sort = 999
+      this.formData.remark = ''
     },
     copyFormData(data) {
       this.formData.id = data.id
@@ -299,12 +332,74 @@ export default {
       this.formData.name = data.name
       this.formData.enabled = data.enabled
       this.formData.sort = data.sort
+      this.formData.remark = data.remark
     },
     pageSizeChange(val) {
       this.pageSize = val
     },
     pageIdxChange(val) {
       this.pageIdx = val
+    },
+
+    // 获取menu tree
+    // 获取roles_menus
+    // 显示dialog
+    preAssignPermission(role) {
+      var params1 = {
+        select_col: 'id, title, pid',
+        method: null,
+        cond: null,
+        cond_col: null
+      }
+      var params2 = {
+        select_col: 'menu_id',
+        method: 'where',
+        cond: { 'role_id': role.id },
+        cond_col: null
+      }
+      this.tempRoleId = role.id
+      Promise.all([apiGetMenu(params1), apiGetRoleMenu(params2)])
+        .then(function(res) {
+          this.treeData.splice(0, this.treeData.length)
+          this.treeData = res[0].slice(0)
+          //
+          this.checkedIds = []
+          res[1].forEach(element => {
+            this.checkedIds.push(element.menu_id)
+          })
+          // this.checkedIds = res[1].slice(0)
+          //
+          this.titlePermissionTo = '授权 - ' + role.label
+          this.dialogVisiblePermission = true
+        }.bind(this))
+        .catch(function(err) {
+          console.log(err)
+        })
+    },
+
+    doAssignPermission() {
+      if (this.tempRoleId !== null) {
+        const roleMenus = { role_id: this.tempRoleId, menus: [] }
+        // 得到半选的父节点数据
+        // this.$refs.treeSelect.getHalfCheckedKeys().forEach(function(data, index) {
+        //   const menu = { id: data }
+        //   role.menus.push(menu)
+        // })
+        // 得到已选中的 key 值
+        this.$refs.treeSelect.getCheckedKeys().forEach(function(data, index) {
+          const menu = data
+          roleMenus.menus.push(menu)
+        })
+        apiCreateRoleMenu(roleMenus)
+          .then(function(data) {
+            this.titlePermissionTo = ''
+            this.tempRoleId = null
+            this.dialogVisiblePermission = false
+          }.bind(this))
+          .catch(function(err) {
+            console.log(err)
+          })
+      }
     }
   }
 }
