@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 20:40:25
+ * @LastEditTime : 2020-01-16 16:21:21
  */
 
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -25,6 +25,8 @@ $config['tables']['dict'] = 'app_dict';
 $config['tables']['dict_data'] = 'app_dict_data';
 $config['tables']['role'] = 'app_role';
 $config['tables']['roles_menus'] = 'app_roles_menus';
+$config['tables']['user'] = 'app_user';
+$config['tables']['user_attribute'] = 'app_user_attribute';
 
 /*
  | table A column and table B column you want to join WITH.

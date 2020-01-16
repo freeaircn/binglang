@@ -226,6 +226,84 @@
 3. 编写动态路由，权限管理
 
 ---
+### 2020-01-16
+```
+  1 编写user页面
+  
+  # 约定
+  1. dict.name 字段，含user_attr_ 表示 user表 附加属性项
+  2. user_attribute表
+    `user_id` 
+    `dict_data_id`
+
+  3. 相关table:
+      app_user，app_user_attribute，app_users_roles
+        app_dict_data，app_dict
+        app_role
+
+  4. 新建：
+  4.1 步骤：
+      检索dict表name字段含user_attr_，得到dict.id, dict.label （array-1）
+      dict.label作为form单项label
+      通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label （array-2）
+      （array-2）作为form表单项select content
+      
+      读app_dict, 读app_dict_data，读app_role
+      写app_user，写app_user_attribute，写app_users_roles
+  4.2 数据格式：
+    [
+      {
+        dict.label,
+        [
+          {
+            dict_data.id,
+            dict_data.label
+          },
+          {
+            dict_data.id,
+            dict_data.label
+          }
+        ]
+      },
+      {
+        dict.label,
+        [
+          {
+            dict_data.id,
+            dict_data.label
+          },
+          {
+            dict_data.id,
+            dict_data.label
+          }
+        ]
+      },
+    ]
+    
+    extraAttribute: []
+    
+    4.3 API:
+    apiGetUser, params: wanted: new_form
+    
+  
+  5. 编辑：
+  5.1 步骤：
+      检索dict表name字段含user_attr_，得到dict.id, dict.label （array-1）
+      dict.label作为form单项label
+      通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label （array-2）
+      （array-2）作为form表单项select content
+      
+      读app_dict, 读app_dict_data，读app_role，读app_user，读app_user_attribute，读app_users_roles
+      写app_user，写app_user_attribute，写app_users_roles
+  
+  5.2 API:
+    apiGetUser, params: wanted: current_form
+```
+***TODO:***  
+1. x
+
+
+---
 ### 2020-01-
 ```
   1 a

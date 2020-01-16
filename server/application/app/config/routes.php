@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:00:39
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 20:39:55
+ * @LastEditTime : 2020-01-16 23:10:52
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -67,6 +67,7 @@ $route['api/dict'] = 'api/dict';
 $route['api/dict-data'] = 'api/dict_data';
 $route['api/role'] = 'api/role';
 $route['api/role-menu'] = 'api/role_menu';
+$route['api/user'] = 'api/user';
 
 // 
 $route['admin/(:any)'] = 'home';

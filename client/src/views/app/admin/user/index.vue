@@ -19,11 +19,13 @@
       size="small"
       :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
-      <el-table-column prop="sort" label="排序" />
-      <el-table-column :show-overflow-tooltip="true" prop="dict_label" label="所属字典" />
-      <el-table-column :show-overflow-tooltip="true" prop="label" label="标签" />
-      <el-table-column :show-overflow-tooltip="true" prop="name" label="键名" />
-      <el-table-column :show-overflow-tooltip="true" prop="code" label="键值" />
+      <el-table-column prop="employee_number" label="工号" />
+      <el-table-column :show-overflow-tooltip="true" prop="username" label="中文名" />
+      <el-table-column :show-overflow-tooltip="true" prop="sex" label="性别" />
+      <el-table-column :show-overflow-tooltip="true" prop="phone" label="手机号" />
+      <el-table-column :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
+      <el-table-column :show-overflow-tooltip="true" prop="dept_label" label="部门" />
+      <el-table-column :show-overflow-tooltip="true" prop="job_label" label="岗位" />
 
       <el-table-column prop="enabled" label="是否启用" align="center">
         <template slot-scope="scope">
@@ -31,6 +33,10 @@
           <span v-else>否</span>
         </template>
       </el-table-column>
+
+      <el-table-column :show-overflow-tooltip="true" prop="last_login" label="登录日期" />
+      <el-table-column :show-overflow-tooltip="true" prop="ip_address" label="登录IP" />
+
       <el-table-column prop="update_time" label="更新日期" />
 
       <el-table-column label="操作" width="130px" align="center" fixed="right">
@@ -53,29 +59,26 @@
     />
 
     <!--表单渲染-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="500px">
-      <el-form ref="form" :model="formData" :rules="rules" size="small" label-width="80px">
-        <el-form-item label="所属字典" prop="dict_id">
-          <el-select v-model="formData.dict_id" :disabled="dialogAction==='update'" placeholder="选择所属字典">
-            <el-option
-              v-for="item in treeData"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            />
-          </el-select>
+    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px">
+      <el-form ref="form" :model="formData" :rules="rules" size="mini" label-width="80px">
+        <el-form-item label="工号" prop="employee_number">
+          <el-input v-model="formData.employee_number" />
         </el-form-item>
-
-        <el-form-item label="标签" prop="label">
-          <el-input v-model="formData.label" />
+        <el-form-item label="中文名" prop="username">
+          <el-input v-model="formData.username" />
         </el-form-item>
-        <el-form-item label="键名" prop="name">
-          <el-input v-model="formData.name" />
+        <el-form-item label="性别" prop="sex">
+          <el-input v-model="formData.sex" />
         </el-form-item>
-        <el-form-item label="键值" prop="code">
-          <el-input v-model="formData.code" />
+        <el-form-item label="身份证号" prop="identity_document_number">
+          <el-input v-model="formData.identity_document_number" />
         </el-form-item>
-
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="formData.phone" />
+        </el-form-item>
+        <el-form-item label="电子邮箱" prop="email">
+          <el-input v-model="formData.email" />
+        </el-form-item>
         <el-form-item label="是否启用" prop="enabled">
           <el-radio-group v-model="formData.enabled" size="mini">
             <el-radio-button label="1">是</el-radio-button>
@@ -83,8 +86,41 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="排序" prop="sort">
-          <el-input-number v-model.number="formData.sort" :min="0" :max="999" controls-position="right" style="" />
+        <el-form-item label="党派" prop="dept_id">
+          <el-select v-model="formData.dept_id" placeholder="选择部门">
+            <el-option
+              v-for="item in treeDept"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="部门" prop="dept_id">
+          <el-select v-model="formData.dept_id" placeholder="选择部门">
+            <el-option
+              v-for="item in treeDept"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="岗位" prop="job_id">
+          <el-select v-model="formData.job_id" placeholder="选择岗位">
+            <el-option
+              v-for="item in treeJob"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="formData.password" show-password autocomplete="off" />
         </el-form-item>
 
       </el-form>
@@ -104,11 +140,10 @@
 import { validQueryWords, validLabel } from '@/utils/app/validator/common'
 
 // import api
-import { apiGetDictData, apiCreateDictData, apiUpdateDictData, apiDelDictData } from '@/api/app/admin/dict-data'
-import { apiGetDict } from '@/api/app/admin/dict'
+import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/admin/user'
 
 export default {
-  name: 'AdminDictData',
+  name: 'AdminUser',
   data() {
     return {
       query: {
@@ -131,12 +166,16 @@ export default {
       },
       formData: {
         id: null,
-        sort: 999,
-        label: '',
-        name: '',
-        code: '',
+        employee_number: '',
+        username: '',
+        sex: '',
+        identity_document_number: '',
+        phone: '',
+        email: '',
         enabled: '1',
-        dict_id: null
+        dept_id: null,
+        job_id: null,
+        password: ''
       },
       rules: {
         // label: [{ required: true, validator: validLabel, trigger: 'change' }]
@@ -170,7 +209,7 @@ export default {
           cond_col: null
         }
       }
-      apiGetDictData(params)
+      apiGetUser(params)
         .then(function(data) {
           this.tableData.splice(0, this.tableData.length)
           this.pageTotalContent = data.slice(0).length
@@ -212,16 +251,13 @@ export default {
     // 显示dialog
     preCreate() {
       this.rstFormData()
-      var params = {
-        select_col: 'id, label',
-        method: null,
-        cond: null,
-        cond_col: null
+      const params = {
+        wanted: 'new_form'
       }
-      apiGetDict(params)
+      apiGetUser(params)
         .then(function(data) {
-          this.treeData.splice(0, this.treeData.length)
-          this.treeData = data.slice(0)
+          // this.treeData.splice(0, this.treeData.length)
+          // this.treeData = data.slice(0)
           //
           this.dialogAction = 'create'
           this.dialogVisible = true
@@ -240,7 +276,7 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // API create
-          apiCreateDictData(this.formData)
+          apiCreateUser(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
@@ -258,18 +294,12 @@ export default {
     // 显示dialog
     preUpdate(rowID) {
       var params1 = {
-        select_col: 'id, label',
+        select_col: null,
         method: null,
         cond: null,
         cond_col: null
       }
-      var params2 = {
-        select_col: null,
-        method: 'where',
-        cond: { 'id': rowID },
-        cond_col: null
-      }
-      Promise.all([apiGetDict(params1), apiGetDictData(params2)])
+      apiGetUser(params1)
         .then(function(res) {
           this.treeData.splice(0, this.treeData.length)
           this.treeData = res[0].slice(0)
@@ -292,7 +322,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.formData)
           // API update
-          apiUpdateDictData(tempData)
+          apiUpdateUser(tempData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
@@ -315,7 +345,7 @@ export default {
         center: true
       })
         .then(() => {
-          apiDelDictData(id)
+          apiDelUser(id)
             .then(function(data) {
               this.$message({
                 type: 'success',
@@ -334,12 +364,15 @@ export default {
     // 其他
     rstFormData() {
       this.formData.id = null
-      this.formData.label = ''
-      this.formData.name = ''
-      this.formData.code = ''
+      this.formData.employee_number = ''
+      this.formData.username = ''
+      this.formData.sex = ''
+      this.formData.phone = ''
+      this.formData.email = ''
       this.formData.enabled = '1'
-      this.formData.sort = 999
-      this.formData.dict_id = null
+      this.formData.dept_id = null
+      this.formData.job_id = null
+      this.formData.password = ''
     },
     copyFormData(data) {
       this.formData.id = data.id
@@ -349,6 +382,17 @@ export default {
       this.formData.enabled = data.enabled
       this.formData.sort = data.sort
       this.formData.dict_id = data.dict_id
+
+      this.formData.id = data.id
+      this.formData.employee_number = data.employee_number
+      this.formData.username = data.username
+      this.formData.sex = data.sex
+      this.formData.phone = data.phone
+      this.formData.email = data.email
+      this.formData.enabled = data.enabled
+      this.formData.dept_id = data.dept_id
+      this.formData.job_id = data.job_id
+      this.formData.password = data.password
     },
     pageSizeChange(val) {
       this.pageSize = val
