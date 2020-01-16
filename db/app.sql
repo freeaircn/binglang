@@ -180,3 +180,61 @@ CREATE TABLE `app_users_roles`  (
 -- ----------------------------
 INSERT INTO `users_roles` VALUES (1, 1);
 INSERT INTO `users_roles` VALUES (3, 2);
+
+
+-- ----------------------------
+-- Table structure for app_user
+-- ----------------------------
+CREATE TABLE `app_user` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(10) NULL,
+  `phone` varchar(16) NOT NULL,
+  `email` varchar(40) NULL,
+  `enabled` bit(1) NOT NULL,
+  `last_login` datetime NULL DEFAULT NULL COMMENT '登录日期',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sex` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `id_number` varchar(32) NULL DEFAULT NULL COMMENT '证件号',
+  `employee_number` varchar(32) NULL DEFAULT NULL COMMENT '工号',
+  `dept_id` int(11) unsigned NULL DEFAULT NULL COMMENT '部门',
+  `job_id` int(11) unsigned NULL DEFAULT NULL COMMENT '岗位',
+  `avatar_id` int(11) unsigned NULL DEFAULT NULL COMMENT '头像',
+  `ip_address` char(45) NULL,
+  `password` varchar(255) NOT NULL,
+  `forgotten_password_selector` varchar(255) DEFAULT NULL,
+  `forgotten_password_code` varchar(255) DEFAULT NULL,
+  `forgotten_password_time` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  CONSTRAINT `uc_email` UNIQUE (`email`) USING BTREE,
+  CONSTRAINT `uc_phone` UNIQUE (`phone`) USING BTREE,
+  CONSTRAINT `uc_forgotten_password_selector` UNIQUE (`forgotten_password_selector`),
+  INDEX `FK5rwmryny6jthaaxkogownknqp`(`dept_id`) USING BTREE,
+  INDEX `FKfftoc2abhot8f2wu6cl9a5iky`(`job_id`) USING BTREE,
+  INDEX `FKpq2dhypk2qgt68nauh2by22jb`(`avatar_id`) USING BTREE,
+  CONSTRAINT `FK5rwmryny6jthaaxkogownknqp` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKfftoc2abhot8f2wu6cl9a5iky` FOREIGN KEY (`job_id`) REFERENCES `app_job` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKpq2dhypk2qgt68nauh2by22jb` FOREIGN KEY (`avatar_id`) REFERENCES `app_user_avatar` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户' ROW_FORMAT = Compact;
+
+
+-- `politic_id` int(11) unsigned NULL DEFAULT NULL COMMENT '党派',
+
+-- ----------------------------
+-- Table structure for app_user_attribute
+-- ----------------------------
+DROP TABLE IF EXISTS `app_user_attribute`;
+CREATE TABLE `app_users_roles`  (
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `dict_id` bigint(20) NOT NULL COMMENT '字典ID',
+  `dict_data_id` bigint(20) NOT NULL COMMENT '字典数据ID',
+  PRIMARY KEY (`user_id`, `dict_id`, `dict_data_id`) USING BTREE,
+  INDEX `FKq4eq273l04bpu4efj0jd0jb98`(`user_id`) USING BTREE,
+  CONSTRAINT `FKgd3iendaoyh04b95ykqise6qh` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKt4v0rrweyk393bdgt107vdx0x` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKt4v0rrweyk393bdgt107vdx0x` FOREIGN KEY (`dict_data_id`) REFERENCES `app_dict_data` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户字典关联' ROW_FORMAT = Compact;
+
+
+
+
+
