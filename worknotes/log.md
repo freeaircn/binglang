@@ -250,6 +250,8 @@
       
       读app_dict, app_dict_data，app_role，app_dept, app_job
       写app_user，app_user_attribute，app_users_roles
+      
+      # 确保额外属性项在 app_dict 和 app_user_attribute 的读，写 顺序一致，与页面显示一致，特别核对“编辑”
   4.2 数据格式：
     [
       {
@@ -300,8 +302,9 @@
     apiGetUser, params: wanted: current_form
 ```
 ***TODO:***  
-1. x
-
+1. 确保额外属性项在 app_dict 和 app_user_attribute 的读，写 顺序一致，与页面显示一致，特别核对“编辑”
+2. 用bit存储性别字段
+3. 用户信息 划分表单
 
 ---
 ### 2020-01-

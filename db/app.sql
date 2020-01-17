@@ -4,6 +4,7 @@
 CREATE DATABASE binglang CHARACTER SET utf8;
 -- --------------------------------------------------------
 
+use binglang;
 --
 -- 表的结构 `app_dept`
 --

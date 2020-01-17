@@ -59,82 +59,83 @@
     />
 
     <!--表单渲染-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px">
-      <el-form ref="form" :model="formData" :rules="rules" size="mini" label-width="80px">
-        <el-form-item label="工号" prop="employee_number">
-          <el-input v-model="formData.employee_number" />
-        </el-form-item>
-        <el-form-item label="中文名" prop="username">
-          <el-input v-model="formData.username" />
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-input v-model="formData.sex" />
-        </el-form-item>
-        <el-form-item label="身份证号" prop="identity_document_number">
-          <el-input v-model="formData.identity_document_number" />
-        </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="formData.phone" />
-        </el-form-item>
-        <el-form-item label="电子邮箱" prop="email">
-          <el-input v-model="formData.email" />
-        </el-form-item>
-        <el-form-item label="是否启用" prop="enabled">
-          <el-radio-group v-model="formData.enabled" size="mini">
-            <el-radio-button label="1">是</el-radio-button>
-            <el-radio-button label="0">否</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
+    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="480px">
+      <el-tabs v-model="tabIndex" tab-position="left">
+        <el-tab-pane name="basic_info" label="基本信息">
+          <el-form ref="form_basic_info" :model="formData" :rules="rules" size="mini" label-width="80px">
+            <el-form-item label="中文名" prop="username">
+              <el-input v-model="formData.username" />
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+              <el-input v-model="formData.sex" />
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="formData.phone" />
+            </el-form-item>
+            <el-form-item label="电子邮箱" prop="email">
+              <el-input v-model="formData.email" />
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="formData.password" show-password autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="是否启用" prop="enabled">
+              <el-radio-group v-model="formData.enabled" size="mini">
+                <el-radio-button label="1">是</el-radio-button>
+                <el-radio-button label="0">否</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="所属角色" prop="role">
+              <el-select v-model="formData.role_id" multiple placeholder="授予权限，可多选">
+                <el-option
+                  v-for="item in roleList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
 
-        <el-form-item label="党派" prop="dept_id">
-          <el-select v-model="formData.dept_id" placeholder="选择部门">
-            <el-option
-              v-for="item in treeDept"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="部门" prop="dept_id">
-          <el-select v-model="formData.dept_id" placeholder="选择部门">
-            <el-option
-              v-for="item in treeDept"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="岗位" prop="job_id">
-          <el-select v-model="formData.job_id" placeholder="选择岗位">
-            <el-option
-              v-for="item in treeJob"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="formData.password" show-password autocomplete="off" />
-        </el-form-item>
-
-        <el-form-item label="所属角色" prop="role">
-          <el-select v-model="formData.role_id" placeholder="授予权限">
-            <el-option
-              v-for="item in roleList"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-
-      </el-form>
+        <el-tab-pane name="more_info" label="更多信息">
+          <el-form ref="form_more_info" :model="formData" :rules="rules" size="mini" label-width="80px">
+            <el-form-item label="身份证号" prop="identity_document_number">
+              <el-input v-model="formData.identity_document_number" />
+            </el-form-item>
+            <el-form-item label="工号" prop="employee_number">
+              <el-input v-model="formData.employee_number" />
+            </el-form-item>
+            <el-form-item label="部门" prop="dept_id">
+              <treeSelect v-model="formData.dept_id" :options="deptList" placeholder="选择部门" />
+            </el-form-item>
+            <el-form-item label="岗位" prop="job_id">
+              <el-select v-model="formData.job_id" placeholder="选择岗位">
+                <el-option
+                  v-for="item in jobList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item
+              v-for="(attribute, index) in extraAttributeList"
+              :key="index"
+              :label="attribute.label"
+              :prop="attribute.label"
+            >
+              <el-select v-model="formData.extra_attributes[index]" placeholder="请选择">
+                <el-option
+                  v-for="item in attribute.values"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
 
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="dialogVisible = false">取消</el-button>
@@ -146,15 +147,18 @@
 
 <script>
 // import 第三方组件
+import treeSelect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import 公共method
-import { validQueryWords, validLabel } from '@/utils/app/validator/common'
+import { validQueryWords } from '@/utils/app/validator/common'
 
 // import api
 import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/admin/user'
 
 export default {
   name: 'AdminUser',
+  components: { treeSelect },
   data() {
     return {
       query: {
@@ -174,6 +178,7 @@ export default {
         update: '编辑',
         create: '新建'
       },
+      tabIndex: 'basic_info',
 
       formData: {
         id: null,
@@ -187,9 +192,11 @@ export default {
         dept_id: null,
         job_id: null,
         password: '',
-        role_id: null
+        role_id: [],
+        extra_attributes: []
       },
 
+      // 关联其他table，获取data
       roleList: [],
       extraAttributeList: [],
       deptList: [],
@@ -274,8 +281,18 @@ export default {
       }
       apiGetUser(params)
         .then(function(data) {
-          this.roleList = []
-          this.roleList = data.role
+          this.roleList.splice(0, this.roleList.length)
+          this.roleList = data[0].role.slice(0)
+          this.deptList.splice(0, this.deptList.length)
+          this.deptList = data[0].dept.slice(0)
+          this.jobList.splice(0, this.jobList.length)
+          this.jobList = data[0].job.slice(0)
+
+          this.extraAttributeList.splice(0, this.extraAttributeList.length)
+          this.extraAttributeList = data[0].extra_attribute.slice(0)
+
+          const tempLength = this.extraAttributeList.length
+          this.extra_attributes = new Array(tempLength).fill(0)
 
           //
           this.dialogAction = 'create'
@@ -294,6 +311,7 @@ export default {
     doCreate() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
+          console.log(this.formData)
           // API create
           apiCreateUser(this.formData)
             .then(function(data) {
@@ -392,7 +410,8 @@ export default {
       this.formData.dept_id = null
       this.formData.job_id = null
       this.formData.password = ''
-      this.formData.role_id = null
+      this.formData.role_id = []
+      this.formData.extra_attributes = []
     },
     copyFormData(data) {
       this.formData = JSON.parse(JSON.stringify(data))

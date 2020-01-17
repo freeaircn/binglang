@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-17 09:15:42
+ * @LastEditTime : 2020-01-17 21:16:52
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -125,8 +125,8 @@ class User_model extends CI_Model {
 						->result_array();
 			$extra_attribute[] = array
 			(
-				"attribute_label" => $v['label'],
-				"attribute_values" => $dict_data
+				"label" => $v['label'],
+				"values" => $dict_data
 			);
 		}
 		
