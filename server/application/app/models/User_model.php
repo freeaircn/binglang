@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-16 23:36:03
+ * @LastEditTime : 2020-01-17 09:15:42
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -21,6 +21,8 @@ class User_model extends CI_Model {
 		$this->config->load('app_config', TRUE);
 		$db_name = $this->config->item('db_name', 'app_config');
 		$this->tables = $this->config->item('tables', 'app_config');
+
+		$this->load->library('common_tools');
 
 		if (empty($db_name))
 		{
@@ -102,34 +104,58 @@ class User_model extends CI_Model {
 
 	/**
      * 准备user 信息空表单
-     * 读app_dict, app_dict_data，app_role
+     * 读app_dict, app_dict_data，app_role，app_dept, app_job
      * @return array
      */
 	public function prepare_new_form()
 	{
-		// 检索dict表name字段含user_attr_，得到dict.id, dict.label （array-1）
+		// 检索dict表name字段含user_attr_，得到dict.id, dict.label
 		$dict = $this->db->select('id, label')
 				->like('name', 'user_attr_')
 				->get($this->tables['dict'])
 				->result_array();
 
-		// 通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label （array-2）
-		$extraAttribute = [];
+		// 通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label
+		$extra_attribute = [];
 		foreach ($dict as $v)
 		{
 			$dict_data = $this->db->select('id, label')
 						->where('dict_id', $v['id'])
 						->get($this->tables['dict_data'])
 						->result_array();
-			$temp = array
+			$extra_attribute[] = array
 			(
 				"attribute_label" => $v['label'],
 				"attribute_values" => $dict_data
 			);
-			$extraAttribute[] = $temp;
 		}
 		
-		return $extraAttribute;
+		// 检索app_role 表，得到role.id, role.label
+		$role = $this->db->select('id, label')
+					->get($this->tables['role'])
+					->result_array();
+		
+		// 检索app_dept 得到dept.id, dept.label tree
+		$dept_temp = $this->db->select('id, label, pid')
+					->get($this->tables['dept'])
+					->result_array();
+		$dept = $this->common_tools->arr2tree($dept_temp);
+
+		// 检索app_job 得到job.id, job.label
+		$job = $this->db->select('id, label')
+					->get($this->tables['job'])
+					->result_array();
+		
+		$res = [];
+		$res[] = array
+		(
+			"extra_attribute" => $extra_attribute,
+			"dept" => $dept,
+			"job" => $job,
+			"role" => $role
+		);
+
+		return $res;
 	}
 	
 	/**

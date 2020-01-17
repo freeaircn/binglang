@@ -123,6 +123,17 @@
           <el-input v-model="formData.password" show-password autocomplete="off" />
         </el-form-item>
 
+        <el-form-item label="所属角色" prop="role">
+          <el-select v-model="formData.role_id" placeholder="授予权限">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -152,7 +163,6 @@ export default {
 
       tableLoading: false,
       tableData: [],
-      treeData: [],
 
       pageTotalContent: 0,
       pageSize: 5,
@@ -164,6 +174,7 @@ export default {
         update: '编辑',
         create: '新建'
       },
+
       formData: {
         id: null,
         employee_number: '',
@@ -175,8 +186,15 @@ export default {
         enabled: '1',
         dept_id: null,
         job_id: null,
-        password: ''
+        password: '',
+        role_id: null
       },
+
+      roleList: [],
+      extraAttributeList: [],
+      deptList: [],
+      jobList: [],
+
       rules: {
         // label: [{ required: true, validator: validLabel, trigger: 'change' }]
       }
@@ -256,8 +274,9 @@ export default {
       }
       apiGetUser(params)
         .then(function(data) {
-          // this.treeData.splice(0, this.treeData.length)
-          // this.treeData = data.slice(0)
+          this.roleList = []
+          this.roleList = data.role
+
           //
           this.dialogAction = 'create'
           this.dialogVisible = true
@@ -373,26 +392,20 @@ export default {
       this.formData.dept_id = null
       this.formData.job_id = null
       this.formData.password = ''
+      this.formData.role_id = null
     },
     copyFormData(data) {
-      this.formData.id = data.id
-      this.formData.label = data.label
-      this.formData.name = data.name
-      this.formData.code = data.code
-      this.formData.enabled = data.enabled
-      this.formData.sort = data.sort
-      this.formData.dict_id = data.dict_id
-
-      this.formData.id = data.id
-      this.formData.employee_number = data.employee_number
-      this.formData.username = data.username
-      this.formData.sex = data.sex
-      this.formData.phone = data.phone
-      this.formData.email = data.email
-      this.formData.enabled = data.enabled
-      this.formData.dept_id = data.dept_id
-      this.formData.job_id = data.job_id
-      this.formData.password = data.password
+      this.formData = JSON.parse(JSON.stringify(data))
+      // this.formData.id = data.id
+      // this.formData.employee_number = data.employee_number
+      // this.formData.username = data.username
+      // this.formData.sex = data.sex
+      // this.formData.phone = data.phone
+      // this.formData.email = data.email
+      // this.formData.enabled = data.enabled
+      // this.formData.dept_id = data.dept_id
+      // this.formData.job_id = data.job_id
+      // this.formData.password = data.password
     },
     pageSizeChange(val) {
       this.pageSize = val

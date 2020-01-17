@@ -248,8 +248,8 @@
       通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label （array-2）
       （array-2）作为form表单项select content
       
-      读app_dict, 读app_dict_data，读app_role
-      写app_user，写app_user_attribute，写app_users_roles
+      读app_dict, app_dict_data，app_role，app_dept, app_job
+      写app_user，app_user_attribute，app_users_roles
   4.2 数据格式：
     [
       {
