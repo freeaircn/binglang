@@ -278,7 +278,7 @@ export default {
       }
       apiGetMenu(params)
         .then(function(data) {
-          this.tableData.splice(0, this.tableData.length)
+          this.tableData.splice(0)
           this.tableData = data.slice(0)
         }.bind(this))
         .catch(function(err) {
@@ -325,7 +325,7 @@ export default {
       }
       apiGetMenu(params)
         .then(function(data) {
-          this.treeData[0].children.splice(0, this.treeData[0].children.length)
+          this.treeData[0].children.splice(0)
           this.treeData[0].children = data.slice(0)
           //
           this.dialogAction = 'create'
@@ -376,7 +376,7 @@ export default {
       }
       Promise.all([apiGetMenu(params1), apiGetMenu(params2)])
         .then(function(res) {
-          this.treeData[0].children.splice(0, this.treeData[0].children.length)
+          this.treeData[0].children.splice(0)
           this.treeData[0].children = res[0].slice(0)
           //
           this.copyFormData(res[1][0])

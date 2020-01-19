@@ -3,12 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 21:58:59
+ * @LastEditTime : 2020-01-19 21:02:38
  */
 import axios from 'axios'
 import qs from 'qs'
-// import { Message } from 'element-ui'
-import { Notification } from 'element-ui'
+import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -58,7 +57,24 @@ service.interceptors.response.use(
   // Any status code that lie within the range of 2xx cause this function to trigger
   response => {
     console.log(response.data)
-    return response.data
+    const res = response.data
+    // eslint-disable-next-line eqeqeq
+    if (res.code == 0) {
+      if (typeof res.msg !== 'undefined') {
+        Message({
+          message: res.msg,
+          type: 'success'
+        })
+      }
+      if (typeof res.data !== 'undefined') {
+        return Promise.resolve(res.data)
+      } else {
+        return Promise.resolve()
+      }
+    } else {
+      const msg = res.msg + ' (' + res.code.toString() + ')'
+      return Promise.reject(msg)
+    }
   },
   // Any status codes that falls outside the range of 2xx cause this function to trigger
   error => {
@@ -67,16 +83,16 @@ service.interceptors.response.use(
       code = error.response.data.status
     } catch (e) {
       if (error.toString().indexOf('Error: timeout') !== -1) {
-        Notification.error({
-          title: '请求超时',
-          duration: 2500
+        Message({
+          message: '请求超时',
+          type: 'error'
         })
         return Promise.reject(error)
       }
       if (error.toString().indexOf('Error: Network Error') !== -1) {
-        Notification.error({
-          title: '网络错误',
-          duration: 2500
+        Message({
+          message: '网络错误',
+          type: 'error'
         })
         return Promise.reject(error)
       }

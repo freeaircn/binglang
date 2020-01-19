@@ -121,7 +121,7 @@ export default {
       }
       apiGetJob(params)
         .then(function(data) {
-          this.tableData.splice(0, this.tableData.length)
+          this.tableData.splice(0)
           this.tableData = data.slice(0)
         }.bind(this))
         .catch(function(err) {

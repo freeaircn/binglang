@@ -152,7 +152,7 @@ export default {
       }
       apiGetDict(params)
         .then(function(data) {
-          this.tableData.splice(0, this.tableData.length)
+          this.tableData.splice(0)
           this.pageTotalContent = data.slice(0).length
           this.tableData = data.slice(0)
         }.bind(this))

@@ -126,7 +126,7 @@ export default {
       }
       apiGetDept(params)
         .then(function(data) {
-          this.tableData.splice(0, this.tableData.length)
+          this.tableData.splice(0)
           this.tableData = data.slice(0)
         }.bind(this))
         .catch(function(err) {
@@ -173,7 +173,7 @@ export default {
       }
       apiGetDept(params)
         .then(function(data) {
-          this.treeData.splice(0, this.treeData.length)
+          this.treeData.splice(0)
           this.treeData = data.slice(0)
           //
           this.dialogAction = 'create'
@@ -224,7 +224,7 @@ export default {
       }
       Promise.all([apiGetDept(params1), apiGetDept(params2)])
         .then(function(res) {
-          this.treeData.splice(0, this.treeData.length)
+          this.treeData.splice(0)
           this.treeData = res[0].slice(0)
           //
           this.copyFormData(res[1][0])

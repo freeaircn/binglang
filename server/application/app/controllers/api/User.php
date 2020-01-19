@@ -1,100 +1,198 @@
 <?php
 /*
- * @Description: 
+ * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-17 20:25:56
+ * @LastEditTime : 2020-01-19 20:52:14
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
+use \App_Settings\App_Code as App_Code;
+use \App_Settings\App_Msg as App_Msg;
 
-class User extends RestController {
+class User extends RestController
+{
 
-	function __construct()
+    public function __construct()
     {
         // Construct the parent class
-		parent::__construct();
-		
-		$this->load->model('user_model');
-		// $this->load->library('common_tools');
-	}
+        parent::__construct();
 
-	public function index_get()
-	{
-		$wanted = $this->get('wanted');
-		$select_col = $this->get('select_col');
-		$method = $this->get('method');
-		$cond = $this->get('cond');
-		$cond_col = $this->get('cond_col');
+        $this->load->model('user_model');
+        $this->load->library('common_tools');
+    }
 
-		if ($wanted == 'new_form')
-		{
-			$res = $this->user_model->prepare_new_form();
+    public function index_get()
+    {
+        $wanted = $this->get('wanted');
+        $uid    = $this->get('uid');
 
-			$this->response($res, 200);
-		}
-		else
-		{
-			$res = $this->user_model->read($select_col, $method, $cond, $cond_col);
+        switch ($wanted) {
+            case "all":
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $this->user_model->read_all();
+                break;
+            case "new_form":
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $this->user_model->prepare_new_form();
+                break;
+            case "current_form":
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $this->user_model->prepare_current_form($uid);
+                break;
+            default:
 
-			$this->response($res, 200);
-		}
-	}
+        }
+        $this->response($res, 200);
+    }
 
-	public function index_post()
-	{
-		$data['sort'] = $this->post('sort');
-		$data['label'] = $this->post('label');
-		$data['name'] = $this->post('name');
-		$data['enabled'] = ($this->post('enabled') === '1') ? 1 : 0;
-		$data['remark'] = $this->post('remark');
-		
-		$data['update_time'] = date("Y-m-d H:i:s", time());
+    public function index_post()
+    {
+        $data['username']                 = $this->post('username');
+        $data['sex']                      = ($this->post('sex') === '1') ? 1 : 0;
+        $data['phone']                    = $this->post('phone');
+        $data['email']                    = $this->post('email');
+        $data['enabled']                  = ($this->post('enabled') === '1') ? 1 : 0;
+        $data['identity_document_number'] = $this->post('identity_document_number');
+        $data['employee_number']          = $this->post('employee_number');
+        $data['dept_id']                  = $this->post('dept_id');
+        $data['job_id']                   = $this->post('job_id');
 
-		$result = $this->user_model->create($data);
-		if ($result === FALSE)
-		{
-			$this->response([], 500);
-		}
-		else
-		{
-			$this->response($result, 201);
-		}
-		
-	}
+        $pwd              = $this->post('password');
+        $role_ids         = $this->post('role_ids');
+        $extra_attributes = $this->post('extra_attributes');
 
-	public function index_put()
-	{
-		$id = $this->put('id');
-		$data['sort'] = $this->put('sort');
-		$data['label'] = $this->put('label');
-		$data['name'] = $this->put('name');
-		$data['enabled'] = ($this->put('enabled') === '1') ? 1 : 0;
-		$data['remark'] = $this->put('remark');
-		
-		$data['update_time'] = date("Y-m-d H:i:s", time());
-		
-		$result = $this->user_model->update($id, $data);
-		if ($result === FALSE)
-		{
-			$this->response([], 500);
-		}
-		else
-		{
-			$this->response($result, 200);
-		}
-	}
+        $data['update_time'] = date("Y-m-d H:i:s", time());
 
-	public function index_delete()
-	{
-		$id = $this->delete('id');
-		// $ids = (string)$id;
+        // hash password
+        $hash_pwd = $this->common_tools->hash_password($pwd);
+        if ($hash_pwd === false) {
+            $res['code'] = App_Code::HASH_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
 
-		// $ids = $this->dict_model->get_all_children_ids($id);
-		$result = $this->user_model->delete($id);
+            $this->response($res, 200);
+            return;
+        }
+        $data['password'] = $hash_pwd;
 
-		$this->response($result, 200);
-	}
+        // insert user table
+        $uid = $this->user_model->create_user($data);
+        if ($uid === false) {
+            $res['code'] = App_Code::TBL_USER_CREATE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_CREATE_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+
+        // get user id, insert role table
+        $rtn = $this->user_model->create_user_role($uid, $role_ids);
+        if ($rtn === false) {
+            $res['code'] = App_Code::TBL_USER_ROLE_CREATE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_ROLE_CREATE_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+
+        // get user id, insert user extra attribute table
+        $rtn = $this->user_model->create_user_extra_attribute($uid, $extra_attributes);
+        if ($rtn === false) {
+            $res['code'] = App_Code::TBL_USER_EXTRA_ATTR_CREATE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_EXTRA_ATTR_CREATE_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+
+        $res['code'] = App_Code::SUCCESS;
+        $res['data'] = ['uid' => $uid];
+
+        $this->response($res, 201);
+    }
+
+    public function index_put()
+    {
+        $uid                              = $this->put('id');
+        $data['username']                 = $this->put('username');
+        $data['sex']                      = ($this->put('sex') === '1') ? 1 : 0;
+        $data['phone']                    = $this->put('phone');
+        $data['email']                    = $this->put('email');
+        $data['enabled']                  = ($this->put('enabled') === '1') ? 1 : 0;
+        $data['identity_document_number'] = $this->put('identity_document_number');
+        $data['employee_number']          = $this->put('employee_number');
+        $data['dept_id']                  = $this->put('dept_id');
+        $data['job_id']                   = $this->put('job_id');
+
+        $pwd              = $this->put('password');
+        $role_ids         = $this->put('role_ids');
+        $extra_attributes = $this->put('extra_attributes');
+
+        $data['update_time'] = date("Y-m-d H:i:s", time());
+
+        // hash password
+        $hash_pwd = $this->common_tools->hash_password($pwd);
+        if ($hash_pwd === false) {
+            $res['code'] = App_Code::HASH_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+        $data['password'] = $hash_pwd;
+
+        // update user table
+        $rtn = $this->user_model->update_user($uid, $data);
+        if ($rtn === false) {
+            $res['code'] = App_Code::TBL_USER_UPDATE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_UPDATE_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+
+        // get user id, update role table
+        $rtn = $this->user_model->update_user_role($uid, $role_ids);
+        if ($rtn === false) {
+            $res['code'] = App_Code::TBL_USER_ROLE_UPDATE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_ROLE_UPDATE_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+
+        // get user id, update user extra attribute table
+        $rtn = $this->user_model->update_user_extra_attribute($uid, $extra_attributes);
+        if ($rtn === false) {
+            $res['code'] = App_Code::TBL_USER_EXTRA_ATTR_UPDATE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_EXTRA_ATTR_UPDATE_FAILED;
+
+            $this->response($res, 200);
+            return;
+        }
+
+        $res['code'] = App_Code::SUCCESS;
+        $res['data'] = ['uid' => $uid];
+
+        $this->response($res, 200);
+    }
+
+    public function index_delete()
+    {
+        $id = $this->delete('id');
+
+        $result = $this->user_model->delete($id);
+
+        if ($result === true) {
+            $res['code'] = App_Code::SUCCESS;
+            $res['msg']  = App_Msg::SUCCESS;
+        } else {
+            $res['code'] = App_Code::TBL_USER_DELETE_FAILED;
+            $res['msg']  = App_Msg::TBL_USER_DELETE_FAILED;
+        }
+
+        $this->response($res, 200);
+    }
 }

@@ -184,7 +184,7 @@ export default {
       }
       apiGetRole(params)
         .then(function(data) {
-          this.tableData.splice(0, this.tableData.length)
+          this.tableData.splice(0)
           this.pageTotalContent = data.slice(0).length
           this.tableData = data.slice(0)
         }.bind(this))
@@ -360,7 +360,7 @@ export default {
       this.tempRoleId = role.id
       Promise.all([apiGetMenu(params1), apiGetRoleMenu(params2)])
         .then(function(res) {
-          this.treeData.splice(0, this.treeData.length)
+          this.treeData.splice(0)
           this.treeData = res[0].slice(0)
           //
           this.checkedIds = []

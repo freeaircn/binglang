@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `app_user` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `employee_number` varchar(15) DEFAULT NULL COMMENT '工号',
   `username` varchar(10) DEFAULT NULL COMMENT '中文名',
-  `sex` varchar(3) DEFAULT NULL,
+  `sex` bit(1) NOT NULL COMMENT '1-女，0-男',
   `identity_document_number` varchar(32) DEFAULT NULL COMMENT '证件号',
   `phone` varchar(15) NOT NULL,
   `email` varchar(40) DEFAULT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `app_user` (
 --
 
 INSERT INTO `app_user` (`id`, `employee_number`, `username`, `sex`, `identity_document_number`, `phone`, `email`, `enabled`, `dept_id`, `job_id`, `last_login`, `ip_address`, `update_time`, `avatar_id`, `password`, `forgotten_password_selector`, `forgotten_password_code`, `forgotten_password_time`) VALUES
-(1, '1', '赵钱孙', '男', NULL, '18612345678', NULL, b'1', NULL, NULL, NULL, NULL, '2020-01-16 08:45:52', NULL, NULL, NULL, NULL, NULL);
+(1, '1', '赵钱孙', b'0', NULL, '18612345678', NULL, b'1', NULL, NULL, NULL, NULL, '2020-01-16 08:45:52', NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -346,13 +346,5 @@ ALTER TABLE `app_users_roles`
 ALTER TABLE `app_user_attribute`
   ADD CONSTRAINT `FK_dict_data_id_dsf` FOREIGN KEY (`dict_data_id`) REFERENCES `app_dict_data` (`id`),
   ADD CONSTRAINT `FK_user_id_dsf` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`);
---
--- 数据库： `test`
---
-CREATE DATABASE IF NOT EXISTS `test` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `test`;
-COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+COMMIT;

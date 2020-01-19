@@ -21,9 +21,15 @@
     >
       <el-table-column prop="employee_number" label="工号" />
       <el-table-column :show-overflow-tooltip="true" prop="username" label="中文名" />
-      <el-table-column :show-overflow-tooltip="true" prop="sex" label="性别" />
+      <el-table-column :show-overflow-tooltip="true" prop="sex" label="性别" align="center">
+        <template slot-scope="scope">
+          <span v-if="scope.row.sex == '1'">女</span>
+          <span v-else>男</span>
+        </template>
+      </el-table-column>
       <el-table-column :show-overflow-tooltip="true" prop="phone" label="手机号" />
       <el-table-column :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
+      <el-table-column :show-overflow-tooltip="true" prop="identity_document_number" label="身份证号" />
       <el-table-column :show-overflow-tooltip="true" prop="dept_label" label="部门" />
       <el-table-column :show-overflow-tooltip="true" prop="job_label" label="岗位" />
 
@@ -60,15 +66,19 @@
 
     <!--表单渲染-->
     <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="480px">
-      <el-tabs v-model="tabIndex" tab-position="left">
-        <el-tab-pane name="basic_info" label="基本信息">
-          <el-form ref="form_basic_info" :model="formData" :rules="rules" size="mini" label-width="80px">
+      <el-tabs v-model="tabIndex" tab-position="left" :before-leave="leaveTab">
+        <el-tab-pane name="tab_one" label="基本信息">
+          <el-form ref="form_tab_one" :model="formData" :rules="rules_tab_one" size="mini" label-width="80px">
             <el-form-item label="中文名" prop="username">
               <el-input v-model="formData.username" />
             </el-form-item>
             <el-form-item label="性别" prop="sex">
-              <el-input v-model="formData.sex" />
+              <el-radio-group v-model="formData.sex">
+                <el-radio label="0">男</el-radio>
+                <el-radio label="1">女</el-radio>
+              </el-radio-group>
             </el-form-item>
+
             <el-form-item label="手机号" prop="phone">
               <el-input v-model="formData.phone" />
             </el-form-item>
@@ -79,13 +89,13 @@
               <el-input v-model="formData.password" show-password autocomplete="off" />
             </el-form-item>
             <el-form-item label="是否启用" prop="enabled">
-              <el-radio-group v-model="formData.enabled" size="mini">
-                <el-radio-button label="1">是</el-radio-button>
-                <el-radio-button label="0">否</el-radio-button>
+              <el-radio-group v-model="formData.enabled">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="所属角色" prop="role">
-              <el-select v-model="formData.role_id" multiple placeholder="授予权限，可多选">
+              <el-select v-model="formData.role_ids" multiple placeholder="授予权限，可多选">
                 <el-option
                   v-for="item in roleList"
                   :key="item.id"
@@ -97,8 +107,8 @@
           </el-form>
         </el-tab-pane>
 
-        <el-tab-pane name="more_info" label="更多信息">
-          <el-form ref="form_more_info" :model="formData" :rules="rules" size="mini" label-width="80px">
+        <el-tab-pane name="tab_two" label="更多信息">
+          <el-form ref="form_tab_two" :model="formData" :rules="rules_tab_two" size="mini" label-width="80px">
             <el-form-item label="身份证号" prop="identity_document_number">
               <el-input v-model="formData.identity_document_number" />
             </el-form-item>
@@ -138,8 +148,9 @@
       </el-tabs>
 
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提交</el-button>
+        <el-button size="mini" @click="cancelDialog()">取消</el-button>
+        <el-button v-show="tabIndex == 'tab_one'" type="primary" size="mini" @click="toNextTab()">下一页</el-button>
+        <el-button v-show="tabIndex == 'tab_two'" type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -178,21 +189,21 @@ export default {
         update: '编辑',
         create: '新建'
       },
-      tabIndex: 'basic_info',
+      tabIndex: 'tab_one',
 
       formData: {
         id: null,
-        employee_number: '',
         username: '',
-        sex: '',
-        identity_document_number: '',
+        sex: '0',
         phone: '',
         email: '',
+        password: '',
         enabled: '1',
+        role_ids: [],
+        identity_document_number: '',
+        employee_number: '',
         dept_id: null,
         job_id: null,
-        password: '',
-        role_id: [],
         extra_attributes: []
       },
 
@@ -202,8 +213,11 @@ export default {
       deptList: [],
       jobList: [],
 
-      rules: {
-        // label: [{ required: true, validator: validLabel, trigger: 'change' }]
+      rules_tab_one: {
+        username: [{ required: true, trigger: 'change' }]
+      },
+      rules_tab_two: {
+        identity_document_number: [{ required: true, trigger: 'change' }]
       }
     }
   },
@@ -219,163 +233,188 @@ export default {
     }
   },
   created() {
-    this.updateTbl(null)
+    this.updateTbl({ wanted: 'all' })
   },
   methods: {
     // CRUD core
+    /**
+     * @description: success response, tableData be updated; failed response, tableData be cleared
+     * @param {type}
+     * @return:
+     */
     updateTbl(params) {
       this.tableLoading = true
-
-      if (params === null) {
-        params = {
-          select_col: null,
-          method: null,
-          cond: null,
-          cond_col: null
-        }
-      }
       apiGetUser(params)
         .then(function(data) {
-          this.tableData.splice(0, this.tableData.length)
-          this.pageTotalContent = data.slice(0).length
-          this.tableData = data.slice(0)
+          this.pageTotalContent = data.users.slice(0).length
+          this.tableData.splice(0)
+          this.tableData = data.users.slice(0)
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.tableData.splice(0)
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
         .finally(function() {
           this.tableLoading = false
         }.bind(this))
     },
-    handleQuery() {
-      // API param - this.word，输入检验
-      if (this.query.words === '') {
-        this.updateTbl(null)
-      } else {
-        const res = validQueryWords(this.query.words)
-        if (res === true) {
-          var params = {
-            select_col: null,
-            method: 'like',
-            cond: { 'label': this.query.words },
-            cond_col: null
-          }
-          this.updateTbl(params)
-        } else {
-          this.$notify.error({
-            title: '错误',
-            message: res,
-            duration: 2000
-          })
-        }
-      }
-    },
 
-    // 表单formData清空
-    // 获取字典列表
-    // 显示dialog
+    /**
+     * @description: reset formData, request a blank user profile, show dialog
+     * @param {type}
+     * @return:
+     */
     preCreate() {
       this.rstFormData()
-      const params = {
-        wanted: 'new_form'
-      }
-      apiGetUser(params)
+      this.roleList.splice(0)
+      this.deptList.splice(0)
+      this.jobList.splice(0)
+      this.extraAttributeList.splice(0)
+
+      this.tabIndex = 'tab_one'
+      apiGetUser({ wanted: 'new_form' })
         .then(function(data) {
-          this.roleList.splice(0, this.roleList.length)
-          this.roleList = data[0].role.slice(0)
-          this.deptList.splice(0, this.deptList.length)
-          this.deptList = data[0].dept.slice(0)
-          this.jobList.splice(0, this.jobList.length)
-          this.jobList = data[0].job.slice(0)
-
-          this.extraAttributeList.splice(0, this.extraAttributeList.length)
-          this.extraAttributeList = data[0].extra_attribute.slice(0)
-
+          this.roleList = data.role.slice(0)
+          this.deptList = data.dept.slice(0)
+          this.jobList = data.job.slice(0)
+          this.extraAttributeList = data.extra_attribute.slice(0)
           const tempLength = this.extraAttributeList.length
-          this.extra_attributes = new Array(tempLength).fill(0)
-
+          this.formData.extra_attributes = new Array(tempLength).fill('')
           //
           this.dialogAction = 'create'
           this.dialogVisible = true
           this.$nextTick(() => {
-            this.$refs['form'].clearValidate()
+            this.$refs['form_tab_one'].clearValidate()
+            this.$refs['form_tab_two'].clearValidate()
           })
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
     },
-    // validate 表单输入，请求后台
-    // 接收response
-    // 200，获取整个数据表，更新显示
-    doCreate() {
-      this.$refs['form'].validate((valid) => {
+
+    /**
+     * @description: make sure form validation in tab_one passed, then turn to tab_two
+     * @param {type}
+     * @return:
+     */
+    toNextTab() {
+      this.$refs['form_tab_one'].validate((valid) => {
         if (valid) {
-          console.log(this.formData)
+          this.tabIndex = 'tab_two'
+        }
+      })
+    },
+    leaveTab(activeName, oldActiveName) {
+      if (this.dialogVisible === true) {
+        if (oldActiveName === 'tab_one') {
+          return this.$refs['form_tab_one'].validate()
+        }
+        if (oldActiveName === 'tab_two') {
+          return this.$refs['form_tab_two'].validate()
+        }
+      }
+    },
+
+    /**
+     * @description: validate form in tab_two, post new form, update data display area
+     * @param {type}
+     * @return:
+     */
+    doCreate() {
+      this.$refs['form_tab_two'].validate((valid) => {
+        if (valid) {
           // API create
           apiCreateUser(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.updateTbl(null)
+              this.updateTbl({ wanted: 'all' })
             }.bind(this))
             .catch(function(err) {
-              console.log(err)
-            })
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
         }
       })
     },
 
-    // 取row.id，请求后台，填写表单formData
-    // 获取字典列表
-    // 显示dialog
-    preUpdate(rowID) {
-      var params1 = {
-        select_col: null,
-        method: null,
-        cond: null,
-        cond_col: null
-      }
-      apiGetUser(params1)
-        .then(function(res) {
-          this.treeData.splice(0, this.treeData.length)
-          this.treeData = res[0].slice(0)
+    /**
+     * @description: reset formData, select list, request a current user profile, show dialog
+     * @param {type}
+     * @return:
+     */
+    preUpdate(id) {
+      this.rstFormData()
+      this.roleList.splice(0)
+      this.deptList.splice(0)
+      this.jobList.splice(0)
+      this.extraAttributeList.splice(0)
+
+      this.tabIndex = 'tab_one'
+      apiGetUser({ wanted: 'current_form', uid: id })
+        .then(function(data) {
+          this.roleList = data.lists.role.slice(0)
+          this.deptList = data.lists.dept.slice(0)
+          this.jobList = data.lists.job.slice(0)
+          this.extraAttributeList = data.lists.extra_attribute.slice(0)
           //
-          this.copyFormData(res[1][0])
+          this.copyFormData(data.user)
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
-            this.$refs['form'].clearValidate()
+            this.$refs['form_tab_one'].clearValidate()
+            this.$refs['form_tab_two'].clearValidate()
           })
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
     },
-    // validate 表单输入，请求后台
-    // 接收response，更新显示
+
+    /**
+     * @description: validate form in tab_two, post update form, update data display area
+     * @param {type}
+     * @return:
+     */
     doUpdate() {
-      this.$refs['form'].validate((valid) => {
+      this.$refs['form_tab_two'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.formData)
           // API update
-          apiUpdateUser(tempData)
+          apiUpdateUser(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.updateTbl(null)
+              this.updateTbl({ wanted: 'all' })
             }.bind(this))
             .catch(function(err) {
-              console.log(err)
-            })
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
         }
       })
     },
 
-    // 子节点删除处理
-    // 接收response，更新显示
+    /**
+     * @description: delete by id, update data display area
+     * @param {type}
+     * @return:
+     */
     doDelete(id) {
-      this.$confirm('确定删除吗？此操作不能撤销！', '提示', {
+      this.$confirm('确定删除吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -383,16 +422,15 @@ export default {
       })
         .then(() => {
           apiDelUser(id)
-            .then(function(data) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-              this.updateTbl(null)
+            .then(function() {
+              this.updateTbl({ wanted: 'all' })
             }.bind(this))
             .catch(function(err) {
-              console.log(err)
-            })
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
         })
         .catch(() => {
         })
@@ -403,34 +441,65 @@ export default {
       this.formData.id = null
       this.formData.employee_number = ''
       this.formData.username = ''
-      this.formData.sex = ''
+      this.formData.sex = '0'
+      this.formData.identity_document_number = ''
       this.formData.phone = ''
       this.formData.email = ''
       this.formData.enabled = '1'
       this.formData.dept_id = null
       this.formData.job_id = null
       this.formData.password = ''
-      this.formData.role_id = []
-      this.formData.extra_attributes = []
+      this.formData.role_ids = []
+      this.formData.extra_attributes.splice(0)
     },
     copyFormData(data) {
-      this.formData = JSON.parse(JSON.stringify(data))
-      // this.formData.id = data.id
-      // this.formData.employee_number = data.employee_number
-      // this.formData.username = data.username
-      // this.formData.sex = data.sex
-      // this.formData.phone = data.phone
-      // this.formData.email = data.email
-      // this.formData.enabled = data.enabled
-      // this.formData.dept_id = data.dept_id
-      // this.formData.job_id = data.job_id
-      // this.formData.password = data.password
+      // this.formData = JSON.parse(JSON.stringify(data))
+      this.formData.id = data.id
+      this.formData.employee_number = data.employee_number
+      this.formData.username = data.username
+      this.formData.sex = data.sex
+      this.formData.identity_document_number = data.identity_document_number
+      this.formData.phone = data.phone
+      this.formData.email = data.email
+      this.formData.enabled = data.enabled
+      this.formData.dept_id = data.dept_id
+      this.formData.job_id = data.job_id
+      this.formData.password = ''
+      this.formData.role_ids = data.role_ids.slice(0)
+      this.formData.extra_attributes = data.extra_attributes.slice(0)
     },
     pageSizeChange(val) {
       this.pageSize = val
     },
     pageIdxChange(val) {
       this.pageIdx = val
+    },
+    cancelDialog() {
+      this.dialogAction = ''
+      this.dialogVisible = false
+    },
+
+    handleQuery() {
+      // API param - this.word，输入检验
+      if (this.query.words === '') {
+        this.updateTbl({ wanted: 'all' })
+      } else {
+        const msg = validQueryWords(this.query.words)
+        if (msg === true) {
+          var params = {
+            select_col: null,
+            method: 'like',
+            cond: { 'label': this.query.words },
+            cond_col: null
+          }
+          this.updateTbl(params)
+        } else {
+          this.$message({
+            message: msg,
+            type: 'warning'
+          })
+        }
+      }
     }
   }
 }
