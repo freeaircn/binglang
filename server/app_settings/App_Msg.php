@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 20:53:02
+ * @LastEditTime : 2020-01-20 21:30:12
  */
 namespace App_Settings;
 
@@ -22,6 +22,7 @@ class App_Msg
     const TBL_USER_ROLE_UPDATE_FAILED       = '数据表USER_ROLE修改失败，请稍后重试！';
     const TBL_USER_EXTRA_ATTR_UPDATE_FAILED = '数据表USER_EXTRA_ATTR修改失败，请稍后重试！';
     const TBL_USER_DELETE_FAILED            = '数据表USER删除失败，请稍后重试！';
+    const TBL_USER_READ_FAILED              = '数据表USER读失败，请稍后重试！';
 
     const POST_INPUT_EMPTY_MSG    = '提交的数据有误！';
     const USERS_TOKEN_INVALID_MSG = '用户凭据或失效，请重新登录！';

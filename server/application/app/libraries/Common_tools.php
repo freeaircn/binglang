@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 18:55:39
+ * @LastEditTime : 2020-01-20 20:57:10
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -21,9 +21,10 @@ class Common_tools extends CI_Model
 
     /**
      * 一维数据数组生成数据树
+     *
      * @param array $list 数据列表
-     * @param string $id 父ID Key
-     * @param string $pid ID Key
+     * @param string $id ID Key
+     * @param string $pid 父ID Key
      * @param string $son 定义子数据Key
      * @return array
      */
@@ -61,6 +62,7 @@ class Common_tools extends CI_Model
         // Long password may pose DOS issue (note: strlen gives size in bytes and not in multibyte symbol)
         if (empty($password) || strpos($password, "\0") !== false ||
             strlen($password) > $MAX_PASSWORD_SIZE_BYTES) {
+            SeasLog::error('APP_code: ' . ' - ' . 'input of func hash_password checked failed');
             return false;
         }
 

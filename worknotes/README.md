@@ -1,4 +1,4 @@
-# APP日志
+# APP Worknotes
 ---
 ### 摘要  
 1. 按TODO排序
@@ -11,6 +11,10 @@
 3. [done]设定API和response
 4. [done]设定页面crud流程
 5. [done]编写 用户管理页面  
+6. [done]后端log  
+7. 前端log
+
+
 
 . 参照用户管理页面，更新 app其他页面文件  
 . 编写用户头像功能   
@@ -18,6 +22,17 @@
 . 页面 检索功能，适应多查询条件组合  
 . 页面 数据显示区分页功能，新增，编辑，删除操作，如何刷新定位 数据显示区  
 . 编写动态路由，权限管理  
+
+---
+### 置顶
+```
+# 后端&PHP
+  # 检查多维数组入参。比如；a = [[], []], empty(a)不为空
+  # 外键字段，写入值的数据类型。比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
+  # ci 查询数据表结果->result_array()，为数组结构。
+    示例1 table：id - 1, 查询结果：array(1) [{id:1}] 
+    示例2 table：id - 1, id - 2，查询结果：array(2) [{id:1}, {id:2}]
+```
 
 ---
 ### 1 初始适配vue和ci框架
@@ -297,6 +312,19 @@
     1.2 修改1条记录，点击修改按钮，弹出对话框表单，preUpdate。
         对话框表单，提交doUpdate。响应处理：提示，更新数据显示区。
     1.3 删除1条记录，点击删除按钮，提示，确认，doDelete。响应处理：提示，更新数据显示区。
+  
+  2 新增页面
+    新增页面，添加文件如下：
+    # 前端：
+    1. src/router/路由.js
+    2. src/views/app/视图.vue
+    3. src/api/app/接口.js
+
+    # 后端：
+    1. application/app/config/routes.php
+    2. application/app/config/app_config.php 加数据表
+    3. application/app/controller/api/控制器.php   修改post, put参数
+    4. application/app/model/模型.php  数据库接口
 ```
 
 ---
@@ -402,14 +430,61 @@
   
   8.2 API:
     apiGetUser, params: wanted: current_form
-    
+  
+  8.3 password
+      不是必改项，后端识别password = ‘’，跳过hash_password
+  
   9 insert, update 入参检查
-    # 数据表 主键，外键字段 不能为空，且注意唯一性
     # 注意检查多维数组入参。比如；a = [[], []], empty(a)不为空
+    # 注意 外键字段，写入值的数据类型，比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
     
   10 删除: 
       开启事务
       user_attribute，users_roles, user
+      
+  11 添加表单校验rules
+  
+```
+
+---
+### 6 后端log
+```
+  6.1 后端
+      PHP引入Seaslog
+      # php.ini文件
+        seaslog.default_basepath="D:/www/binglang/server/application/app/logs"
+        seaslog.default_logger=default
+        seaslog.default_datetime_format = "Y-m-d H:i:s"
+        seaslog.default_template = "%T (%t) [%L] [%F] [%C] %P | %Q | %R | %m | %M "
+        seaslog.disting_folder = 1
+        seaslog.disting_type=0
+        seaslog.disting_by_hour=0
+        seaslog.use_buffer=1
+        seaslog.buffer_size=100
+        seaslog.level=8
+        seaslog.trace_error=1
+        seaslog.trace_exception=0
+        
+        2020-01-20 19:45:28 (1579520728.125) [WARNING] [User.php:32] [User::index_get] 9096 | 5e2592d80fc9e | /api/user?wanted=all | GET | hello log! 
+      
+      # level
+        seaslog.level = 8 记录的日志级别.默认为8,即所有日志均记录。
+        seaslog.level = 0 记录EMERGENCY。
+        seaslog.level = 1 记录EMERGENCY、ALERT。
+        seaslog.level = 2 记录EMERGENCY、ALERT、CRITICAL。
+        seaslog.level = 3 记录EMERGENCY、ALERT、CRITICAL、ERROR。
+        seaslog.level = 4 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING。
+        seaslog.level = 5 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING、NOTICE。
+        seaslog.level = 6 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING、NOTICE、INFO。
+        seaslog.level = 7 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING、NOTICE、INFO、DEBUG。
+      
+      CI DB调试error显示控制
+        application/app/config/database.php文件
+        ['db_debug'] TRUE/FALSE - Whether database errors should be displayed.
+        production - db_debug = FALSE
+        
+        获取DB error
+        $error = $this->db->error(); // Has keys 'code' and 'message'
 ```
 
 ---

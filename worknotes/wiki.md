@@ -1,4 +1,4 @@
-# 改造app框架
+# Wiki
 
 ---
 ### 简介  
@@ -468,23 +468,5 @@ axios.interceptors.response.use(function (response) {
 student和grade，学生表中的gid是学生所在的班级id，是引入了班级表grade中的主键id。
 那么gid就可以作为表student表的外键。
 被引用的表，即表grade是主表，使用外键的表，即student，是从表。
-
-```
-
----
-### 8. CRUD 页面  
-##### 8.1 新增页面
-```
-新增页面，需添加文件如下：
-# 前端：
-1. src/router/路由.js
-2. src/views/app/视图.vue
-3. src/api/app/接口.js
-
-# 后端：
-1. application/app/config/routes.php
-2. application/app/config/app_config.php 加数据表
-3. application/app/controller/api/控制器.php   修改post, put参数
-4. application/app/model/模型.php  数据库接口
 
 ```

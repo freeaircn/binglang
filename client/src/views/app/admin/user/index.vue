@@ -162,7 +162,7 @@ import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import 公共method
-import { validQueryWords } from '@/utils/app/validator/common'
+import { validQueryWords, validChineseChar, validPhone, validEmail } from '@/utils/app/validator/common'
 
 // import api
 import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/admin/user'
@@ -214,10 +214,9 @@ export default {
       jobList: [],
 
       rules_tab_one: {
-        username: [{ required: true, trigger: 'change' }]
-      },
-      rules_tab_two: {
-        identity_document_number: [{ required: true, trigger: 'change' }]
+        username: [{ required: true, validator: validChineseChar, trigger: 'change' }],
+        phone: [{ required: true, validator: validPhone, trigger: 'change' }],
+        email: [{ required: true, validator: validEmail, trigger: 'change' }]
       }
     }
   },
@@ -367,7 +366,7 @@ export default {
           this.jobList = data.lists.job.slice(0)
           this.extraAttributeList = data.lists.extra_attribute.slice(0)
           //
-          this.copyFormData(data.user)
+          this.updateFormData(data.user)
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
@@ -449,10 +448,10 @@ export default {
       this.formData.dept_id = null
       this.formData.job_id = null
       this.formData.password = ''
-      this.formData.role_ids = []
+      this.formData.role_ids.splice(0)
       this.formData.extra_attributes.splice(0)
     },
-    copyFormData(data) {
+    updateFormData(data) {
       // this.formData = JSON.parse(JSON.stringify(data))
       this.formData.id = data.id
       this.formData.employee_number = data.employee_number

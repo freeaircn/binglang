@@ -1,0 +1,4 @@
+2020-01-20 21:25:56 | CRITICAL | 5892 | 5e25aa64cc303 | 1579526756.836 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-joewznk.php - line:37 - msg:syntax error, unexpected ';'
+2020-01-20 21:26:05 | CRITICAL | 6528 | 5e25aa6df3841 | 1579526765.998 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-uhvtdqra.php - line:37 - msg:syntax error, unexpected ';'
+2020-01-20 21:26:20 | CRITICAL | 8404 | 5e25aa7c3b40f | 1579526780.243 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-yotehwibsr.php - line:37 - msg:syntax error, unexpected ';'
+2020-01-20 21:26:35 | CRITICAL | 5124 | 5e25aa8b65de8 | 1579526795.417 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-prgfeqpok.php - line:37 - msg:syntax error, unexpected ';'

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 20:41:51
+ * @LastEditTime : 2020-01-20 21:29:40
  */
 namespace App_Settings;
 
@@ -22,6 +22,7 @@ class App_Code
     const TBL_USER_ROLE_UPDATE_FAILED       = 204;
     const TBL_USER_EXTRA_ATTR_UPDATE_FAILED = 205;
     const TBL_USER_DELETE_FAILED            = 206;
+    const TBL_USER_READ_FAILED              = 207;
 
     // ! 变量名组成：控制器名_流程_描述
     // ! Users Signup流程 code：201~249

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 20:52:14
+ * @LastEditTime : 2020-01-20 21:28:08
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -31,16 +31,34 @@ class User extends RestController
 
         switch ($wanted) {
             case "all":
-                $res['code'] = App_Code::SUCCESS;
-                $res['data'] = $this->user_model->read_all();
+                $data = $this->user_model->read_all();
+                if ($data === false) {
+                    $res['code'] = App_Code::TBL_USER_READ_FAILED;
+                    $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
+                } else {
+                    $res['code'] = App_Code::SUCCESS;
+                    $res['data'] = $data;
+                }
                 break;
             case "new_form":
-                $res['code'] = App_Code::SUCCESS;
-                $res['data'] = $this->user_model->prepare_new_form();
+                $data = $this->user_model->prepare_new_form();
+                if ($data === false) {
+                    $res['code'] = App_Code::TBL_USER_READ_FAILED;
+                    $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
+                } else {
+                    $res['code'] = App_Code::SUCCESS;
+                    $res['data'] = $data;
+                }
                 break;
             case "current_form":
-                $res['code'] = App_Code::SUCCESS;
-                $res['data'] = $this->user_model->prepare_current_form($uid);
+                $data = $this->user_model->prepare_current_form($uid);
+                if ($data === false) {
+                    $res['code'] = App_Code::TBL_USER_READ_FAILED;
+                    $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
+                } else {
+                    $res['code'] = App_Code::SUCCESS;
+                    $res['data'] = $data;
+                }
                 break;
             default:
 
@@ -57,12 +75,20 @@ class User extends RestController
         $data['enabled']                  = ($this->post('enabled') === '1') ? 1 : 0;
         $data['identity_document_number'] = $this->post('identity_document_number');
         $data['employee_number']          = $this->post('employee_number');
-        $data['dept_id']                  = $this->post('dept_id');
-        $data['job_id']                   = $this->post('job_id');
 
+        $dept_id          = $this->post('dept_id');
+        $job_id           = $this->post('job_id');
         $pwd              = $this->post('password');
         $role_ids         = $this->post('role_ids');
         $extra_attributes = $this->post('extra_attributes');
+
+        // dept, job items - optional
+        if (!empty($dept_id)) {
+            $data['dept_id'] = $dept_id;
+        }
+        if (!empty($job_id)) {
+            $data['job_id'] = $job_id;
+        }
 
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
@@ -71,6 +97,7 @@ class User extends RestController
         if ($hash_pwd === false) {
             $res['code'] = App_Code::HASH_PASSWORD_FAILED;
             $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -82,6 +109,7 @@ class User extends RestController
         if ($uid === false) {
             $res['code'] = App_Code::TBL_USER_CREATE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_CREATE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -92,6 +120,7 @@ class User extends RestController
         if ($rtn === false) {
             $res['code'] = App_Code::TBL_USER_ROLE_CREATE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_ROLE_CREATE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -102,6 +131,7 @@ class User extends RestController
         if ($rtn === false) {
             $res['code'] = App_Code::TBL_USER_EXTRA_ATTR_CREATE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_EXTRA_ATTR_CREATE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -123,31 +153,43 @@ class User extends RestController
         $data['enabled']                  = ($this->put('enabled') === '1') ? 1 : 0;
         $data['identity_document_number'] = $this->put('identity_document_number');
         $data['employee_number']          = $this->put('employee_number');
-        $data['dept_id']                  = $this->put('dept_id');
-        $data['job_id']                   = $this->put('job_id');
 
+        $dept_id          = $this->put('dept_id');
+        $job_id           = $this->put('job_id');
         $pwd              = $this->put('password');
         $role_ids         = $this->put('role_ids');
         $extra_attributes = $this->put('extra_attributes');
 
+        // dept, job items - optional
+        if (!empty($dept_id)) {
+            $data['dept_id'] = $dept_id;
+        }
+        if (!empty($job_id)) {
+            $data['job_id'] = $job_id;
+        }
+
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
-        // hash password
-        $hash_pwd = $this->common_tools->hash_password($pwd);
-        if ($hash_pwd === false) {
-            $res['code'] = App_Code::HASH_PASSWORD_FAILED;
-            $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
+        // hash password, when update, skip hash_pwd when pwd is empty
+        if (!empty($pwd)) {
+            $hash_pwd = $this->common_tools->hash_password($pwd);
+            if ($hash_pwd === false) {
+                $res['code'] = App_Code::HASH_PASSWORD_FAILED;
+                $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
+                SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
-            $this->response($res, 200);
-            return;
+                $this->response($res, 200);
+                return;
+            }
+            $data['password'] = $hash_pwd;
         }
-        $data['password'] = $hash_pwd;
 
         // update user table
         $rtn = $this->user_model->update_user($uid, $data);
         if ($rtn === false) {
             $res['code'] = App_Code::TBL_USER_UPDATE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_UPDATE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -158,6 +200,7 @@ class User extends RestController
         if ($rtn === false) {
             $res['code'] = App_Code::TBL_USER_ROLE_UPDATE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_ROLE_UPDATE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -168,6 +211,7 @@ class User extends RestController
         if ($rtn === false) {
             $res['code'] = App_Code::TBL_USER_EXTRA_ATTR_UPDATE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_EXTRA_ATTR_UPDATE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
             return;
@@ -191,6 +235,7 @@ class User extends RestController
         } else {
             $res['code'] = App_Code::TBL_USER_DELETE_FAILED;
             $res['msg']  = App_Msg::TBL_USER_DELETE_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
         }
 
         $this->response($res, 200);

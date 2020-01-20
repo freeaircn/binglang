@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 20:37:31
+ * @LastEditTime : 2020-01-20 22:11:37
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -69,21 +69,32 @@ class User_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-     * @return array
+     * @return bool | array
      */
     public function read_all()
     {
-        $users = $this->db->select('id, employee_number, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time')
+        $query = $this->db->select('id, employee_number, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time')
             ->order_by('id', 'ASC')
-            ->get($this->tables['user'])
-            ->result_array();
+            ->get($this->tables['user']);
+
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $users = $query->result_array();
 
         if (!empty($users)) {
             foreach ($users as &$v) {
-                $job = $this->db->select('label')
+                $query = $this->db->select('label')
                     ->where('id', $v['job_id'])
-                    ->get($this->tables['job'])
-                    ->result_array();
+                    ->get($this->tables['job']);
+                if ($query === false) {
+                    $error = $this->db->error();
+                    SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                    return false;
+                }
+                $job = $query->result_array();
                 if (!empty($job)) {
                     $v['job_label'] = $job[0]['label'];
                 }
@@ -111,15 +122,20 @@ class User_model extends CI_Model
      * @param [array] $data
      * @return [mixed] bool|uid
      */
-    public function create_user($data)
+    public function create_user($data = null)
     {
         if (empty($data)) {
             return true;
         }
-        $this->db->insert($this->tables['user'], $data);
+
+        if (!$this->db->insert($this->tables['user'], $data)) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
         $id = $this->db->insert_id($this->tables['user'] . '_id_seq');
 
-        return (isset($id)) ? $id : false;
+        return $id;
     }
 
     /**
@@ -131,7 +147,7 @@ class User_model extends CI_Model
      * @param [array] $role_ids
      * @return bool
      */
-    public function create_user_role($uid, $role_ids)
+    public function create_user_role($uid = null, $role_ids = null)
     {
         if (empty($uid) || empty($role_ids)) {
             return true;
@@ -148,6 +164,8 @@ class User_model extends CI_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 
@@ -163,9 +181,9 @@ class User_model extends CI_Model
      * @param [array] $extra_attributes
      * @return bool
      */
-    public function create_user_extra_attribute($uid, $extra_attributes)
+    public function create_user_extra_attribute($uid = null, $extra_attributes = null)
     {
-        if (empty($extra_attributes) || empty($extra_attributes)) {
+        if (empty($uid) || empty($extra_attributes)) {
             return true;
         }
 
@@ -180,6 +198,9 @@ class User_model extends CI_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+
             return false;
         }
 
@@ -195,16 +216,20 @@ class User_model extends CI_Model
      * @param [array] $data
      * @return bool
      */
-    public function update_user($uid, $data)
+    public function update_user($uid = null, $data = null)
     {
         if (empty($uid) || empty($data)) {
             return true;
         }
         $this->db->where('id', $uid);
-        $this->db->update($this->tables['user'], $data);
+        $res = $this->db->update($this->tables['user'], $data);
 
-        $res = $this->db->affected_rows();
-        return ($res == 1) ? true : false;
+        if (!$res) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -216,14 +241,18 @@ class User_model extends CI_Model
      * @param [array] $role_ids
      * @return bool
      */
-    public function update_user_role($uid, $role_ids)
+    public function update_user_role($uid = null, $role_ids = null)
     {
         if (empty($uid) || empty($role_ids)) {
             return true;
         }
 
         // delete old
-        $this->db->where('user_id', $uid)->delete($this->tables['users_roles']);
+        if ($this->db->where('user_id', $uid)->delete($this->tables['users_roles']) === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
 
         // insert new
         $this->db->trans_start();
@@ -237,6 +266,8 @@ class User_model extends CI_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 
@@ -252,13 +283,17 @@ class User_model extends CI_Model
      * @param [array] $extra_attributes
      * @return bool
      */
-    public function update_user_extra_attribute($uid, $extra_attributes)
+    public function update_user_extra_attribute($uid = null, $extra_attributes = null)
     {
         if (empty($uid) || empty($extra_attributes)) {
             return true;
         }
         // delete old
-        $this->db->where('user_id', $uid)->delete($this->tables['user_attribute']);
+        if ($this->db->where('user_id', $uid)->delete($this->tables['user_attribute']) === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
 
         // insert new
         $this->db->trans_start();
@@ -272,6 +307,8 @@ class User_model extends CI_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 
@@ -286,10 +323,10 @@ class User_model extends CI_Model
      * @param [int] $id
      * @return bool
      */
-    public function delete($id)
+    public function delete($id = null)
     {
         if (empty($id)) {
-            return true;
+            return false;
         }
 
         $this->db->trans_start();
@@ -301,6 +338,8 @@ class User_model extends CI_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;
@@ -312,26 +351,36 @@ class User_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-     * @return array
+     * @return array| bool
      */
     public function prepare_new_form()
     {
         $res = [];
         // select dict.id, dict.label like name = user_attr_ from dict table
-        $dict = $this->db->select('id, label')
+        $query = $this->db->select('id, label')
             ->like('name', 'user_attr_')
             ->order_by('id', 'ASC')
-            ->get($this->tables['dict'])
-            ->result_array();
+            ->get($this->tables['dict']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $dict = $query->result_array();
 
         // select dict_data.id, dict_data.label where dict.id from dict_data table
         $extra_attribute = [];
         foreach ($dict as $v) {
-            $dict_data = $this->db->select('id, label')
+            $query = $this->db->select('id, label')
                 ->where('dict_id', $v['id'])
                 ->order_by('id', 'ASC')
-                ->get($this->tables['dict_data'])
-                ->result_array();
+                ->get($this->tables['dict_data']);
+            if ($query === false) {
+                $error = $this->db->error();
+                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                return false;
+            }
+            $dict_data         = $query->result_array();
             $extra_attribute[] =
                 [
                 "label"  => $v['label'],
@@ -340,23 +389,38 @@ class User_model extends CI_Model
         }
 
         // select role.id, role.label from role table
-        $role = $this->db->select('id, label')
+        $query = $this->db->select('id, label')
             ->order_by('id', 'ASC')
-            ->get($this->tables['role'])
-            ->result_array();
+            ->get($this->tables['role']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $role = $query->result_array();
 
         // select dept.id, dept.label from dept table, make tree structure
-        $dept_temp = $this->db->select('id, label, pid')
+        $query = $this->db->select('id, label, pid')
             ->order_by('id', 'ASC')
-            ->get($this->tables['dept'])
-            ->result_array();
-        $dept = $this->common_tools->arr2tree($dept_temp);
+            ->get($this->tables['dept']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $dept_temp = $query->result_array();
+        $dept      = $this->common_tools->arr2tree($dept_temp);
 
         // select job.id, job.label from job table
-        $job = $this->db->select('id, label')
+        $query = $this->db->select('id, label')
             ->order_by('id', 'ASC')
-            ->get($this->tables['job'])
-            ->result_array();
+            ->get($this->tables['job']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $job = $query->result_array();
 
         $res['extra_attribute'] = $extra_attribute;
         $res['role']            = $role;
@@ -375,36 +439,59 @@ class User_model extends CI_Model
      * @param int $uid
      * @return array
      */
-    public function prepare_current_form($uid)
+    public function prepare_current_form($uid = null)
     {
+        if (empty($uid)) {
+            return false;
+        }
         // get select list of roles, dept, job, extra_attribute
         $lists = $this->prepare_new_form();
+        if ($lists === false) {
+            return false;
+        }
 
         $res = [];
 
         // select from user table
-        $user = $this->db->select('id, username, sex, phone, email, enabled, identity_document_number, employee_number, dept_id, job_id')
+        $query = $this->db->select('id, username, sex, phone, email, enabled, identity_document_number, employee_number, dept_id, job_id')
             ->where('id', $uid)
-            ->get($this->tables['user'])
-            ->result_array()[0];
+            ->get($this->tables['user']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $user = $query->result_array()[0];
 
         // select role_id from users_roles
-        $temp = $this->db->select('role_id')
+        $query = $this->db->select('role_id')
             ->where('user_id', $uid)
             ->order_by('role_id', 'ASC')
-            ->get($this->tables['users_roles'])
-            ->result_array();
+            ->get($this->tables['users_roles']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $temp = $query->result_array();
+
         $role_ids = [];
         foreach ($temp as $v) {
             $role_ids[] = $v['role_id'];
         }
 
         // select dict_data_id from user_attribute
-        $temp = $this->db->select('dict_data_id')
+        $query = $this->db->select('dict_data_id')
             ->where('user_id', $uid)
             ->order_by('dict_data_id', 'ASC')
-            ->get($this->tables['user_attribute'])
-            ->result_array();
+            ->get($this->tables['user_attribute']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $temp = $query->result_array();
+
         $extra_attributes = [];
         foreach ($temp as $v) {
             $extra_attributes[] = $v['dict_data_id'];
@@ -427,7 +514,7 @@ class User_model extends CI_Model
      */
     protected function _get_all_parents_label($id = null, $tbl = null)
     {
-        if ($id === null || $tbl === null) {
+        if (empty($id) || empty($tbl)) {
             return false;
         }
 
@@ -438,7 +525,13 @@ class User_model extends CI_Model
             $this->db->select('label, pid');
             $this->db->where_in('id', $temp_arr);
             $query = $this->db->get($tbl);
-            $res   = $query->result_array();
+            if ($query === false) {
+                $error = $this->db->error();
+                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                return false;
+            } else {
+                $res = $query->result_array();
+            }
             unset($temp_arr);
             foreach ($res as $k => $v) {
                 $array[]    = $v['label'];

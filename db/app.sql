@@ -218,7 +218,7 @@ DROP TABLE IF EXISTS `app_user`;
 CREATE TABLE `app_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `employee_number` varchar(15) NULL DEFAULT NULL COMMENT '工号',
-  `username` varchar(10) NULL DEFAULT NULL COMMENT '中文名',
+  `username` varchar(10) NOT NULL COMMENT '中文名',
   `sex` varchar(3) NULL DEFAULT NULL,
   `identity_document_number` varchar(32) NULL DEFAULT NULL COMMENT '证件号',
   `phone` varchar(15) NOT NULL,
