@@ -3,9 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2019-12-29 11:27:36
+ * @LastEditTime : 2020-01-21 22:11:15
  */
 import Vue from 'vue'
+
+import './utils/app/error-log' // error log
 
 import Cookies from 'js-cookie'
 
@@ -23,7 +25,6 @@ import router from './router'
 import './icons' // icon
 import './logos' // logo by freeair
 import './permission' // permission control
-import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 

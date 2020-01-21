@@ -480,6 +480,7 @@ export default {
 
     handleQuery() {
       // API param - this.word，输入检验
+      this.a = b
       if (this.query.words === '') {
         this.updateTbl({ wanted: 'all' })
       } else {

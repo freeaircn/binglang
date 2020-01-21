@@ -12,9 +12,7 @@
 4. [done]设定页面crud流程
 5. [done]编写 用户管理页面  
 6. [done]后端log  
-7. 前端log
-
-
+7. 前端log  
 
 . 参照用户管理页面，更新 app其他页面文件  
 . 编写用户头像功能   
@@ -485,6 +483,66 @@
         
         获取DB error
         $error = $this->db->error(); // Has keys 'code' and 'message'
+```
+
+---
+### 7 前端log
+```
+  逻辑
+  1 流程：
+    # error钩子：window，vue， pormiss
+    # client缓存log，indexDB
+    # client清理log缓存
+    # log上报后端，用户手动提交
+    # 后端响应存储log，写文件，写db？
+    
+  2 log字段
+    # 用户会话ID，与后台对应
+    
+  3 log页面
+  
+  实现
+  1 vue errorHandler ：
+    # Vue.config.errorHandler = function(err) {
+      const {
+        message, // 异常信息
+        name, // 异常名称
+        stack // 异常堆栈信息
+      } = err
+  
+    # 示例打印：
+      {message: "b is not defined", name: "ReferenceError", stack: "ReferenceError: b is not defined↵    at a.handleQu…e/dist/static/js/chunk-libs.9e2f0126.js:18:51770)"}
+        message : "b is not defined"
+        name : "ReferenceError"
+        stack : "ReferenceError: b is not defined↵    at a.handleQuery (http://127.0.0.1/resource/dist/static/js/chunk-b7754a92.7d401a55.js:1:13133)↵    at ne (http://127.0.0.1/resource/dist/static/js/chunk-libs.9e2f0126.js:18:11664)↵    
+      window.location.href : http://127.0.0.1/admin/user
+      
+  2 client缓存log
+    # npm引入logline
+      npm install logline
+      
+    # js文件 引入logline
+      import logLine from 'logline';
+      
+    # 使用
+      Logline.using(Logline.PROTOCOL.INDEXEDDB, 'binglang')
+      Logline.keep(1)
+
+      var appLogger = new Logline('app')
+      appLogger.info('description')
+      appLogger.error('description', { a: '' })
+      appLogger.warn('description')
+      appLogger.critical('description', { b: '' })
+      
+    # 示例打印：
+      appLogger.error('vue error', { message: message, name: name, stack: stack, url: url })
+      
+      data: {message: "b is not defined", name: "ReferenceError", stack: "ReferenceError: b is not defined↵    at a.handleQu…e/dist/static/js/chunk-libs.fc1beddb.js:18:51770)", url: "http://127.0.0.1/admin/user"}
+      descriptor: "vue error"
+      level: "error"
+      namespace: "app"
+      time: 1579620015353
+  
 ```
 
 ---
