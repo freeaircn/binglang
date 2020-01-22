@@ -508,7 +508,11 @@
   格式：
   timestamp | 会话 | level | description | log信息
     log信息 {
-      
+      url
+      message
+      name
+      stack
+      navigator.userAgent
     }
   
   实现
