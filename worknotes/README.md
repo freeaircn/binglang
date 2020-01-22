@@ -13,13 +13,14 @@
 5. [done]编写 用户管理页面  
 6. [done]后端log  
 7. 前端log  
-
-. 参照用户管理页面，更新 app其他页面文件  
-. 编写用户头像功能   
+8. 编写用户头像功能   
 
 . 页面 检索功能，适应多查询条件组合  
-. 页面 数据显示区分页功能，新增，编辑，删除操作，如何刷新定位 数据显示区  
+. 参照用户管理页面，更新 app其他页面文件  
 . 编写动态路由，权限管理  
+. 埋点  
+. 页面 数据显示区分页功能，新增，编辑，删除操作，如何刷新定位 数据显示区  
+
 
 ---
 ### 置顶
@@ -450,6 +451,7 @@
   6.1 后端
       PHP引入Seaslog
       # php.ini文件
+        extension=seaslog
         seaslog.default_basepath="D:/www/binglang/server/application/app/logs"
         seaslog.default_logger=default
         seaslog.default_datetime_format = "Y-m-d H:i:s"
@@ -500,6 +502,7 @@
     
   2 log字段
     # 用户会话ID，与后台对应
+      Seaslog::getRequestID
     
   3 log页面
   
@@ -512,7 +515,7 @@
       message
       name
       stack
-      navigator.userAgent
+      ua
     }
   
   实现
@@ -557,6 +560,15 @@
       namespace: "app"
       time: 1579620015353
   
+  TODO: 
+    手动上报log至后端
+```
+
+---
+### 8. 编写用户头像功能
+```
+  
+
 ```
 
 ---

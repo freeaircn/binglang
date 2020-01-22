@@ -3,16 +3,16 @@
  * @Author: freeair
  * @Date: 2020-01-21 20:49:14
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-22 15:55:10
+ * @LastEditTime : 2020-01-22 21:14:57
  */
 import Vue from 'vue'
-import Logline from 'logline'
+import LogLine from 'logline'
 
-// Logline.clean()
-Logline.using(Logline.PROTOCOL.INDEXEDDB, 'binglang')
-Logline.keep(0.007)
+// LogLine.clean()
+LogLine.using(LogLine.PROTOCOL.INDEXEDDB, 'binglang')
+LogLine.keep(0.007)
 
-var appLogger = new Logline('app')
+var appLogger = new LogLine('app')
 
 Vue.config.errorHandler = function(err) {
   const {
@@ -21,19 +21,23 @@ Vue.config.errorHandler = function(err) {
     stack
   } = err
   const url = window.location.href
+  const ua = navigator.userAgent
+  appLogger.error('catch_vue', { url: url, message: message, name: name, stack: stack, ua: ua })
 
-  appLogger.error('vue error', { url: url, message: message, name: name, stack: stack })
   console.error(err)
 }
 
 window.onerror = function(message, url, line, column, error) {
-  console.log(message, url, line, column, error.stack)
+  const ua = navigator.userAgent
+  appLogger.error('catch_window', { url: url, message: message, line: line, column: column, stack: error.stack, ua: ua })
+
+  console.error(message, url, line, column, error)
 }
 
-window.addEventListener('error', (message, url, line, column, error) => {
-  console.log(message, url, line, column, error.stack)
-  return true
-})
+// window.addEventListener('error', (message, url, line, column, error) => {
+//   console.log(message, url, line, column, error.stack)
+//   return true
+// })
 
 // window.addEventListener('unhandledrejection', function(e) {
 //   e.preventDefault()
@@ -41,18 +45,3 @@ window.addEventListener('error', (message, url, line, column, error) => {
 //   console.log(e.reason)
 //   return true
 // })
-
-export function getUserAgent(url, method) {
-  const ua = navigator.userAgent
-
-  let timer5s = setInterval(() => {
-    clearInterval(timer5s)
-    timer5s = null
-    if (method === 'blank') {
-      window.open(url, '_blank')
-    }
-    if (method === 'replace') {
-      window.location.replace(url)
-    }
-  }, 5000)
-}

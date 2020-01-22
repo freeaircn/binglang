@@ -1,22 +1,9 @@
--- phpMyAdmin SQL Dump
--- version 4.8.5
--- https://www.phpmyadmin.net/
---
--- 主机： 127.0.0.1:3307
--- 生成日期： 2020-01-17 15:57:44
--- 服务器版本： 10.3.14-MariaDB
--- PHP 版本： 7.2.18
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- 数据库： `binglang`
@@ -93,7 +80,8 @@ CREATE TABLE IF NOT EXISTS `app_dict_data` (
   `dict_id` int(11) UNSIGNED NOT NULL COMMENT '所属字典id',
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  KEY `fk_dict_id` (`dict_id`) USING BTREE
+  KEY `fk_dict_data_ref_dict_id` (`dict_id`) USING BTREE,
+  CONSTRAINT `fk_dict_data_ref_dict_id` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='数据字典详情' ROW_FORMAT=COMPACT;
 
 --
@@ -135,6 +123,20 @@ INSERT INTO `app_job` (`id`, `label`, `enabled`, `sort`, `update_time`) VALUES
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `app_user_avatar`
+--
+
+DROP TABLE IF EXISTS `app_user_avatar`;
+CREATE TABLE IF NOT EXISTS `app_user_avatar` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `real_name` varchar(255) DEFAULT NULL COMMENT '真实文件名',
+  `path` varchar(255) DEFAULT NULL COMMENT '路径',
+  `size` varchar(255) DEFAULT NULL COMMENT '大小',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户头像' ROW_FORMAT=COMPACT;
+
+--
 -- 表的结构 `app_menu`
 --
 
@@ -158,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `app_menu` (
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uc_name` (`name`),
-  KEY `FKqcf9gem97gqa5qjm4d3elcqt5` (`pid`) USING BTREE
+  KEY `key_menu_pid` (`pid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='页面菜单' ROW_FORMAT=COMPACT;
 
 --
@@ -207,8 +209,10 @@ CREATE TABLE IF NOT EXISTS `app_roles_menus` (
   `role_id` int(11) UNSIGNED NOT NULL COMMENT '角色ID',
   `menu_id` int(11) UNSIGNED NOT NULL COMMENT '菜单ID',
   PRIMARY KEY (`role_id`,`menu_id`) USING BTREE,
-  KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE,
-  KEY `FKo7wsmlrrxb2osfaoavp46rv2r` (`menu_id`) USING BTREE
+  KEY `fk_roles_menus_ref_role_id` (`role_id`) USING BTREE,
+  KEY `fk_roles_menus_ref_menu_id` (`menu_id`) USING BTREE,
+  CONSTRAINT `fk_roles_menus_ref_role_id` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`),
+  CONSTRAINT `fk_roles_menus_ref_menu_id` FOREIGN KEY (`menu_id`) REFERENCES `app_menu` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色菜单关联' ROW_FORMAT=COMPACT;
 
 --
@@ -250,18 +254,14 @@ CREATE TABLE IF NOT EXISTS `app_user` (
   UNIQUE KEY `uc_phone` (`phone`) USING BTREE,
   UNIQUE KEY `uc_email` (`email`) USING BTREE,
   UNIQUE KEY `uc_forgotten_password_selector` (`forgotten_password_selector`) USING BTREE,
-  KEY `FK_username_knqp` (`username`) USING BTREE,
-  KEY `FK5rwmryny6jthaaxkogownknqp` (`dept_id`) USING BTREE,
-  KEY `FKfftoc2abhot8f2wu6cl9a5iky` (`job_id`) USING BTREE,
-  KEY `FKpq2dhypk2qgt68nauh2by22jb` (`avatar_id`) USING BTREE
+  KEY `key_username` (`username`) USING BTREE,
+  KEY `fk_user_ref_dept_id` (`dept_id`) USING BTREE,
+  KEY `fk_user_ref_job_id` (`job_id`) USING BTREE,
+  KEY `fk_user_ref_avatar_id` (`avatar_id`) USING BTREE,
+  CONSTRAINT `fk_user_ref_dept_id` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`),
+  CONSTRAINT `fk_user_ref_job_id` FOREIGN KEY (`job_id`) REFERENCES `app_job` (`id`),
+  CONSTRAINT `fk_user_ref_avatar_id` FOREIGN KEY (`avatar_id`) REFERENCES `app_user_avatar` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户' ROW_FORMAT=COMPACT;
-
---
--- 转存表中的数据 `app_user`
---
-
-INSERT INTO `app_user` (`id`, `employee_number`, `username`, `sex`, `identity_document_number`, `phone`, `email`, `enabled`, `dept_id`, `job_id`, `last_login`, `ip_address`, `update_time`, `avatar_id`, `password`, `forgotten_password_selector`, `forgotten_password_code`, `forgotten_password_time`) VALUES
-(1, '1', '赵钱孙', b'0', NULL, '18612345678', NULL, b'1', NULL, NULL, NULL, NULL, '2020-01-16 08:45:52', NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -274,8 +274,10 @@ CREATE TABLE IF NOT EXISTS `app_users_roles` (
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '用户ID',
   `role_id` int(11) UNSIGNED NOT NULL COMMENT '角色ID',
   PRIMARY KEY (`user_id`,`role_id`) USING BTREE,
-  KEY `FK_user_id_se6qh` (`user_id`) USING BTREE,
-  KEY `FK_role_id_se6qh` (`role_id`)
+  KEY `fk_users_roles_ref_user_id` (`user_id`) USING BTREE,
+  KEY `fk_users_roles_ref_role_id` (`role_id`),
+  CONSTRAINT `fk_users_roles_ref_user_id` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`),
+  CONSTRAINT `fk_users_roles_ref_role_id` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色关联' ROW_FORMAT=COMPACT;
 
 -- --------------------------------------------------------
@@ -289,63 +291,14 @@ CREATE TABLE IF NOT EXISTS `app_user_attribute` (
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '用户ID',
   `dict_data_id` int(11) UNSIGNED NOT NULL COMMENT '字典数据ID',
   PRIMARY KEY (`user_id`,`dict_data_id`) USING BTREE,
-  KEY `FK_user_id_dsf` (`user_id`) USING BTREE,
-  KEY `FK_dict_data_id_dsf` (`dict_data_id`) USING BTREE
+  KEY `fk_user_attribute_ref_user_id` (`user_id`) USING BTREE,
+  KEY `fk_user_attribute_ref_dict_data_id` (`dict_data_id`) USING BTREE,
+  CONSTRAINT `fk_user_attribute_ref_user_id` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`),
+  CONSTRAINT `fk_user_attribute_ref_dict_data_id` FOREIGN KEY (`dict_data_id`) REFERENCES `app_dict_data` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户字典关联' ROW_FORMAT=COMPACT;
 
 -- --------------------------------------------------------
 
---
--- 表的结构 `app_user_avatar`
---
 
-DROP TABLE IF EXISTS `app_user_avatar`;
-CREATE TABLE IF NOT EXISTS `app_user_avatar` (
-  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `real_name` varchar(255) DEFAULT NULL COMMENT '真实文件名',
-  `path` varchar(255) DEFAULT NULL COMMENT '路径',
-  `size` varchar(255) DEFAULT NULL COMMENT '大小',
-  `update_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户头像' ROW_FORMAT=COMPACT;
-
---
--- 限制导出的表
---
-
---
--- 限制表 `app_dict_data`
---
-ALTER TABLE `app_dict_data`
-  ADD CONSTRAINT `fk_dict_id` FOREIGN KEY (`dict_id`) REFERENCES `app_dict` (`id`);
-
---
--- 限制表 `app_roles_menus`
---
-ALTER TABLE `app_roles_menus`
-  ADD CONSTRAINT `FKgd3iendaoyh04b95ykqise6qh` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`),
-  ADD CONSTRAINT `FKt4v0rrweyk393bdgt107vdx0x` FOREIGN KEY (`menu_id`) REFERENCES `app_menu` (`id`);
-
---
--- 限制表 `app_user`
---
-ALTER TABLE `app_user`
-  ADD CONSTRAINT `FK5rwmryny6jthaaxkogownknqp` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`),
-  ADD CONSTRAINT `FKfftoc2abhot8f2wu6cl9a5iky` FOREIGN KEY (`job_id`) REFERENCES `app_job` (`id`),
-  ADD CONSTRAINT `FKpq2dhypk2qgt68nauh2by22jb` FOREIGN KEY (`avatar_id`) REFERENCES `app_user_avatar` (`id`);
-
---
--- 限制表 `app_users_roles`
---
-ALTER TABLE `app_users_roles`
-  ADD CONSTRAINT `FK_role_id_se6qh` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`),
-  ADD CONSTRAINT `FK_user_id_se6qh` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`);
-
---
--- 限制表 `app_user_attribute`
---
-ALTER TABLE `app_user_attribute`
-  ADD CONSTRAINT `FK_dict_data_id_dsf` FOREIGN KEY (`dict_data_id`) REFERENCES `app_dict_data` (`id`),
-  ADD CONSTRAINT `FK_user_id_dsf` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`);
 
 COMMIT;
