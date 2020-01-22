@@ -464,6 +464,8 @@
         seaslog.trace_exception=0
         
         2020-01-20 19:45:28 (1579520728.125) [WARNING] [User.php:32] [User::index_get] 9096 | 5e2592d80fc9e | /api/user?wanted=all | GET | hello log! 
+        # 格式
+          seaslog.default_template = "%T (%t) [%L] [%F] [%C] %P | %Q | %R | %m | %M "
       
       # level
         seaslog.level = 8 记录的日志级别.默认为8,即所有日志均记录。
@@ -493,13 +495,21 @@
     # error钩子：window，vue， pormiss
     # client缓存log，indexDB
     # client清理log缓存
-    # log上报后端，用户手动提交
+    # 需用户手动提交缓存log。考虑日志数据多，取最近x条log。后台下发x，x暂定10条。
     # 后端响应存储log，写文件，写db？
     
   2 log字段
     # 用户会话ID，与后台对应
     
   3 log页面
+  
+    isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+  
+  格式：
+  timestamp | 会话 | level | description | log信息
+    log信息 {
+      
+    }
   
   实现
   1 vue errorHandler ：
