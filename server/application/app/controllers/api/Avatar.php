@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-22 23:10:17
+ * @LastEditTime : 2020-01-23 17:28:05
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -25,11 +25,12 @@ class Avatar extends RestController
 
     public function update_post()
     {
-        $config['upload_path']   = './resource/avatar/';
+        $config['upload_path']   = FCPATH . '/resource/avatar/';
         $config['allowed_types'] = 'gif|jpg|png';
         $config['max_size']      = 100;
         $config['max_width']     = 1024;
         $config['max_height']    = 768;
+        // $config['encrypt_name']  = true;
 
         $this->load->library('upload', $config);
 
@@ -41,6 +42,13 @@ class Avatar extends RestController
             $res['code'] = App_Code::SUCCESS;
             $res['data'] = $this->upload->data();
         }
+        $res['path'] = [
+            'SELF'     => SELF,
+            'BASEPATH' => BASEPATH,
+            'FCPATH'   => FCPATH,
+            'SYSDIR'   => SYSDIR,
+            'APPPATH'  => APPPATH,
+        ];
 
         $this->response($res, 200);
     }

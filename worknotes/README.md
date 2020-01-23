@@ -11,15 +11,16 @@
 3. [done]设定API和response
 4. [done]设定页面crud流程
 5. [done]编写 用户管理页面  
-6. [done]后端log  
+6. 后端log  
 7. 前端log  
-8. 编写用户头像功能   
+8. [done]编写用户头像功能   
 
-. 页面 检索功能，适应多查询条件组合  
+. 用户管理页面 检索功能，适应多条件组合  
 . 参照用户管理页面，更新 app其他页面文件  
 . 编写动态路由，权限管理  
 . 埋点  
 . 页面 数据显示区分页功能，新增，编辑，删除操作，如何刷新定位 数据显示区  
+. 后端，用户数据/文件的存放文件位置，和访问权限。
 
 
 ---
@@ -487,6 +488,9 @@
         
         获取DB error
         $error = $this->db->error(); // Has keys 'code' and 'message'
+        
+  TODO: 
+    log展示
 ```
 
 ---
@@ -567,7 +571,69 @@
 ---
 ### 8. 编写用户头像功能
 ```
+  # 前端
+    # 引入identicon.js，crypto
+      npm install identicon.js --save
+      npm install crypto --save 
+      
+      import crypto from 'crypto'
+      import Identicon from 'identicon.js'
+      
+      var seed = Math.floor((Math.random() * 100) + 1)
+      var hash = crypto.createHash('md5')
+      hash.update(seed.toString())
+      const data = new Identicon(hash.digest('hex'), 178).toString()
+      this.imageUrl = 'data:image/png;base64,' + data
+    
+    # 使用el-upload
+        <el-upload
+          class="avatar-uploader"
+          action="http://127.0.0.1/api/avatar/update" // 服务端地址
+          :show-file-list="false"
+          list-type="picture"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+        >
+          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon" />
+        </el-upload>
+
+  # 后端
+    使用library->upload
+      public function update_post() // 控制器使用restserver类
+      {
+          $config['upload_path']   = './resource/avatar/';   // 存放文件相对路径，注：路径是相对于你网站的 index.php 文件的，而不是相对于控制器或视图文件。
+          $config['allowed_types'] = 'gif|jpg|png';
+          $config['max_size']      = 100;
+          $config['max_width']     = 1024;
+          $config['max_height']    = 768;
+
+          $this->load->library('upload', $config);
+
+          if (!$this->upload->do_upload('file')) {  // 接收上传
+              $res['code'] = 300;
+              $res['msg']  = $this->upload->display_errors();
+
+          } else {
+              $res['code'] = App_Code::SUCCESS;
+              $res['data'] = $this->upload->data();   // 接收完毕的结果
+          }
+
+          $this->response($res, 200);
+      }
+    
+    # CI路径定义  位于index.php
+      APPPATH: "D:\www\binglang\server\application\app\"
+      BASEPATH: "D:\www\binglang\server\system\"
+      FCPATH: "D:\www\binglang\server\"
+      SELF: "index.php"
+      SYSDIR: "system"
   
+```
+
+---
+### 9. 用户管理页面 检索功能，适应多条件组合 
+```
 
 ```
 

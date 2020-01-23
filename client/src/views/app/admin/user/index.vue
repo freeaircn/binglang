@@ -7,6 +7,8 @@
         <el-input v-model="query.words" clearable size="small" placeholder="搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
         <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
         <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
+        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
+        <TableOptions :table-columns="columns" />
       </div>
     </div>
     <el-divider><i class="el-icon-arrow-down" /></el-divider>
@@ -19,31 +21,31 @@
       size="small"
       :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
-      <el-table-column prop="employee_number" label="工号" />
-      <el-table-column :show-overflow-tooltip="true" prop="username" label="中文名" />
-      <el-table-column :show-overflow-tooltip="true" prop="sex" label="性别" align="center">
+      <el-table-column v-if="isColumnVisible.visible('employee_number')" prop="employee_number" label="工号" />
+      <el-table-column v-if="isColumnVisible.visible('username')" :show-overflow-tooltip="true" prop="username" label="中文名" />
+      <el-table-column v-if="isColumnVisible.visible('sex')" :show-overflow-tooltip="true" prop="sex" label="性别" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.sex == '1'">女</span>
           <span v-else>男</span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" prop="phone" label="手机号" />
-      <el-table-column :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
-      <el-table-column :show-overflow-tooltip="true" prop="identity_document_number" label="身份证号" />
-      <el-table-column :show-overflow-tooltip="true" prop="dept_label" label="部门" />
-      <el-table-column :show-overflow-tooltip="true" prop="job_label" label="岗位" />
+      <el-table-column v-if="isColumnVisible.visible('phone')" :show-overflow-tooltip="true" prop="phone" label="手机号" />
+      <el-table-column v-if="isColumnVisible.visible('email')" :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
+      <el-table-column v-if="isColumnVisible.visible('identity_document_number')" column-key="pre-hide" :show-overflow-tooltip="true" prop="identity_document_number" label="身份证号" />
+      <el-table-column v-if="isColumnVisible.visible('dept_label')" :show-overflow-tooltip="true" prop="dept_label" label="部门" />
+      <el-table-column v-if="isColumnVisible.visible('job_label')" :show-overflow-tooltip="true" prop="job_label" label="岗位" />
 
-      <el-table-column prop="enabled" label="是否启用" align="center">
+      <el-table-column v-if="isColumnVisible.visible('enabled')" prop="enabled" label="是否启用" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.enabled == '1'">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
 
-      <el-table-column :show-overflow-tooltip="true" prop="last_login" label="登录日期" />
-      <el-table-column :show-overflow-tooltip="true" prop="ip_address" label="登录IP" />
+      <el-table-column v-if="isColumnVisible.visible('last_login')" column-key="pre-hide" :show-overflow-tooltip="true" prop="last_login" label="登录日期" />
+      <el-table-column v-if="isColumnVisible.visible('ip_address')" column-key="pre-hide" :show-overflow-tooltip="true" prop="ip_address" label="登录IP" />
 
-      <el-table-column prop="update_time" label="更新日期" />
+      <el-table-column v-if="isColumnVisible.visible('update_time')" prop="update_time" label="更新日期" />
 
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="{row}">
@@ -161,6 +163,9 @@
 import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
+import TableOptions from '@/components/app/TableOptions/index'
+import hideColumns from '@/components/app/TableOptions/hide-columns'
+
 // import 公共method
 import { validQueryWords, validChineseChar, validPhone, validEmail } from '@/utils/app/validator/common'
 
@@ -169,7 +174,8 @@ import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/
 
 export default {
   name: 'AdminUser',
-  components: { treeSelect },
+  components: { treeSelect, TableOptions },
+  mixins: [hideColumns()],
   data() {
     return {
       query: {
@@ -230,6 +236,10 @@ export default {
         return []
       }
     }
+  },
+  mounted() {
+    console.log('#3')
+    console.log(this.columns)
   },
   created() {
     this.updateTbl({ wanted: 'all' })
@@ -499,6 +509,10 @@ export default {
           })
         }
       }
+    },
+    xx() {
+      console.log('#6')
+      console.log(this.columns)
     }
   }
 }

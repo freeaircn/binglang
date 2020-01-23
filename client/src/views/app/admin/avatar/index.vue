@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-22 23:15:14
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-23 00:08:34
+ * @LastEditTime : 2020-01-23 19:02:17
  -->
 <template>
   <div class="app-container">
@@ -37,10 +37,13 @@ export default {
   name: 'AdminAvatar',
   data() {
     return {
-      imageUrl: 'http://127.0.0.1/resource/avatar/1.png'
+      imageUrl: 'http://127.0.0.1/resource/avatar/px200/avatar_4.jpg'
     }
   },
-
+  created() {
+    var seed = Math.floor((Math.random() * 20) + 1)
+    this.imageUrl = 'http://127.0.0.1/resource/avatar/px200/avatar_' + seed.toString() + '.jpg'
+  },
   methods: {
     handleAvatarSuccess(res, file) {
       console.log('#1')
