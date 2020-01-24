@@ -3,54 +3,51 @@
  * @Author: freeair
  * @Date: 2020-01-23 19:13:13
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-23 23:16:34
+ * @LastEditTime : 2020-01-24 19:51:57
  -->
 <template>
-  <div class="table-opts">
-    <el-button-group class="table-opts-right">
-      <!-- <el-button
-        size="mini"
-        icon="el-icon-refresh"
-        @click="crud.refresh()"
-      /> -->
-      <el-popover placement="bottom-end" width="150" trigger="click">
-        <el-button slot="reference" size="mini" icon="el-icon-s-grid">
-          <i class="fa fa-caret-down" aria-hidden="true" />
-        </el-button>
-        <el-checkbox v-model="allColumnsSelected" :indeterminate="allColumnsSelectedIndeterminate" @change="handleCheckAllChange">
-          全选
-        </el-checkbox>
-        <el-checkbox
-          v-for="item in tableColumns"
-          :key="item.label"
-          v-model="item.visible"
-          @change="handleCheckedTableColumnsChange(item)"
-        >
-          {{ item.label }}
-        </el-checkbox>
-      </el-popover>
-    </el-button-group>
-  </div>
+  <!-- <div class="table-opts"> -->
+  <!-- <el-button-group class="table-opts-right"> -->
+  <el-popover placement="bottom-end" width="150" trigger="click" style="float:right;">
+    <el-button slot="reference" size="mini" icon="el-icon-s-grid">
+      <i class="fa fa-caret-down" aria-hidden="true" />
+    </el-button>
+    <el-checkbox v-model="allColumnsSelected" :indeterminate="allColumnsSelectedIndeterminate" :disabled="!enableFullChecked" @change="handleCheckAllChange">
+      全选
+    </el-checkbox>
+    <el-checkbox
+      v-for="item in tableColumns"
+      :key="item.label"
+      v-model="item.visible"
+      @change="handleCheckedTableColumnsChange(item)"
+    >
+      {{ item.label }}
+    </el-checkbox>
+  </el-popover>
+  <!-- </el-button-group> -->
+  <!-- </div> -->
 </template>
 
 <script>
 
 export default {
-  props: { tableColumns: {
-    type: Object,
-    default: function() {
-      return {}
-    }
-  }},
-  data() {
-    return {
-      allColumnsSelected: true,
-      allColumnsSelectedIndeterminate: false
+  props: {
+    tableColumns: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    },
+    enableFullChecked: {
+      type: Boolean,
+      default: false
     }
   },
-  mounted() {
-    console.log('#2')
-    console.log(this.tableColumns)
+  data() {
+    return {
+      allColumnsSelected: false,
+      allColumnsSelectedIndeterminate: true
+    }
   },
   methods: {
     handleCheckAllChange(val) {
@@ -86,7 +83,7 @@ export default {
 </script>
 
 <style>
-  .table-opts {
+  /* .table-opts {
     padding: 6px 0;
     display: -webkit-flex;
     display: flex;
@@ -94,5 +91,5 @@ export default {
   }
   .table-opts .table-opts-right {
     margin-left: auto;
-  }
+  } */
 </style>

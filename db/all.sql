@@ -233,7 +233,7 @@ INSERT INTO `app_roles_menus` (`role_id`, `menu_id`) VALUES
 DROP TABLE IF EXISTS `app_user`;
 CREATE TABLE IF NOT EXISTS `app_user` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `employee_number` varchar(15) DEFAULT NULL COMMENT '工号',
+  `sort` int(11) UNSIGNED NOT NULL COMMENT '工号',
   `username` varchar(10) NOT NULL COMMENT '中文名',
   `sex` bit(1) NOT NULL COMMENT '1-女，0-男',
   `identity_document_number` varchar(32) DEFAULT NULL COMMENT '证件号',
@@ -251,6 +251,7 @@ CREATE TABLE IF NOT EXISTS `app_user` (
   `forgotten_password_code` varchar(255) DEFAULT NULL,
   `forgotten_password_time` int(11) UNSIGNED DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uc_user_sort` (`sort`) USING BTREE,
   UNIQUE KEY `uc_phone` (`phone`) USING BTREE,
   UNIQUE KEY `uc_email` (`email`) USING BTREE,
   UNIQUE KEY `uc_forgotten_password_selector` (`forgotten_password_selector`) USING BTREE,

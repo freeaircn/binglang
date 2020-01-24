@@ -10,16 +10,18 @@
 2. [done]适配框架文件夹结构
 3. [done]设定API和response
 4. [done]设定页面crud流程
-5. [done]编写 用户管理页面  
+5. 编写用户管理页面  
+   数据显示区分页，新增，编辑，删除操作，显示变化如何呈现用户  
 6. 后端log  
 7. 前端log  
 8. [done]编写用户头像功能   
+9. [done]table列动态显示/隐藏功能  
 
 . 用户管理页面 检索功能，适应多条件组合  
 . 参照用户管理页面，更新 app其他页面文件  
 . 编写动态路由，权限管理  
 . 埋点  
-. 页面 数据显示区分页功能，新增，编辑，删除操作，如何刷新定位 数据显示区  
+.   
 . 后端，用户数据/文件的存放文件位置，和访问权限。
 
 
@@ -32,6 +34,21 @@
   # ci 查询数据表结果->result_array()，为数组结构。
     示例1 table：id - 1, 查询结果：array(1) [{id:1}] 
     示例2 table：id - 1, id - 2，查询结果：array(2) [{id:1}, {id:2}]
+  # vue子组件props类型-Object，是父组件传入对象的引用。
+  # vue 修饰符sync的功能是：当一个子组件改变了一个 prop 的值时，这个变化也会同步到父组件中所绑定。
+  # select语句完整语法
+      SELECT 
+      DISTINCT <select_list>
+      FROM <left_table>
+      <join_type> JOIN <right_table>
+      ON <join_condition>
+      WHERE <where_condition>
+      GROUP BY <group_by_list>
+      HAVING <having_condition>
+      ORDER BY <order_by_condition>
+      LIMIT <limit_number>
+      
+      from →join →on →where →group by→having→select→order by→limit
 ```
 
 ---
@@ -328,7 +345,7 @@
 ```
 
 ---
-### 5 编写 用户管理页面
+### 5 编写用户管理页面
 ```
   1 编写user页面
   
@@ -438,12 +455,89 @@
     # 注意检查多维数组入参。比如；a = [[], []], empty(a)不为空
     # 注意 外键字段，写入值的数据类型，比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
     
-  10 删除: 
+  10. 删除: 
       开启事务
       user_attribute，users_roles, user
       
-  11 添加表单校验rules
+  11. 添加表单校验rules
   
+  12. table 增加显示extra attribute列
+      # 流程
+        查询user table
+        !empty(user)
+          获取列表头prop(extra_columns)：查询dict表 select label, name like(name, user_attr_)，order by(id)
+          获取user extra attr：
+            查询user_attribute表 select dict_data_id where user_id, order by dict_data_id;
+            查询dict_data表 select label where_in dict_data_id
+      
+      # 适配动态隐藏列
+        因为 用户extra attribute 从后端读取，有延时，添加标志initTableDone，收到extra attribute后，只更新一次[mixin]updateColumns(),支持pre-hide。
+        使用Vue.set( 用于组件中data 对象，追加新属性。
+        使用this.$nextTick(() => {， 用于等待view更新完毕，再读取view中元素。
+        使用v-for  v-if，用于隐藏控制。
+  
+  13. 数据显示区分页，新增，编辑，删除操作，显示变化如何呈现用户（分页，limit）
+      # 前端 
+        api 入参：limit: string e.g. num_offset
+        
+        pagechange事件，调用refreshTblDisplay()
+        
+      # 后端：
+        if (!empty($limit)) {
+            $limit_temp = explode('_', $limit);
+            $num        = (int) $limit_temp[0];
+            $offset     = (int) $limit_temp[1];
+            $this->db->limit($num, $offset);
+        }
+        $total_rows = $this->db->count_all($this->tables['user']);
+        返回 table总行数。
+        
+      # 新增一行
+        对于DB table，新行肯定在表的末尾。查询时order by(sort)，结果集新行不一定在最后一行。
+        对于user 表，有“工号”列，insert时，工号既不是递增，也不是递减，则工号列 乱序。比如：insert了小强-1，小猪-5，小芳-3
+        
+        insert 小明-4，怎么让页面显示 定位在 用户刚新增的那一行？？
+        # insert增加分页数
+        # 有3个分页，在任意分页，点击新增按钮
+        
+        操作成功response
+          .then(function() {
+              this.tableTotalRows = this.tableTotalRows + 1
+              this.$nextTick(() => {
+                this.refreshTblDisplay()
+              })
+      
+      # 最后一分页，最后一行，删除处理
+        1 current-page添加.sync修饰符
+          <el-pagination
+            :page-sizes="[5, 10, 30]"
+            :page-size="pageSize"
+            :current-page.sync="pageIdx"
+            
+        2 删除操作成功response
+          .then(function() {
+              if (this.tableTotalRows > 0) {
+                this.tableTotalRows = this.tableTotalRows - 1
+              }
+              this.$nextTick(() => {
+                this.refreshTblDisplay()
+              })
+          this.tableTotalRows - 1 改变总行数，触发el-pagination组件内更新current-page，借助current-page.sync，更新反馈给父组件。
+          this.$nextTick 等待current-page更新，再调用api刷新table显示区
+        
+  
+  14. 页面 检索功能，适应多条件组合，
+      # 查询语句
+        SELECT 
+        <select_list>  -- 需适配 select: string
+        FROM <left_table>  -- api指定访问的table
+        <join_type> JOIN <right_table>
+        ON <join_condition>
+        WHERE <where_condition> -- 需适配 where, where_in, like, ...
+        GROUP BY <group_by_list>
+        HAVING <having_condition>
+        ORDER BY <order_by_condition>
+        LIMIT <limit_number>  -- 需适配 分页读取 limit: string e.g. num_offset
 ```
 
 ---
@@ -632,7 +726,41 @@
 ```
 
 ---
-### 9. 用户管理页面 检索功能，适应多条件组合 
+### 9. table列动态显示/隐藏功能
+```
+  1 组件文件：src\components\app\TableOptions
+    view: index.vue
+      # 子组件属性，类型-Object，其实是父组件传入对象的引用。对应mixin的columns。
+      props: { tableColumns: {
+        type: Object,
+        default: function() {
+          return {}
+        }
+      }},
+    mixin: hide-columns.js
+      data() {
+        return {
+          columnOpt: obColumns(), // 混入显示判断函数
+          columns: {} // 混入 table列属性 {label, visble}
+        }
+      },
+    
+  
+  2 父组件引入：
+    import TableOptions from '@/components/app/TableOptions/index'
+    import hideColumns from '@/components/app/TableOptions/hide-columns'
+
+    components: { TableOptions },
+    mixins: [hideColumns()],
+    
+    # 使用如下，借用column-key="pre-hide"，初始化时，默认隐藏。
+      <el-table-column v-if="columnOpt.visible('last_login')" column-key="pre-hide" :show-overflow-tooltip="true" prop="last_login" label="登录日期" />
+      
+    # 修改table表，只需要<el-table-column属性的修改。
+```
+
+---
+### 10. 用户管理页面 检索功能，适应多条件组合 
 ```
 
 ```

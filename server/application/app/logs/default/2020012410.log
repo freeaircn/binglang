@@ -1,0 +1,8 @@
+2020-01-24 10:40:28 | CRITICAL | 6292 | 5e2a591c8a3e2 | 1579833628.566 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-ivejbtjr.php - line:129 - msg:syntax error, unexpected '{'
+2020-01-24 10:40:31 | CRITICAL | 1420 | 5e2a591f1da8d | 1579833631.122 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-tnkycbq.php - line:129 - msg:syntax error, unexpected '{'
+2020-01-24 10:41:17 | CRITICAL | 9232 | 5e2a594d938a4 | 1579833677.604 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-uj.php - line:130 - msg:syntax error, unexpected '{'
+2020-01-24 10:41:28 | CRITICAL | 2556 | 5e2a5958d758b | 1579833688.882 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-zadrieek.php - line:130 - msg:syntax error, unexpected '{'
+2020-01-24 10:41:36 | CRITICAL | 5180 | 5e2a5960189f2 | 1579833696.101 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-alpemmcu.php - line:130 - msg:syntax error, unexpected '{'
+2020-01-24 10:41:40 | CRITICAL | 8000 | 5e2a59645eeb4 | 1579833700.389 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-dyvqgcmzi.php - line:130 - msg:syntax error, unexpected '{'
+2020-01-24 10:42:07 | CRITICAL | 14476 | 5e2a597f59c83 | 1579833727.368 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-olhnuodtf.php - line:130 - msg:syntax error, unexpected '{'
+2020-01-24 10:42:22 | CRITICAL | 11656 | 5e2a598e1d452 | 1579833742.120 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-kwyxtbkw.php - line:130 - msg:syntax error, unexpected '{'

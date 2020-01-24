@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-22 21:23:44
+ * @LastEditTime : 2020-01-24 17:04:56
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -28,18 +28,9 @@ class User extends RestController
     {
         $wanted = $this->get('wanted');
         $uid    = $this->get('uid');
+        $limit  = $this->get('limit');
 
         switch ($wanted) {
-            case "all":
-                $data = $this->user_model->read_all();
-                if ($data === false) {
-                    $res['code'] = App_Code::TBL_USER_READ_FAILED;
-                    $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
-                } else {
-                    $res['code'] = App_Code::SUCCESS;
-                    $res['data'] = $data;
-                }
-                break;
             case "new_form":
                 $data = $this->user_model->prepare_new_form();
                 if ($data === false) {
@@ -61,7 +52,15 @@ class User extends RestController
                 }
                 break;
             default:
-
+                $data = $this->user_model->read($limit);
+                if ($data === false) {
+                    $res['code'] = App_Code::TBL_USER_READ_FAILED;
+                    $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
+                } else {
+                    $res['code'] = App_Code::SUCCESS;
+                    $res['data'] = $data;
+                }
+                break;
         }
         $this->response($res, 200);
     }
@@ -74,7 +73,7 @@ class User extends RestController
         $data['email']                    = $this->post('email');
         $data['enabled']                  = ($this->post('enabled') === '1') ? 1 : 0;
         $data['identity_document_number'] = $this->post('identity_document_number');
-        $data['employee_number']          = $this->post('employee_number');
+        $data['sort']                     = $this->post('sort');
 
         $dept_id          = $this->post('dept_id');
         $job_id           = $this->post('job_id');
@@ -152,7 +151,7 @@ class User extends RestController
         $data['email']                    = $this->put('email');
         $data['enabled']                  = ($this->put('enabled') === '1') ? 1 : 0;
         $data['identity_document_number'] = $this->put('identity_document_number');
-        $data['employee_number']          = $this->put('employee_number');
+        $data['sort']                     = $this->put('sort');
 
         $dept_id          = $this->put('dept_id');
         $job_id           = $this->put('job_id');

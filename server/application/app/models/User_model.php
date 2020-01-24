@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-20 22:11:37
+ * @LastEditTime : 2020-01-24 16:17:01
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -23,14 +23,14 @@ class User_model extends CI_Model
         $db_name      = $this->config->item('db_name', 'app_config');
         $this->tables = $this->config->item('tables', 'app_config');
 
-        $this->load->library('common_tools');
-
         if (empty($db_name)) {
             $CI       = &get_instance();
             $this->db = $CI->db;
         } else {
             $this->db = $this->load->database($db_name, true, true);
         }
+
+        $this->load->library('common_tools');
     }
 
     public function db()
@@ -38,44 +38,31 @@ class User_model extends CI_Model
         return $this->db;
     }
 
-    public function read($select_col = null, $method = null, $cond = null, $cond_col = null)
-    {
-        $this->db->order_by('id', 'ASC');
-
-        if (!empty($select_col)) {
-            $this->db->select($select_col);
-        }
-
-        if (!empty($method)) {
-            if ($method === 'where' && (!empty($cond))) {
-                $this->db->where($cond);
-            }
-            if ($method === 'like' && (!empty($cond))) {
-                $this->db->like($cond);
-            }
-            if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col))) {
-                $this->db->where_in($cond_col, $cond);
-            }
-        }
-
-        $query  = $this->db->get($this->tables['user']);
-        $result = $query->result_array();
-
-        return $result;
-    }
-
     /**
-     * read all data in user table, transfer dept_label and job_label
+     * read data in user table, transfer dept_label and job_label, extra attribute
      *
      * @author freeair
      * @DateTime 2020-01-19
      * @return bool | array
      */
-    public function read_all()
+    public function read($limit = null)
     {
-        $query = $this->db->select('id, employee_number, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time')
-            ->order_by('id', 'ASC')
-            ->get($this->tables['user']);
+        // $query = $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time')
+        //     ->order_by('id', 'ASC')
+        //     ->get($this->tables['user']);
+
+        $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time');
+
+        $this->db->order_by('sort', 'ASC');
+        // $this->db->order_by('id', 'ASC');
+        if (!empty($limit)) {
+            $limit_temp = explode('_', $limit);
+            $num        = (int) $limit_temp[0];
+            $offset     = (int) $limit_temp[1];
+            $this->db->limit($num, $offset);
+        }
+        $query      = $this->db->get($this->tables['user']);
+        $total_rows = $this->db->count_all($this->tables['user']);
 
         if ($query === false) {
             $error = $this->db->error();
@@ -84,8 +71,22 @@ class User_model extends CI_Model
         }
         $users = $query->result_array();
 
+        // prepare extra_columns
+        // select dict.id, dict.label like name = user_attr_ from dict table
+        $query = $this->db->select('name, label')
+            ->like('name', 'user_attr_')
+            ->order_by('id', 'ASC')
+            ->get($this->tables['dict']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $extra_columns = $query->result_array();
+
         if (!empty($users)) {
             foreach ($users as &$v) {
+                // transfer job_label
                 $query = $this->db->select('label')
                     ->where('id', $v['job_id'])
                     ->get($this->tables['job']);
@@ -99,17 +100,57 @@ class User_model extends CI_Model
                     $v['job_label'] = $job[0]['label'];
                 }
 
-                $temp = $this->_get_all_parents_label($v['dept_id'], $this->tables['dept']);
-                if (!empty($temp)) {
+                // transfer dept_label
+                $temp_label = $this->_get_all_parents_label($v['dept_id'], $this->tables['dept']);
+                if (!empty($temp_label)) {
                     $dept = '';
-                    for ($i = count($temp) - 1; $i >= 0; $i--) {
-                        $dept = $dept . ' / ' . $temp[$i];
+                    for ($i = count($temp_label) - 1; $i >= 0; $i--) {
+                        $dept = $dept . ' / ' . $temp_label[$i];
                     }
                     $v['dept_label'] = substr($dept, 3, strlen($dept));
                 }
+
+                // transfer extra attribute label
+                // select dict_data_id from user_attribute
+                $query = $this->db->select('dict_data_id')
+                    ->where('user_id', $v['id'])
+                    ->order_by('dict_data_id', 'ASC')
+                    ->get($this->tables['user_attribute']);
+                if ($query === false) {
+                    $error = $this->db->error();
+                    SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                    return false;
+                }
+                $temps = $query->result_array();
+
+                // select dict_data.label where id from dict_data table
+
+                for ($j = 0; $j < count($extra_columns); $j++) {
+                    $v[$extra_columns[$j]['name']] = '';
+                }
+
+                $i = 0;
+                foreach ($temps as $temp) {
+                    $query = $this->db->select('label')
+                        ->where('id', $temp['dict_data_id'])
+                        ->get($this->tables['dict_data']);
+                    if ($query === false) {
+                        $error = $this->db->error();
+                        SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                        return false;
+                    }
+                    $dict_data_arr = $query->result_array();
+                    if (!empty($dict_data_arr[0])) {
+                        $v[$extra_columns[$i]['name']] = $dict_data_arr[0]['label'];
+                    }
+                    $i++;
+                }
+
             }
         }
-        $res['users'] = $users;
+        $res['users']         = $users;
+        $res['total_rows']    = $total_rows;
+        $res['extra_columns'] = $extra_columns;
 
         return $res;
     }
@@ -453,7 +494,7 @@ class User_model extends CI_Model
         $res = [];
 
         // select from user table
-        $query = $this->db->select('id, username, sex, phone, email, enabled, identity_document_number, employee_number, dept_id, job_id')
+        $query = $this->db->select('id, username, sex, phone, email, enabled, identity_document_number, sort, dept_id, job_id')
             ->where('id', $uid)
             ->get($this->tables['user']);
         if ($query === false) {
@@ -567,5 +608,31 @@ class User_model extends CI_Model
     //     while (!empty($res));
 
     //     return $array;
+    // }
+
+    // public function read($select_col = null, $method = null, $cond = null, $cond_col = null)
+    // {
+    //     $this->db->order_by('id', 'ASC');
+
+    //     if (!empty($select_col)) {
+    //         $this->db->select($select_col);
+    //     }
+
+    //     if (!empty($method)) {
+    //         if ($method === 'where' && (!empty($cond))) {
+    //             $this->db->where($cond);
+    //         }
+    //         if ($method === 'like' && (!empty($cond))) {
+    //             $this->db->like($cond);
+    //         }
+    //         if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col))) {
+    //             $this->db->where_in($cond_col, $cond);
+    //         }
+    //     }
+
+    //     $query  = $this->db->get($this->tables['user']);
+    //     $result = $query->result_array();
+
+    //     return $result;
     // }
 }

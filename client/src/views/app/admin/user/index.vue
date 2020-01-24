@@ -2,50 +2,65 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
-      <div>
+      <el-row>
         <!-- 搜索 -->
-        <el-input v-model="query.words" clearable size="small" placeholder="搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
-        <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
-        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
-        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
-        <TableOptions :table-columns="columns" />
-      </div>
+        <el-col :span="20">
+          <el-input v-model="query.words" clearable size="small" placeholder="搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
+          <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
+          <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
+          <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
+        </el-col>
+        <el-col :span="4">
+          <TableOptions :table-columns="columns" />
+        </el-col>
+      </el-row>
     </div>
     <el-divider><i class="el-icon-arrow-down" /></el-divider>
     <!--表格渲染-->
     <el-table
       ref="table"
       v-loading="tableLoading"
-      :data="tableToPage"
+      :data="tableData"
       row-key="id"
+      highlight-current-row
       size="small"
       :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
-      <el-table-column v-if="isColumnVisible.visible('employee_number')" prop="employee_number" label="工号" />
-      <el-table-column v-if="isColumnVisible.visible('username')" :show-overflow-tooltip="true" prop="username" label="中文名" />
-      <el-table-column v-if="isColumnVisible.visible('sex')" :show-overflow-tooltip="true" prop="sex" label="性别" align="center">
+      <el-table-column v-if="columnOpt.visible('sort')" prop="sort" label="工号" />
+      <el-table-column v-if="columnOpt.visible('username')" :show-overflow-tooltip="true" prop="username" label="中文名" />
+      <el-table-column v-if="columnOpt.visible('sex')" :show-overflow-tooltip="true" prop="sex" label="性别" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.sex == '1'">女</span>
           <span v-else>男</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="isColumnVisible.visible('phone')" :show-overflow-tooltip="true" prop="phone" label="手机号" />
-      <el-table-column v-if="isColumnVisible.visible('email')" :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
-      <el-table-column v-if="isColumnVisible.visible('identity_document_number')" column-key="pre-hide" :show-overflow-tooltip="true" prop="identity_document_number" label="身份证号" />
-      <el-table-column v-if="isColumnVisible.visible('dept_label')" :show-overflow-tooltip="true" prop="dept_label" label="部门" />
-      <el-table-column v-if="isColumnVisible.visible('job_label')" :show-overflow-tooltip="true" prop="job_label" label="岗位" />
+      <el-table-column v-if="columnOpt.visible('phone')" :show-overflow-tooltip="true" prop="phone" label="手机号" />
+      <el-table-column v-if="columnOpt.visible('email')" :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
+      <el-table-column v-if="columnOpt.visible('identity_document_number')" column-key="pre-hide" :show-overflow-tooltip="true" prop="identity_document_number" label="身份证号" />
+      <el-table-column v-if="columnOpt.visible('dept_label')" :show-overflow-tooltip="true" prop="dept_label" label="部门" />
+      <el-table-column v-if="columnOpt.visible('job_label')" :show-overflow-tooltip="true" prop="job_label" label="岗位" />
 
-      <el-table-column v-if="isColumnVisible.visible('enabled')" prop="enabled" label="是否启用" align="center">
+      <el-table-column
+        v-for="item in extra_columns"
+        v-if="columnOpt.visible(item.name)"
+        :key="item.name"
+        :show-overflow-tooltip="true"
+        :prop="item.name"
+        :label="item.label"
+        column-key="pre-hide"
+      />
+
+      <el-table-column v-if="columnOpt.visible('enabled')" prop="enabled" label="是否启用" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.enabled == '1'">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="isColumnVisible.visible('last_login')" column-key="pre-hide" :show-overflow-tooltip="true" prop="last_login" label="登录日期" />
-      <el-table-column v-if="isColumnVisible.visible('ip_address')" column-key="pre-hide" :show-overflow-tooltip="true" prop="ip_address" label="登录IP" />
+      <el-table-column v-if="columnOpt.visible('last_login')" column-key="pre-hide" :show-overflow-tooltip="true" prop="last_login" label="登录日期" />
+      <el-table-column v-if="columnOpt.visible('ip_address')" column-key="pre-hide" :show-overflow-tooltip="true" prop="ip_address" label="登录IP" />
 
-      <el-table-column v-if="isColumnVisible.visible('update_time')" prop="update_time" label="更新日期" />
+      <el-table-column v-if="columnOpt.visible('update_time')" prop="update_time" label="更新日期" />
 
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="{row}">
@@ -57,11 +72,11 @@
 
     <!--分页-->
     <el-pagination
-      :page-sizes="[5, 10, 30, 50]"
+      :page-sizes="[5, 10, 30]"
       :page-size="pageSize"
-      :current-page="pageIdx"
+      :current-page.sync="pageIdx"
       layout="total, prev, pager, next, sizes"
-      :total="pageTotalContent"
+      :total="tableTotalRows"
       @size-change="pageSizeChange"
       @current-change="pageIdxChange"
     />
@@ -71,6 +86,9 @@
       <el-tabs v-model="tabIndex" tab-position="left" :before-leave="leaveTab">
         <el-tab-pane name="tab_one" label="基本信息">
           <el-form ref="form_tab_one" :model="formData" :rules="rules_tab_one" size="mini" label-width="80px">
+            <el-form-item label="工号" prop="sort">
+              <el-input v-model="formData.sort" />
+            </el-form-item>
             <el-form-item label="中文名" prop="username">
               <el-input v-model="formData.username" />
             </el-form-item>
@@ -113,9 +131,6 @@
           <el-form ref="form_tab_two" :model="formData" :rules="rules_tab_two" size="mini" label-width="80px">
             <el-form-item label="身份证号" prop="identity_document_number">
               <el-input v-model="formData.identity_document_number" />
-            </el-form-item>
-            <el-form-item label="工号" prop="employee_number">
-              <el-input v-model="formData.employee_number" />
             </el-form-item>
             <el-form-item label="部门" prop="dept_id">
               <treeSelect v-model="formData.dept_id" :options="deptList" placeholder="选择部门" />
@@ -167,7 +182,7 @@ import TableOptions from '@/components/app/TableOptions/index'
 import hideColumns from '@/components/app/TableOptions/hide-columns'
 
 // import 公共method
-import { validQueryWords, validChineseChar, validPhone, validEmail } from '@/utils/app/validator/common'
+import { validQueryWords, validChineseChar, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
 
 // import api
 import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/admin/user'
@@ -184,8 +199,10 @@ export default {
 
       tableLoading: false,
       tableData: [],
+      extra_columns: [],
+      initTableDone: false,
 
-      pageTotalContent: 0,
+      tableTotalRows: 0,
       pageSize: 5,
       pageIdx: 1,
 
@@ -207,7 +224,7 @@ export default {
         enabled: '1',
         role_ids: [],
         identity_document_number: '',
-        employee_number: '',
+        sort: '',
         dept_id: null,
         job_id: null,
         extra_attributes: []
@@ -220,29 +237,15 @@ export default {
       jobList: [],
 
       rules_tab_one: {
+        sort: [{ required: true, validator: validSort, trigger: 'change' }],
         username: [{ required: true, validator: validChineseChar, trigger: 'change' }],
         phone: [{ required: true, validator: validPhone, trigger: 'change' }],
         email: [{ required: true, validator: validEmail, trigger: 'change' }]
       }
     }
   },
-  computed: {
-    // tableToPage计算属性通过slice方法计算表格当前应显示的数据
-    tableToPage() {
-      if (this.tableData.length !== 0) {
-        return this.tableData.slice(
-          (this.pageIdx - 1) * this.pageSize, this.pageIdx * this.pageSize)
-      } else {
-        return []
-      }
-    }
-  },
-  mounted() {
-    console.log('#3')
-    console.log(this.columns)
-  },
   created() {
-    this.updateTbl({ wanted: 'all' })
+    this.refreshTblDisplay()
   },
   methods: {
     // CRUD core
@@ -251,13 +254,23 @@ export default {
      * @param {type}
      * @return:
      */
-    updateTbl(params) {
+    refreshTblDisplay() {
+      const offset = (this.pageIdx - 1) * this.pageSize
+      const params = { 'limit': this.pageSize.toString() + '_' + offset.toString() }
       this.tableLoading = true
       apiGetUser(params)
         .then(function(data) {
-          this.pageTotalContent = data.users.slice(0).length
+          this.tableTotalRows = data.total_rows
           this.tableData.splice(0)
           this.tableData = data.users.slice(0)
+          this.extra_columns = data.extra_columns.slice(0)
+
+          this.$nextTick(() => {
+            if (!this.initTableDone) {
+              this.updateColumns()
+              this.initTableDone = true
+            }
+          })
         }.bind(this))
         .catch(function(err) {
           this.tableData.splice(0)
@@ -344,7 +357,10 @@ export default {
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.updateTbl({ wanted: 'all' })
+              this.tableTotalRows = this.tableTotalRows + 1
+              this.$nextTick(() => {
+                this.refreshTblDisplay()
+              })
             }.bind(this))
             .catch(function(err) {
               this.$message({
@@ -405,7 +421,7 @@ export default {
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.updateTbl({ wanted: 'all' })
+              this.refreshTblDisplay()
             }.bind(this))
             .catch(function(err) {
               this.$message({
@@ -432,7 +448,12 @@ export default {
         .then(() => {
           apiDelUser(id)
             .then(function() {
-              this.updateTbl({ wanted: 'all' })
+              if (this.tableTotalRows > 0) {
+                this.tableTotalRows = this.tableTotalRows - 1
+              }
+              this.$nextTick(() => {
+                this.refreshTblDisplay()
+              })
             }.bind(this))
             .catch(function(err) {
               this.$message({
@@ -448,7 +469,7 @@ export default {
     // 其他
     rstFormData() {
       this.formData.id = null
-      this.formData.employee_number = ''
+      this.formData.sort = ''
       this.formData.username = ''
       this.formData.sex = '0'
       this.formData.identity_document_number = ''
@@ -464,7 +485,7 @@ export default {
     updateFormData(data) {
       // this.formData = JSON.parse(JSON.stringify(data))
       this.formData.id = data.id
-      this.formData.employee_number = data.employee_number
+      this.formData.sort = data.sort
       this.formData.username = data.username
       this.formData.sex = data.sex
       this.formData.identity_document_number = data.identity_document_number
@@ -477,21 +498,25 @@ export default {
       this.formData.role_ids = data.role_ids.slice(0)
       this.formData.extra_attributes = data.extra_attributes.slice(0)
     },
-    pageSizeChange(val) {
-      this.pageSize = val
-    },
-    pageIdxChange(val) {
-      this.pageIdx = val
-    },
+
     cancelDialog() {
       this.dialogAction = ''
       this.dialogVisible = false
     },
 
+    pageSizeChange(val) {
+      this.pageSize = val
+      this.refreshTblDisplay()
+    },
+    pageIdxChange(val) {
+      this.pageIdx = val
+      console.log('# page idx change event')
+      this.refreshTblDisplay()
+    },
     handleQuery() {
       // API param - this.word，输入检验
       if (this.query.words === '') {
-        this.updateTbl({ wanted: 'all' })
+        this.refreshTblDisplay()
       } else {
         const msg = validQueryWords(this.query.words)
         if (msg === true) {
@@ -501,7 +526,7 @@ export default {
             cond: { 'label': this.query.words },
             cond_col: null
           }
-          this.updateTbl(params)
+          this.refreshTblDisplay(params)
         } else {
           this.$message({
             message: msg,
@@ -511,8 +536,8 @@ export default {
       }
     },
     xx() {
-      console.log('#6')
-      console.log(this.columns)
+      console.log('# page idx')
+      console.log(this.pageIdx)
     }
   }
 }
