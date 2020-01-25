@@ -4,14 +4,14 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-20 21:29:40
+ * @LastEditTime : 2020-01-26 00:43:03
  */
 namespace App_Settings;
 
 class App_Code
 {
     const SUCCESS             = 0;
-    const POST_INPUT_EMPTY    = 101;
+    const PARAMS_INVALID      = 101;
     const USERS_TOKEN_INVALID = 110;
 
     const HASH_PASSWORD_FAILED              = 150;

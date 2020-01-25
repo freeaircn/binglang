@@ -12,6 +12,8 @@
 4. [done]设定页面crud流程
 5. 编写用户管理页面  
    数据显示区分页，新增，编辑，删除操作，显示变化如何呈现用户  
+   前后端输入验证  
+   用户认证，访问api权限认证
 6. 后端log  
 7. 前端log  
 8. [done]编写用户头像功能   
@@ -22,7 +24,8 @@
 . 编写动态路由，权限管理  
 . 埋点  
 .   
-. 后端，用户数据/文件的存放文件位置，和访问权限。
+. 后端，用户数据/文件的存放文件位置，和访问权限。  
+  数据库权限，centos文件路径权限  
 
 
 ---
@@ -459,7 +462,103 @@
       开启事务
       user_attribute，users_roles, user
       
-  11. 添加表单校验rules
+  11. 前后端输入验证
+      # CI库：
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('username', 'Username', 'required');
+        if ($this->form_validation->run() == FALSE)
+        
+        验证系统支持设置你自己的验证函数，要调用一个回调函数(限制只能定义在控制器中)只需把函数名加一个 "callback_" 前缀 并放在验证规则里
+        使用任何可调用的方法作为验证规则，任何 is_callable() 函数返回 TRUE 的东西都可以作为规则，使用任何对象和方法来接收域值作为第一个参数
+        
+        你可能希望对一个单纯的数组进行验证，而不是对 $_POST 数组。
+          $data = array(
+              'username' => 'johndoe',
+              'password' => 'mypassword',
+              'passconf' => 'mypassword'
+          );
+          $this->form_validation->reset_validation();
+          $this->form_validation->set_data($data);
+          $this->form_validation->set_rules('rules');
+          $this->form_validation->run()
+          
+          
+          如果你想验证多个数组，那么你应该在验证下一个新数组之前先调用 reset_validation() 方法。
+          
+          多个规则组织成规则集，你需要将它们放置到子数组中。调用特定组的验证规则，你可以将它的名称传给 run() 方法。
+          
+          CI预置规则也可以作为独立的函数被调用，例如:你也可以使用任何一个接受两个参数的原生 PHP 函数（其中至少有一个参数是必须的，用于传递域值）
+          $this->form_validation->required($string);
+      
+      # 后端验证流程：
+        1 定好 每个api 提交的数据结构
+        2 根据提交的数据结构，定义校验规则集 - 将控制器方法和规则集关联在一起
+        3 api入口，获取提交的数据
+        4 进行校验
+        
+      # 示例：
+        1 api方法入口：
+            public function index_get()
+            {
+                $data = $this->get();
+
+                $valid = $this->common_tools->valid_client_data($data, 'user_index_get');
+                if ($valid !== true) {
+                    $res['code'] = App_Code::PARAMS_INVALID;
+                    $res['msg']  = $valid;
+                    $this->response($res, 200);
+                }
+                
+        2 application/app/libraries/Common_tools.php 
+          /**
+           * valid client data
+           *
+           * @author freeair
+           * @DateTime 2020-01-26
+           * @param [associative array] $data
+           * @param [string] $rules
+           * @return bool | string
+           */
+          public function valid_client_data($data = null, $rules = null)
+          {
+              if (empty($data) || empty($rules)) {
+                  return false;
+              }
+
+              $this->form_validation->reset_validation();
+              $this->form_validation->set_data($data);
+              if ($this->form_validation->run($rules) == false) {
+                  return $this->form_validation->error_string();
+              } else {
+                  return true;
+              }
+          }
+        
+        3 application/app/config/form_validation.php  
+          $config = [
+            'user_index_get' => [
+                [
+                    'field'  => 'limit',
+                    'label'  => 'limit',
+                    'rules'  => [
+                        ['valid_limit',
+                            function ($str) {
+                                if ($str != '') {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            },
+                        ],
+                    ],
+                    'errors' => ['valid_limit' => '请求参数非法！'],   //不用编写/修改 lang文件，定义规则时，写下错误msg
+                ],
+            ],
+          ];
+
+          $config['error_prefix'] = '';
+          $config['error_suffix'] = '';
+            
   
   12. table 增加显示extra attribute列
       # 流程
@@ -523,8 +622,7 @@
                 this.refreshTblDisplay()
               })
           this.tableTotalRows - 1 改变总行数，触发el-pagination组件内更新current-page，借助current-page.sync，更新反馈给父组件。
-          this.$nextTick 等待current-page更新，再调用api刷新table显示区
-        
+          this.$nextTick 等待current-page更新，再调用api刷新table显示区        
   
   14. 页面 检索功能，适应多条件组合，
       # 查询语句
