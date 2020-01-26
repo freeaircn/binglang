@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 01:06:56
+ * @LastEditTime : 2020-01-26 11:23:47
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -20,16 +20,15 @@ class User extends RestController
         // Construct the parent class
         parent::__construct();
 
-        // $this->load->library('form_validation');
         $this->load->model('user_model');
         $this->load->library('common_tools');
     }
 
     public function index_get()
     {
-        $data = $this->get();
+        $client = $this->get();
 
-        $valid = $this->common_tools->valid_client_data($data, 'user_index_get');
+        $valid = $this->common_tools->valid_client_data($client, 'user_index_get');
         if ($valid !== true) {
             $res['code'] = App_Code::PARAMS_INVALID;
             $res['msg']  = $valid;

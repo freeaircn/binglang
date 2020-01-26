@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-25 23:39:38
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 00:46:51
+ * @LastEditTime : 2020-01-26 11:13:07
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -15,12 +15,13 @@ $config = [
             'label'  => 'limit',
             'rules'  => [
                 ['valid_limit',
-                    function ($str) {
-                        if ($str != '') {
-                            return false;
-                        } else {
+                    function ($str = null) {
+                        // not include limit field, for non-required item
+                        if (!isset($str)) {
                             return true;
                         }
+                        // include limit field, e.g. match 5_10
+                        return (bool) preg_match('/^\d{1,2}_\d{1,3}$/', $str);
                     },
                 ],
             ],

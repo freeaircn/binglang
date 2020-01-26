@@ -13,8 +13,7 @@ const regexChineseChar = /^[0-9]{1,2}$/
 const regexPhone = /^[0-9]{1,2}$/
 const regexEmail = /^[0-9]{1,2}$/
 const regexSort = /^[0-9]{1,2}$/
-
-const REGEX_KEYWORD = /^([0-9a-zA-Z\u4e00-\u9fa5]){2,8}$/
+const regexQueryWord = /^([0-9a-zA-Z\u4e00-\u9fa5]){1,40}$/
 
 export function validChineseChar(rule, value, callback) {
   if (!value) {
@@ -59,10 +58,10 @@ export function validSort(rule, value, callback) {
 export function validQueryWords(value) {
   if (!value) {
     return true
-  } else if (REGEX_KEYWORD.test(value)) {
+  } else if (regexQueryWord.test(value)) {
     return true
   } else {
-    return '请输入中文/英文/数字，长度2~8'
+    return '请输入中文/英文/数字，长度1~40'
   }
 }
 

@@ -43,16 +43,16 @@ class User_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-     * @return bool | array
+	 * @param [string] $limit
+     * @return mixed bool | array
      */
-    public function read($limit = null)
+    public function read($limit = '')
     {
         // $query = $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time')
         //     ->order_by('id', 'ASC')
         //     ->get($this->tables['user']);
 
         $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time');
-
         $this->db->order_by('sort', 'ASC');
         // $this->db->order_by('id', 'ASC');
         if (!empty($limit)) {

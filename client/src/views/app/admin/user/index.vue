@@ -5,8 +5,8 @@
       <el-row>
         <!-- 搜索 -->
         <el-col :span="20">
-          <el-input v-model="query.words" clearable size="small" placeholder="搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
-          <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
+          <el-input v-model="queryOne" clearable size="mini" placeholder="查询工号，姓名，手机号，邮箱，身份证号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQueryOne" />
+          <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQueryOne">查询</el-button>
           <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
           <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
         </el-col>
@@ -193,9 +193,7 @@ export default {
   mixins: [hideColumns()],
   data() {
     return {
-      query: {
-        words: ''
-      },
+      queryOne: '',
 
       tableLoading: false,
       tableData: [],
@@ -244,6 +242,11 @@ export default {
       }
     }
   },
+  computed: {
+    limit: function() {
+      return this.pageSize.toString() + '_' + ((this.pageIdx - 1) * this.pageSize).toString()
+    }
+  },
   created() {
     this.refreshTblDisplay()
   },
@@ -254,10 +257,17 @@ export default {
      * @param {type}
      * @return:
      */
-    refreshTblDisplay() {
-      const offset = (this.pageIdx - 1) * this.pageSize
-      const params = { 'limit': this.pageSize.toString() + '_' + offset.toString() }
+    refreshTblDisplay(query = '') {
       this.tableLoading = true
+
+      var params = []
+      if (query === '') {
+        params['limit'] = this.limit
+      } else {
+        this.pageIdx = 1
+        params['limit'] = this.limit
+        params['query'] = query
+      }
       apiGetUser(params)
         .then(function(data) {
           this.tableTotalRows = data.total_rows
@@ -513,20 +523,15 @@ export default {
       console.log('# page idx change event')
       this.refreshTblDisplay()
     },
-    handleQuery() {
+
+    handleQueryOne() {
       // API param - this.word，输入检验
-      if (this.query.words === '') {
+      if (this.queryOne === '') {
         this.refreshTblDisplay()
       } else {
-        const msg = validQueryWords(this.query.words)
+        const msg = validQueryWords(this.queryOne)
         if (msg === true) {
-          var params = {
-            select_col: null,
-            method: 'like',
-            cond: { 'label': this.query.words },
-            cond_col: null
-          }
-          this.refreshTblDisplay(params)
+          this.refreshTblDisplay(this.queryOne)
         } else {
           this.$message({
             message: msg,

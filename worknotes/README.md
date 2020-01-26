@@ -10,20 +10,21 @@
 2. [done]适配框架文件夹结构
 3. [done]设定API和response
 4. [done]设定页面crud流程
-5. 编写用户管理页面  
-   数据显示区分页，新增，编辑，删除操作，显示变化如何呈现用户  
-   前后端输入验证  
-   用户认证，访问api权限认证
+5. 用户管理页面  
+   [done]数据显示区分页，新增，编辑，删除操作，显示变化如何呈现用户  
+   [done]前后端输入验证  
+   用户管理页面 检索功能，适应多条件组合  
+   埋点  
 6. 后端log  
 7. 前端log  
 8. [done]编写用户头像功能   
 9. [done]table列动态显示/隐藏功能  
 
-. 用户管理页面 检索功能，适应多条件组合  
+
 . 参照用户管理页面，更新 app其他页面文件  
 . 编写动态路由，权限管理  
+  用户认证，访问api权限认证  
 . 埋点  
-.   
 . 后端，用户数据/文件的存放文件位置，和访问权限。  
   数据库权限，centos文件路径权限  
 
@@ -31,15 +32,38 @@
 ---
 ### 置顶
 ```
-# 后端&PHP
-  # 检查多维数组入参。比如；a = [[], []], empty(a)不为空
-  # 外键字段，写入值的数据类型。比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
-  # ci 查询数据表结果->result_array()，为数组结构。
+# PHP
+  1 检查多维数组入参。比如；a = [[], []], empty(a) false
+  2 isset - 检测变量是否已设置并且非 NULL。比如；isset('') true
+  3 empty - 判断一个变量是否被认为是空的。当一个变量并不存在，或者它的值等同于FALSE，那么它会被认为不存在。如果变量不存在的话，empty()并不会产生警告。
+    以下的东西被认为是空的：
+      "" (空字符串)
+      0 (作为整数的0)
+      0.0 (作为浮点数的0)
+      "0" (作为字符串的0)
+      NULL
+      FALSE
+      array() (一个空数组)
+      $var; (一个声明了，但是没有值的变量)
+  4 未申明变量，empty($a) - true, isset($a) - false
+  
+# CI  
+  1 ci 查询数据表结果->result_array()，为数组结构。
     示例1 table：id - 1, 查询结果：array(1) [{id:1}] 
     示例2 table：id - 1, id - 2，查询结果：array(2) [{id:1}, {id:2}]
-  # vue子组件props类型-Object，是父组件传入对象的引用。
-  # vue 修饰符sync的功能是：当一个子组件改变了一个 prop 的值时，这个变化也会同步到父组件中所绑定。
-  # select语句完整语法
+
+  2 RestController
+      # 场景一：
+        $this->get('a');  
+        当client没有参数a时，返回NULL
+      # 场景二：
+        $data = $this->get();
+        $data['a'];
+        当client没有参数a时，php提示Undefined index: a。 一般作为正式的网站会把提示关掉的，甚至连错误信息也被关掉。
+  
+# DB
+  1 外键字段，写入值的数据类型。比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
+  2 select语句完整语法
       SELECT 
       DISTINCT <select_list>
       FROM <left_table>
@@ -52,6 +76,11 @@
       LIMIT <limit_number>
       
       from →join →on →where →group by→having→select→order by→limit
+      
+# VUE
+  1 vue子组件props类型-Object，是父组件传入对象的引用。
+  2 vue 修饰符sync的功能是：当一个子组件改变了一个 prop 的值时，这个变化也会同步到父组件中所绑定。
+  
 ```
 
 ---
@@ -500,9 +529,9 @@
         1 api方法入口：
             public function index_get()
             {
-                $data = $this->get();
+                $client = $this->get();
 
-                $valid = $this->common_tools->valid_client_data($data, 'user_index_get');
+                $valid = $this->common_tools->valid_client_data($client, 'user_index_get');
                 if ($valid !== true) {
                     $res['code'] = App_Code::PARAMS_INVALID;
                     $res['msg']  = $valid;
@@ -515,18 +544,21 @@
            *
            * @author freeair
            * @DateTime 2020-01-26
-           * @param [associative array] $data
+           * @param [associative array] $array
            * @param [string] $rules
-           * @return bool | string
+           * @return mixed bool | string
            */
-          public function valid_client_data($data = null, $rules = null)
+          public function valid_client_data($array = [], $rules = '')
           {
-              if (empty($data) || empty($rules)) {
+              if (empty($rules)) {
                   return false;
+              }
+              if (empty($array)) {
+                  return true;
               }
 
               $this->form_validation->reset_validation();
-              $this->form_validation->set_data($data);
+              $this->form_validation->set_data($array);
               if ($this->form_validation->run($rules) == false) {
                   return $this->form_validation->error_string();
               } else {
@@ -535,29 +567,30 @@
           }
         
         3 application/app/config/form_validation.php  
-          $config = [
-            'user_index_get' => [
-                [
-                    'field'  => 'limit',
-                    'label'  => 'limit',
-                    'rules'  => [
-                        ['valid_limit',
-                            function ($str) {
-                                if ($str != '') {
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            },
+            $config = [
+                'user_index_get' => [
+                    [
+                        'field'  => 'limit',
+                        'label'  => 'limit',
+                        'rules'  => [
+                            ['valid_limit',
+                                function ($str = null) {
+                                    // not include limit field, for non-required item
+                                    if (!isset($str)) {
+                                        return true;
+                                    }
+                                    // include limit field, e.g. match 5_10
+                                    return (bool) preg_match('/^\d{1,2}_\d{1,3}$/', $str);
+                                },
+                            ],
                         ],
+                        'errors' => ['valid_limit' => '请求参数非法！'],
                     ],
-                    'errors' => ['valid_limit' => '请求参数非法！'],   //不用编写/修改 lang文件，定义规则时，写下错误msg
                 ],
-            ],
-          ];
+            ];
 
-          $config['error_prefix'] = '';
-          $config['error_suffix'] = '';
+            $config['error_prefix'] = '';
+            $config['error_suffix'] = '';
             
   
   12. table 增加显示extra attribute列
@@ -595,7 +628,7 @@
         对于DB table，新行肯定在表的末尾。查询时order by(sort)，结果集新行不一定在最后一行。
         对于user 表，有“工号”列，insert时，工号既不是递增，也不是递减，则工号列 乱序。比如：insert了小强-1，小猪-5，小芳-3
         
-        insert 小明-4，怎么让页面显示 定位在 用户刚新增的那一行？？
+        【不处理】insert 小明-4，怎么让页面显示 定位在 用户刚新增的那一行？？
         # insert增加分页数
         # 有3个分页，在任意分页，点击新增按钮
         
@@ -636,6 +669,10 @@
         HAVING <having_condition>
         ORDER BY <order_by_condition>
         LIMIT <limit_number>  -- 需适配 分页读取 limit: string e.g. num_offset
+      
+      # 查询条件分类；
+        1 一对一，比如：工号，中文名，手机号，身份证号，邮箱
+        2 一对多，多条件组合“且”关系，比如：性别，部门，岗位，党派，职称
 ```
 
 ---

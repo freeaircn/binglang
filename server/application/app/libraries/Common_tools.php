@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 01:07:24
+ * @LastEditTime : 2020-01-26 11:30:33
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -51,18 +51,21 @@ class Common_tools extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-26
-     * @param [associative array] $data
+     * @param [associative array] $array
      * @param [string] $rules
-     * @return bool | string
+     * @return mixed bool | string
      */
-    public function valid_client_data($data = null, $rules = null)
+    public function valid_client_data($array = [], $rules = '')
     {
-        if (empty($data) || empty($rules)) {
+        if (empty($rules)) {
             return false;
+        }
+        if (empty($array)) {
+            return true;
         }
 
         $this->form_validation->reset_validation();
-        $this->form_validation->set_data($data);
+        $this->form_validation->set_data($array);
         if ($this->form_validation->run($rules) == false) {
             return $this->form_validation->error_string();
         } else {
