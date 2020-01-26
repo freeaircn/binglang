@@ -43,26 +43,55 @@ class User_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-	 * @param [string] $limit
+	 * @param [associative array] $client
      * @return mixed bool | array
      */
-    public function read($limit = '')
+    public function read($client)
     {
-        // $query = $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time')
-        //     ->order_by('id', 'ASC')
-        //     ->get($this->tables['user']);
+		// start cache sql
+		$this->db->start_cache();
 
-        $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time');
+		$this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time');
+		$where_str = '';
+		$continue = false;
+		if (isset($client['individual']) && $client['individual'] != ''){
+			$where_str .= "( sort LIKE '%" . $client['individual'] . "%'";
+			$where_str .= " OR username LIKE '%" . $client['individual'] . "%'";
+			$where_str .= " OR phone LIKE '%" . $client['individual'] . "%'";
+			$where_str .= " OR identity_document_number LIKE '%" . $client['individual'] . "%'";
+			$where_str .= " OR email LIKE '%" . $client['individual'] . "%' )";
+			$continue = true;
+		}
+		if (isset($client['sex']) && $client['sex'] != ''){
+			if($continue){
+				$where_str .= " AND ";
+				$where_str .= "sex = " . $client['sex'];
+			}else{
+				$where_str .= "sex = " . $client['sex'];
+			}
+			$continue = true;
+		}
+		if($where_str != ''){
+			$this->db->where($where_str);
+		}
+
+		// stop cache sql
+		$this->db->stop_cache();
+		$total_rows = $this->db->get($this->tables['user'])->num_rows();
+
         $this->db->order_by('sort', 'ASC');
         // $this->db->order_by('id', 'ASC');
-        if (!empty($limit)) {
-            $limit_temp = explode('_', $limit);
+        if (isset($client['limit']) && $client['limit'] != '') {
+            $limit_temp = explode('_', $client['limit']);
             $num        = (int) $limit_temp[0];
             $offset     = (int) $limit_temp[1];
             $this->db->limit($num, $offset);
         }
-        $query      = $this->db->get($this->tables['user']);
-        $total_rows = $this->db->count_all($this->tables['user']);
+		$query = $this->db->get($this->tables['user']);
+		// $total_rows = $this->db->count_all($this->tables['user']);
+		
+		// flush cache sql
+		$this->db->flush_cache();
 
         if ($query === false) {
             $error = $this->db->error();

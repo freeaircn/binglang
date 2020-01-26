@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 11:23:47
+ * @LastEditTime : 2020-01-26 22:03:44
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -37,7 +37,7 @@ class User extends RestController
 
         $wanted = $this->get('wanted');
         $uid    = $this->get('uid');
-        $limit  = $this->get('limit');
+        // $limit  = $this->get('limit');
 
         switch ($wanted) {
             case "new_form":
@@ -61,7 +61,7 @@ class User extends RestController
                 }
                 break;
             default:
-                $data = $this->user_model->read($limit);
+                $data = $this->user_model->read($client);
                 if ($data === false) {
                     $res['code'] = App_Code::TBL_USER_READ_FAILED;
                     $res['msg']  = App_Msg::TBL_USER_READ_FAILED;

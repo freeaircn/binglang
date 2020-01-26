@@ -5,10 +5,48 @@
       <el-row>
         <!-- 搜索 -->
         <el-col :span="20">
-          <el-input v-model="queryOne" clearable size="mini" placeholder="查询工号，姓名，手机号，邮箱，身份证号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQueryOne" />
-          <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQueryOne">查询</el-button>
-          <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
-          <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
+          <el-form ref="form_query" :model="query" :rules="rules_form_query" :inline="true" size="mini" label-width="80px">
+            <el-form-item prop="individual">
+              <el-tooltip effect="dark" content="查询字段:工号，姓名，手机号，邮箱，身份证号" placement="top">
+                <el-input v-model="query.individual" clearable placeholder="工号，姓名，手机号..." />
+              </el-tooltip>
+            </el-form-item>
+
+            <el-form-item prop="sex">
+              <el-tooltip effect="dark" content="查询字段:性别" placement="top">
+                <el-select v-model="query.sex" clearable placeholder="性别" style="width:80px;">
+                  <el-option label="男" value="0" />
+                  <el-option label="女" value="1" />
+                </el-select>
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item prop="dept">
+              <el-tooltip effect="dark" content="查询字段:部门" placement="top">
+                <el-input v-model="query.dept" clearable placeholder="字段：部门" style="width:150px;" />
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item prop="job">
+              <el-tooltip effect="dark" content="查询字段:岗位" placement="top">
+                <el-input v-model="query.job" clearable placeholder="字段：岗位" style="width:150px;" />
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item prop="politic">
+              <el-tooltip effect="dark" content="查询字段:党派" placement="top">
+                <el-input v-model="query.politic" clearable placeholder="字段：党派" style="width:150px;" />
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item prop="professional_title">
+              <el-tooltip effect="dark" content="查询字段:职称" placement="top">
+                <el-input v-model="query.professional_title" clearable placeholder="字段：职称" style="width:150px;" />
+              </el-tooltip>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
+            </el-form-item>
+          </el-form>
         </el-col>
         <el-col :span="4">
           <TableOptions :table-columns="columns" />
@@ -165,9 +203,9 @@
       </el-tabs>
 
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="cancelDialog()">取消</el-button>
+        <el-button size="mini" @click="cancelDialog()">取 消</el-button>
         <el-button v-show="tabIndex == 'tab_one'" type="primary" size="mini" @click="toNextTab()">下一页</el-button>
-        <el-button v-show="tabIndex == 'tab_two'" type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提交</el-button>
+        <el-button v-show="tabIndex == 'tab_two'" type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提 交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -182,7 +220,7 @@ import TableOptions from '@/components/app/TableOptions/index'
 import hideColumns from '@/components/app/TableOptions/hide-columns'
 
 // import 公共method
-import { validQueryWords, validChineseChar, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
+import { validChineseChar, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
 
 // import api
 import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/admin/user'
@@ -193,7 +231,14 @@ export default {
   mixins: [hideColumns()],
   data() {
     return {
-      queryOne: '',
+      query: {
+        individual: '',
+        sex: '',
+        dept: '',
+        job: '',
+        politic: '',
+        professional_title: ''
+      },
 
       tableLoading: false,
       tableData: [],
@@ -257,16 +302,20 @@ export default {
      * @param {type}
      * @return:
      */
-    refreshTblDisplay(query = '') {
+    refreshTblDisplay() {
       this.tableLoading = true
 
       var params = []
-      if (query === '') {
+      if (this.isQueryEmpty()) {
         params['limit'] = this.limit
       } else {
-        this.pageIdx = 1
         params['limit'] = this.limit
-        params['query'] = query
+        params['individual'] = this.query.individual
+        params['sex'] = this.query.sex
+        params['dept'] = this.query.dept
+        params['job'] = this.query.job
+        params['politic'] = this.query.politic
+        params['professional_title'] = this.query.professional_title
       }
       apiGetUser(params)
         .then(function(data) {
@@ -524,25 +573,53 @@ export default {
       this.refreshTblDisplay()
     },
 
-    handleQueryOne() {
+    handleQuery() {
       // API param - this.word，输入检验
-      if (this.queryOne === '') {
-        this.refreshTblDisplay()
+      this.pageIdx = 1
+      this.refreshTblDisplay()
+      // const msg = validQueryWords(this.query)
+      // if (msg === true) {
+      //   this.refreshTblDisplay(this.query)
+      // } else {
+      //   this.$message({
+      //     message: msg,
+      //     type: 'warning'
+      //   })
+      // }
+    },
+
+    isQueryEmpty() {
+      var empty = []
+      if (this.query.individual !== '') {
+        empty.push(1)
+      }
+      if (this.query.sex !== '') {
+        empty.push(1)
+      }
+      if (this.query.dept !== '') {
+        empty.push(1)
+      }
+      if (this.query.job !== '') {
+        empty.push(1)
+      }
+      if (this.query.politic !== '') {
+        empty.push(1)
+      }
+      if (this.query.professional_title !== '') {
+        empty.push(1)
+      }
+
+      if (empty.length === 0) {
+        return true
       } else {
-        const msg = validQueryWords(this.queryOne)
-        if (msg === true) {
-          this.refreshTblDisplay(this.queryOne)
-        } else {
-          this.$message({
-            message: msg,
-            type: 'warning'
-          })
-        }
+        return false
       }
     },
     xx() {
-      console.log('# page idx')
-      console.log(this.pageIdx)
+      console.log('# query')
+      console.log(this.query)
+      console.log('# isQueryEmpty')
+      console.log(this.isQueryEmpty())
     }
   }
 }

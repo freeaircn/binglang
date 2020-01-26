@@ -671,8 +671,20 @@
         LIMIT <limit_number>  -- 需适配 分页读取 limit: string e.g. num_offset
       
       # 查询条件分类；
-        1 一对一，比如：工号，中文名，手机号，身份证号，邮箱
-        2 一对多，多条件组合“且”关系，比如：性别，部门，岗位，党派，职称
+        1 A 个性，比如：工号，中文名，手机号，身份证号，邮箱
+        2 B1，B2，B3 共性，多条件组合“且”关系，比如：性别，部门，岗位，党派，职称
+        
+        # 示例：
+          select * from user where 工号 like A or where 中文名 like A
+          select * from user where 性别 like B1 and where 部门 like B2 and where 岗位 like B3
+          
+          分页，页面跳转如何携带 查询条件？？
+      
+      # 原则：
+        1 A ！= empty，（ where 工号 like A or 中文名 like A ）
+        2 B1 ！= empty， （ where 工号 like A or 中文名 like A ） and  性别 = B1
+        3 B2 ！= empty， （ where 工号 like A or 中文名 like A ） and  性别 = B1 and 部门 like B2
+        4 ...
 ```
 
 ---
@@ -895,7 +907,7 @@
 ```
 
 ---
-### 10. 用户管理页面 检索功能，适应多条件组合 
+###  
 ```
 
 ```
