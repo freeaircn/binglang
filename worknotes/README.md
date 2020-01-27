@@ -382,7 +382,7 @@
   1 编写user页面
   
   # 约定
-  1 dict.name 字段，含user_attr_ 表示 user表 附加属性项
+  1 dict.name 字段和dict_data.name，含user_attr_前缀 表示 user表 附加属性项
   2 user_attribute表
     `user_id` 
     `dict_data_id`
@@ -685,6 +685,27 @@
         2 B1 ！= empty， （ where 工号 like A or 中文名 like A ） and  性别 = B1
         3 B2 ！= empty， （ where 工号 like A or 中文名 like A ） and  性别 = B1 and 部门 like B2
         4 ...
+        
+      # 实现：
+        1 A ！= empty，（ where 工号 like A or 中文名 like A ）
+          【去重】？？？
+        
+        2 字段-部门，树形结构，比如，工作室以下有小组1，小组2。当查询 工作室时，需要其下所有子节点的user。
+          # 查询select id from dept like label %str% group by id  【去重】
+          # 查询子节点，合并id，并去重
+            如果没有匹配的部门，说明 最终查询结果是空，不用往后执行查询语句，提前返回前台。
+          # 添加( dept_id in id集合)
+          
+        3 字段-岗位，比如，不同部门下有相同岗位，开发组1，开发组2下都有开发员。当查询 开发员时，列出各个部门user。
+          # 查询select id from job like label %str% group by id  【去重】
+            如果没有匹配的岗位，说明 最终查询结果是空，不用往后执行查询语句，提前返回前台。
+          # 添加( job_id in id集合)
+          
+        4 字段-党派。
+          # 查询select id from dict_data where name like 'user_attr_politic%' and label like %str% group by id  【去重】
+          # 查询select user_id from user_attribute where dict_data_id in () group by user_id  【去重】
+            如果没有匹配的，说明 最终查询结果是空，不用往后执行查询语句，提前返回前台。
+          # 添加( id in id集合)
 ```
 
 ---

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 22:03:44
+ * @LastEditTime : 2020-01-27 21:20:20
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -233,7 +233,7 @@ class User extends RestController
 
     public function index_delete()
     {
-        $id = $this->delete('id');
+        $id = (int) $this->delete('id');
 
         $result = $this->user_model->delete($id);
 

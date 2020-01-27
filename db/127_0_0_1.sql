@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `app_dict` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
   `label` varchar(31) NOT NULL COMMENT '类型名',
-  `name` varchar(63) NOT NULL COMMENT '键名',
+  `name` varchar(255) NOT NULL COMMENT '键名',
   `enabled` bit(1) NOT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `app_dict_data` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
   `label` varchar(31) NOT NULL COMMENT '词条名',
-  `name` varchar(63) NOT NULL COMMENT '键名',
+  `name` varchar(255) NOT NULL COMMENT '键名',
   `code` int(11) UNSIGNED DEFAULT NULL COMMENT '键值',
   `enabled` bit(1) NOT NULL,
   `dict_id` int(11) UNSIGNED NOT NULL COMMENT '所属字典id',
@@ -83,10 +83,10 @@ CREATE TABLE IF NOT EXISTS `app_dict_data` (
 INSERT INTO `app_dict_data` (`id`, `sort`, `label`, `name`, `code`, `enabled`, `dict_id`, `update_time`) VALUES
 (1, 1, '男', 'male', 1, b'1', 1, '2020-01-01 09:14:05'),
 (2, 2, '女', 'female', 2, b'1', 1, '2020-01-15 13:26:26'),
-(3, 3, '无党派', 'non_politic', 1, b'1', 3, '2020-01-16 15:22:49'),
-(4, 4, '共产党员', 'communist_party', 2, b'1', 3, '2020-01-16 15:24:14'),
-(5, 5, '工程师', 'engineer', 1, b'1', 4, '2020-01-17 20:52:00'),
-(6, 6, '助理工程师', 'assistant_engineer', 2, b'1', 4, '2020-01-17 20:52:43');
+(3, 3, '无党派', 'user_attr_politic_non_politic', 1, b'1', 3, '2020-01-16 15:22:49'),
+(4, 4, '共产党员', 'user_attr_politic_communist_party', 2, b'1', 3, '2020-01-16 15:24:14'),
+(5, 5, '工程师', 'user_attr_professional_title_engineer', 1, b'1', 4, '2020-01-17 20:52:00'),
+(6, 6, '助理工程师', 'user_attr_professional_title_assistant_engineer', 2, b'1', 4, '2020-01-17 20:52:43');
 
 -- --------------------------------------------------------
 

@@ -1,0 +1,3 @@
+2020-01-27 17:23:16 | CRITICAL | 2632 | 5e2eac045ebe6 | 1580116996.389 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-dmyysjultp.php - line:770 - msg:Cannot redeclare User_model::_get_all_children_ids()
+2020-01-27 17:23:17 | CRITICAL | 2092 | 5e2eac05e34db | 1580116997.932 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-zbqvpz.php - line:770 - msg:Cannot redeclare User_model::_get_all_children_ids()
+2020-01-27 17:43:33 | CRITICAL | 10456 | 5e2eb0c52325f | 1580118213.144 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-qzfsnkf.php - line:55 - msg:syntax error, unexpected 'if' (T_IF)

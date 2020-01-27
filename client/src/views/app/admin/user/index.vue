@@ -42,7 +42,9 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
+              <el-tooltip effect="dark" content="各字段按“与”组合查询" placement="top">
+                <el-button type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
+              </el-tooltip>
               <el-button type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
               <el-button type="primary" icon="el-icon-plus" @click="xx">xx</el-button>
             </el-form-item>
@@ -85,10 +87,9 @@
         :show-overflow-tooltip="true"
         :prop="item.name"
         :label="item.label"
-        column-key="pre-hide"
       />
 
-      <el-table-column v-if="columnOpt.visible('enabled')" prop="enabled" label="是否启用" align="center">
+      <el-table-column v-if="columnOpt.visible('enabled')" column-key="pre-hide" prop="enabled" label="是否启用" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.enabled == '1'">是</span>
           <span v-else>否</span>

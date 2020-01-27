@@ -1,0 +1,4 @@
+2020-01-27 09:29:25 | CRITICAL | 6388 | 5e2e3cf530499 | 1580088565.198 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-hctirvsj.php - line:73 - msg:syntax error, unexpected 'if' (T_IF)
+2020-01-27 09:30:31 | CRITICAL | 13772 | 5e2e3d37d26f4 | 1580088631.862 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-xcjewetcp.php - line:72 - msg:syntax error, unexpected ')'
+2020-01-27 09:30:39 | CRITICAL | 13576 | 5e2e3d3f29c6b | 1580088639.171 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-gvyhggkb.php - line:72 - msg:syntax error, unexpected ')'
+2020-01-27 09:30:41 | CRITICAL | 6996 | 5e2e3d41e79a5 | 1580088641.949 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-hdotio.php - line:72 - msg:syntax error, unexpected ')'

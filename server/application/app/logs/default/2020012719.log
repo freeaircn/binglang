@@ -1,0 +1,1 @@
+2020-01-27 19:23:36 | CRITICAL | 16196 | 5e2ec838d3390 | 1580124216.866 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-tdsvz.php - line:780 - msg:syntax error, unexpected '$job_ids_str' (T_VARIABLE), expecting ';'

@@ -1,130 +1,96 @@
 <?php
 /*
- * @Description: 
+ * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-12 14:29:00
+ * @LastEditTime : 2020-01-27 09:55:03
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Job_model extends CI_Model {
+class Job_model extends CI_Model
+{
 
-	protected $db;
+    protected $db;
 
-	public $tables = [];
+    public $tables = [];
 
-	public function __construct()
+    public function __construct()
     {
         parent::__construct();
-		// Your own constructor code
-		$this->config->load('app_config', TRUE);
-		$db_name = $this->config->item('db_name', 'app_config');
-		$this->tables = $this->config->item('tables', 'app_config');
+        // Your own constructor code
+        $this->config->load('app_config', true);
+        $db_name      = $this->config->item('db_name', 'app_config');
+        $this->tables = $this->config->item('tables', 'app_config');
 
-		if (empty($db_name))
-		{
-			$CI =& get_instance();
-			$this->db = $CI->db;
-		}
-		else
-		{
-			$this->db = $this->load->database($db_name, TRUE, TRUE);
-		}
-	}
-	
-	public function db()
-	{
-		return $this->db;
-	}
+        if (empty($db_name)) {
+            $CI       = &get_instance();
+            $this->db = $CI->db;
+        } else {
+            $this->db = $this->load->database($db_name, true, true);
+        }
+    }
 
-	public function read($select_col = NULL, $method = NULL, $cond = NULL, $cond_col = NULL)
+    public function db()
     {
-		$this->db->order_by('sort', 'ASC');
-		$this->db->order_by('id', 'ASC');
+        return $this->db;
+    }
 
-		if ($select_col !== NULL)
-		{
-			$this->db->select($select_col);
-		}
+    public function read($select_col = null, $method = null, $cond = null, $cond_col = null)
+    {
+        $this->db->order_by('sort', 'ASC');
+        $this->db->order_by('id', 'ASC');
 
-		if ($method !== NULL)
-		{
-			if ($method === 'where' && (!empty($cond)))
-			{
-				$this->db->where($cond);
-			}
-			if ($method === 'like' && (!empty($cond)))
-			{
-				$this->db->like($cond);
-			}
-			if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col)))
-			{
-				$this->db->where_in($cond_col, $cond);
-			}
+        if ($select_col !== null) {
+            $this->db->select($select_col);
+        }
 
-		}
+        if ($method !== null) {
+            if ($method === 'where' && (!empty($cond))) {
+                $this->db->where($cond);
+            }
+            if ($method === 'like' && (!empty($cond))) {
+                $this->db->like($cond);
+            }
+            if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col))) {
+                $this->db->where_in($cond_col, $cond);
+            }
 
-		$query = $this->db->get($this->tables['job']);
-		$result = $query->result_array();
-		
+        }
+
+        $query  = $this->db->get($this->tables['job']);
+        $result = $query->result_array();
+
         return $result;
-	}
-	
-	public function create($data)
+    }
+
+    public function create($data)
     {
-		$this->db->insert($this->tables['job'], $data);
-		$id = $this->db->insert_id($this->tables['job'] . '_id_seq');
+        $this->db->insert($this->tables['job'], $data);
+        $id = $this->db->insert_id($this->tables['job'] . '_id_seq');
 
-		return (isset($id)) ? $id : FALSE;
-	}
-	
-	public function update($id, $data)
+        return (isset($id)) ? $id : false;
+    }
+
+    public function update($id, $data)
     {
-		$this->db->where('id', $id);
-		$this->db->update($this->tables['job'], $data);
+        $this->db->where('id', $id);
+        $this->db->update($this->tables['job'], $data);
 
-		$res = $this->db->affected_rows();
-		return ($res > 0) ? TRUE : FALSE;
-	}
+        $res = $this->db->affected_rows();
+        return ($res > 0) ? true : false;
+    }
 
-	/**
-     * 
+    /**
+     *
      * @param array $id
      * @return array
      */
-	public function delete($id)
+    public function delete($id)
     {
-		// $result = $this->db->where_in('id', $ids)->delete($this->tables['job']);
-		$result = $this->db->where('id', $id)->delete($this->tables['job']);
-		
-		return $result;
-	}
-	
-	/**
-     * 根据id便利数据表，输出包括输入id的所有子节点id
-     * @param int $id
-     * @return array string
-     */
-	// function get_all_children_ids($id)
-	// {
-	// 	$array[] = (string)$id;
-	// 	$temp_arr[] = (string)$id;
-	// 	do
-	// 	{
-	// 		$this->db->select('id');
-	// 		$this->db->where_in('pid', $temp_arr);
-	// 		$query = $this->db->get($this->tables['job']);
-	// 		$res = $query->result_array();
-	// 		unset($temp_arr);
-	// 		foreach ($res as $k=>$v)
-	// 		{
-	// 			$array[] = (string)$v['id'];
-	// 			$temp_arr[] = (string)$v['id'];
-	// 		}
-	// 	}
-	// 	while (!empty($res));
+        // $result = $this->db->where_in('id', $ids)->delete($this->tables['job']);
+        $result = $this->db->where('id', $id)->delete($this->tables['job']);
 
-	// 	return $array;
-	// }
+        return $result;
+    }
 }
