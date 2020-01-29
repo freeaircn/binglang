@@ -1,0 +1,8 @@
+2020-01-29 17:06:32 | CRITICAL | 3148 | 5e314b18e0e60 | 1580288792.921 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-ziogrsxl.php - line:151 - msg:syntax error, unexpected 'for' (T_FOR)
+2020-01-29 17:18:50 | CRITICAL | 12592 | 5e314dfa0d987 | 1580289530.56 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-lxvetpr.php - line:162 - msg:syntax error, unexpected '='
+2020-01-29 17:24:49 | CRITICAL | 3564 | 5e314f61d70a0 | 1580289889.881 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-gyoemmc.php - line:163 - msg:syntax error, unexpected 'as' (T_AS), expecting :: (T_PAAMAYIM_NEKUDOTAYIM)
+2020-01-29 17:26:49 | CRITICAL | 10788 | 5e314fd9eb338 | 1580290009.963 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-xzwpgjq.php - line:164 - msg:syntax error, unexpected 'dynamic_columns' (T_STRING), expecting '('
+2020-01-29 17:27:12 | CRITICAL | 9316 | 5e314ff02d592 | 1580290032.186 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-gdhuclje.php - line:164 - msg:syntax error, unexpected 'dynamic_columns' (T_STRING), expecting '('
+2020-01-29 17:27:38 | CRITICAL | 6256 | 5e31500ae03b1 | 1580290058.919 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-nqqowjgn.php - line:164 - msg:syntax error, unexpected 'in' (T_STRING)
+2020-01-29 17:28:08 | CRITICAL | 12680 | 5e315028a24cd | 1580290088.665 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-rccvsjak.php - line:164 - msg:syntax error, unexpected 'in' (T_STRING)
+2020-01-29 17:33:57 | CRITICAL | 11876 | 5e315185cc0ff | 1580290437.836 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-ewdmp.php - line:163 - msg:syntax error, unexpected 'in' (T_STRING)

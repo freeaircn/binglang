@@ -17,7 +17,7 @@ class Common_tools extends CI_Model
     {
         // Check compat first
         $this->config->load('app_config', true);
-        $this->load->library('form_validation');
+        $this->load->library('app_form_validation');
     }
 
     /**
@@ -60,14 +60,11 @@ class Common_tools extends CI_Model
         if (empty($rules)) {
             return false;
         }
-        if (empty($array)) {
-            return true;
-        }
 
-        $this->form_validation->reset_validation();
-        $this->form_validation->set_data($array);
-        if ($this->form_validation->run($rules) == false) {
-            return $this->form_validation->error_string();
+        $this->app_form_validation->reset_validation();
+        $this->app_form_validation->set_data($array);
+        if ($this->app_form_validation->run($rules) === false) {
+            return $this->app_form_validation->error_string();
         } else {
             return true;
         }

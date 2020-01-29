@@ -212,11 +212,11 @@ CREATE TABLE IF NOT EXISTS `app_user` (
   `sort` int(11) UNSIGNED NOT NULL COMMENT '工号',
   `username` varchar(10) NOT NULL COMMENT '中文名',
   `sex` bit(1) NOT NULL COMMENT '1-女，0-男',
-  `identity_document_number` varchar(32) DEFAULT NULL COMMENT '证件号',
+  `identity_document_number` varchar(31) DEFAULT NULL COMMENT '证件号',
   `phone` varchar(15) NOT NULL,
-  `email` varchar(40) NOT NULL,
+  `email` varchar(63) NOT NULL,
   `enabled` bit(1) NOT NULL,
-  `dept_id` int(11) UNSIGNED DEFAULT NULL COMMENT '部门',
+  `dept_id` int(11) UNSIGNED NOT NULL COMMENT '部门',
   `job_id` int(11) UNSIGNED DEFAULT NULL COMMENT '岗位',
   `last_login` datetime DEFAULT NULL COMMENT '登录日期',
   `ip_address` varchar(63) DEFAULT NULL,
@@ -242,12 +242,12 @@ CREATE TABLE IF NOT EXISTS `app_user` (
 --
 
 INSERT INTO `app_user` (`id`, `sort`, `username`, `sex`, `identity_document_number`, `phone`, `email`, `enabled`, `dept_id`, `job_id`, `last_login`, `ip_address`, `update_time`, `avatar_id`, `password`, `forgotten_password_selector`, `forgotten_password_code`, `forgotten_password_time`) VALUES
-(2, 1, '1', b'0', '', '1', '1', b'1', 1, 1, NULL, NULL, '2020-01-24 17:16:01', NULL, '$argon2i$v=19$m=16384,t=4,p=2$R0VFV0xHRDRyQ0dGYUtIYg$gv2ZHwk1U9dnq0Xw1bKlURcuBoVomIMqdBZnvfmctOg', NULL, NULL, NULL),
-(3, 5, '5', b'1', '', '5', '5', b'1', NULL, NULL, NULL, NULL, '2020-01-24 17:17:16', NULL, '$argon2i$v=19$m=16384,t=4,p=2$SHRqMzdFbjN1Y21ZUXZqRg$ycDuX2UY3nQ6JsEzDE89ED7aFYA8F+AY+1Y+8KAKXuY', NULL, NULL, NULL),
-(4, 3, '3', b'0', '', '3', '3', b'1', NULL, NULL, NULL, NULL, '2020-01-24 17:17:32', NULL, '$argon2i$v=19$m=16384,t=4,p=2$QmdNY0lQMDB6WXN5b1NrMw$Y4RRvW67MiLo1AsAKYy2jc2GJfL7B59cH4AD71Tgibs', NULL, NULL, NULL),
-(5, 2, '2', b'1', '', '2', '2', b'1', NULL, NULL, NULL, NULL, '2020-01-24 17:51:51', NULL, '$argon2i$v=19$m=16384,t=4,p=2$Z3V2NEpSTjJDQ2c2L1dOZg$4i7rN/FF7QjMyJWmT5yyyPHWY4Pq5CG/XtDkisG5vAM', NULL, NULL, NULL),
-(6, 4, '4', b'1', '', '4', '4', b'1', NULL, NULL, NULL, NULL, '2020-01-24 17:52:19', NULL, '$argon2i$v=19$m=16384,t=4,p=2$OUR6M2k3ZHpJVmovLnlldQ$uJedeYAMMPyWBTGrgeGMthmyMzfoM33R/Rz7S8zO3Zc', NULL, NULL, NULL),
-(8, 6, '6', b'0', '', '6', '6', b'1', NULL, NULL, NULL, NULL, '2020-01-24 17:53:35', NULL, '$argon2i$v=19$m=16384,t=4,p=2$bGQ3Q2x5N1VIYnhmdEt1bQ$3jNl880EXEbkQi9vqcitFxCf9GubQlcdKOYF0YCpiTE', NULL, NULL, NULL);
+(57, 1, '小明', b'0', '', '13812345671', '1@1.1', b'1', 2, 1, NULL, NULL, '2020-01-29 20:49:47', NULL, '$argon2i$v=19$m=16384,t=4,p=2$NEU1Y2FpQ3R5eFlLZ3pEcA$IcHkdPwa8MpT+3VwPt4ogW6G4OYkTTjmVLms/+mxeLQ', NULL, NULL, NULL),
+(59, 2, '小芳', b'1', '', '13812345672', '2@2.2', b'1', 3, 2, NULL, NULL, '2020-01-29 20:50:32', NULL, '$argon2i$v=19$m=16384,t=4,p=2$aGN4SlM5SlhNb0g3MmgzUA$C8GtSDFtRUyKuAnVJV2n60wzct6XmJuA4ADF7yBzkvA', NULL, NULL, NULL),
+(60, 3, '小猪', b'0', '', '13812345673', '3@3.3', b'1', 3, 2, NULL, NULL, '2020-01-29 20:51:05', NULL, '$argon2i$v=19$m=16384,t=4,p=2$a0Ria01iSTRWdVVVR2hFcQ$Xq4jJASTCtPcaeUgA2nRUFK+FS719of2B6M0UjORCJM', NULL, NULL, NULL),
+(61, 4, '小红', b'1', '', '13812345674', '4@4.4', b'1', 2, 1, NULL, NULL, '2020-01-29 20:51:34', NULL, '$argon2i$v=19$m=16384,t=4,p=2$ZFg5R1dSR3FqVnV1aGs4Zw$RomehIgnPMeaesKDxK6V9RsvgeJNPmUoElnlzXvIeRw', NULL, NULL, NULL),
+(62, 5, '小强', b'0', '', '13812345675', '5@5.5', b'1', 1, 2, NULL, NULL, '2020-01-29 20:54:51', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YVByd2g3b0ovc1FYeFpoTA$acsQc4qh/Bvul6hw7NjNsBOf7rxCn9JVsuM+plRdkhg', NULL, NULL, NULL),
+(63, 6, '小丽', b'1', '', '13812345676', '6@6.6', b'1', 1, 1, NULL, NULL, '2020-01-29 20:54:42', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YmZiTzhxZDE0VDVqdnY2bA$aKhx2UHRqUoRaK0xNt2ir3Vp5xYRhXyJRORBMdvtJ6c', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -264,13 +264,6 @@ CREATE TABLE IF NOT EXISTS `app_users_roles` (
   KEY `fk_users_roles_ref_role_id` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色关联' ROW_FORMAT=COMPACT;
 
---
--- 转存表中的数据 `app_users_roles`
---
-
-INSERT INTO `app_users_roles` (`user_id`, `role_id`) VALUES
-(2, 1),
-(2, 2);
 
 -- --------------------------------------------------------
 
@@ -286,14 +279,6 @@ CREATE TABLE IF NOT EXISTS `app_user_attribute` (
   KEY `fk_user_attribute_ref_user_id` (`user_id`) USING BTREE,
   KEY `fk_user_attribute_ref_dict_data_id` (`dict_data_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户字典关联' ROW_FORMAT=COMPACT;
-
---
--- 转存表中的数据 `app_user_attribute`
---
-
-INSERT INTO `app_user_attribute` (`user_id`, `dict_data_id`) VALUES
-(2, 3),
-(2, 5);
 
 -- --------------------------------------------------------
 

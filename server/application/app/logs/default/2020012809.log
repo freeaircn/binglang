@@ -1,0 +1,3 @@
+2020-01-28 09:20:09 | CRITICAL | 1196 | 5e2f8c497bf6e | 1580174409.508 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-denbnuvlsw.php - line:49 - msg:syntax error, unexpected '&&' (T_BOOLEAN_AND)
+2020-01-28 09:22:42 | CRITICAL | 5968 | 5e2f8ce2df536 | 1580174562.915 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-whigywfn.php - line:69 - msg:'break' not in the 'loop' or 'switch' context
+2020-01-28 09:25:12 | CRITICAL | 8748 | 5e2f8d7882566 | 1580174712.534 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-hdknf.php - line:161 - msg:syntax error, unexpected ':', expecting ',' or ')'

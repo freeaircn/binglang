@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-27 10:23:42
+ * @LastEditTime : 2020-01-29 17:36:30
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -48,16 +48,16 @@ class User_model extends CI_Model
      */
     public function read($client)
     {
-        $extra_columns = $this->_get_user_extra_columns();
-        if ($extra_columns === false) {
+        $dynamic_columns = $this->_get_dynamic_column_label();
+        if ($dynamic_columns === false) {
             return false;
         }
 
         $where_str = $this->_get_sql_where($client);
         if ($where_str === true) {
-            $res['users']         = [];
-            $res['total_rows']    = 0;
-            $res['extra_columns'] = $extra_columns;
+            $res['users']           = [];
+            $res['total_rows']      = 0;
+            $res['dynamic_columns'] = $dynamic_columns;
 
             return $res;
         }
@@ -74,14 +74,13 @@ class User_model extends CI_Model
         }
         $total_rows = $query->num_rows();
         if ($total_rows === 0) {
-            $res['users']         = [];
-            $res['total_rows']    = 0;
-            $res['extra_columns'] = $extra_columns;
+            $res['users']           = [];
+            $res['total_rows']      = 0;
+            $res['dynamic_columns'] = $dynamic_columns;
 
             return $res;
         }
 
-        // for wanted
         $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time');
         if ($where_str !== '') {
             $temp_uid = $query->result_array();
@@ -104,35 +103,39 @@ class User_model extends CI_Model
         $users = $query->result_array();
 
         if (!empty($users)) {
-            foreach ($users as &$v) {
-                // transfer job_label
-                $query = $this->db->select('label')
-                    ->where('id', $v['job_id'])
-                    ->get($this->tables['job']);
-                if ($query === false) {
-                    $error = $this->db->error();
-                    SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-                    return false;
+            foreach ($users as &$user) {
+                // get job_label
+                if ($user['job_id'] !== null) {
+                    $query = $this->db->select('label')
+                        ->where('id', $user['job_id'])
+                        ->get($this->tables['job']);
+                    if ($query === false) {
+                        $error = $this->db->error();
+                        SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                        return false;
+                    }
+                    $job = $query->result_array();
                 }
-                $job = $query->result_array();
-                if (!empty($job)) {
-                    $v['job_label'] = $job[0]['label'];
+                if (isset($job) && !empty($job)) {
+                    $user['job_label'] = $job[0]['label'];
+                } else {
+                    $user['job_label'] = '';
                 }
 
-                // transfer dept_label
-                $temp_label = $this->_get_all_parents_label($v['dept_id'], $this->tables['dept']);
+                // get dept_label
+                $temp_label = $this->_get_all_parents_label($user['dept_id'], $this->tables['dept']);
                 if (!empty($temp_label)) {
                     $dept = '';
                     for ($i = count($temp_label) - 1; $i >= 0; $i--) {
                         $dept = $dept . ' / ' . $temp_label[$i];
                     }
-                    $v['dept_label'] = substr($dept, 3, strlen($dept));
+                    $user['dept_label'] = substr($dept, 3, strlen($dept));
                 }
 
-                // transfer extra attribute label
+                // get extra attribute label
                 // select dict_data_id from user_attribute
                 $query = $this->db->select('dict_data_id')
-                    ->where('user_id', $v['id'])
+                    ->where('user_id', $user['id'])
                     ->order_by('dict_data_id', 'ASC')
                     ->get($this->tables['user_attribute']);
                 if ($query === false) {
@@ -140,36 +143,38 @@ class User_model extends CI_Model
                     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
                     return false;
                 }
-                $temps = $query->result_array();
+                $uid_to_attribute = $query->result_array();
 
-                // select dict_data.label where id from dict_data table
-
-                for ($j = 0; $j < count($extra_columns); $j++) {
-                    $v[$extra_columns[$j]['name']] = '';
+                foreach ($dynamic_columns as $category) {
+                    $user[$category['name']] = '';
                 }
-
-                $i = 0;
-                foreach ($temps as $temp) {
-                    $query = $this->db->select('label')
-                        ->where('id', $temp['dict_data_id'])
+                // 动态属性，非必填字段
+                if (count($uid_to_attribute) !== 0) {
+                    $where_in = $this->_get_sql_ci_where_in_by_ci_result($uid_to_attribute, 'dict_data_id');
+                    $query    = $this->db->select('label, name')
+                        ->where_in('id', $where_in)
                         ->get($this->tables['dict_data']);
                     if ($query === false) {
                         $error = $this->db->error();
                         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
                         return false;
                     }
-                    $dict_data_arr = $query->result_array();
-                    if (!empty($dict_data_arr[0])) {
-                        $v[$extra_columns[$i]['name']] = $dict_data_arr[0]['label'];
-                    }
-                    $i++;
-                }
+                    $user_attribute_data = $query->result_array();
 
+                    foreach ($dynamic_columns as $category) {
+                        foreach ($user_attribute_data as $item) {
+                            // 转小写字母
+                            if (strpos(strtolower($item['name']), strtolower($category['name'])) !== false) {
+                                $user[$category['name']] = $item['label'];
+                            }
+                        }
+                    }
+                }
             }
         }
-        $res['users']         = $users;
-        $res['total_rows']    = $total_rows;
-        $res['extra_columns'] = $extra_columns;
+        $res['users']           = $users;
+        $res['total_rows']      = $total_rows;
+        $res['dynamic_columns'] = $dynamic_columns;
 
         return $res;
     }
@@ -180,45 +185,37 @@ class User_model extends CI_Model
      * @author freeair
      * @DateTime 2020-01-19
      * @param [array] $data
-     * @return [mixed] bool|uid
+     * @return [mixed] bool | uid
      */
-    public function create_user($data = null)
+    public function create_user($user = null, $role_list = [], $attribute_list = [])
     {
-        if (empty($data)) {
+        if (empty($user)) {
             return true;
         }
 
-        if (!$this->db->insert($this->tables['user'], $data)) {
+        $uid = false;
+        $this->db->trans_start();
+        if (!$this->db->insert($this->tables['user'], $user)) {
             $error = $this->db->error();
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
         }
-        $id = $this->db->insert_id($this->tables['user'] . '_id_seq');
+        $uid = $this->db->insert_id($this->tables['user'] . '_id_seq');
 
-        return $id;
-    }
-
-    /**
-     * insert to users_roles table
-     *
-     * @author freeair
-     * @DateTime 2020-01-19
-     * @param [uint] $uid
-     * @param [array] $role_ids
-     * @return bool
-     */
-    public function create_user_role($uid = null, $role_ids = null)
-    {
-        if (empty($uid) || empty($role_ids)) {
-            return true;
+        // assign role
+        foreach ($role_list as $role) {
+            if (!empty($role)) {
+                $temp_role['user_id'] = $uid;
+                $temp_role['role_id'] = $role;
+                $this->db->insert($this->tables['users_roles'], $temp_role);
+            }
         }
 
-        $this->db->trans_start();
-        foreach ($role_ids as $v) {
-            if (!empty($v)) {
-                $data['user_id'] = $uid;
-                $data['role_id'] = $v;
-                $this->db->insert($this->tables['users_roles'], $data);
+        // assign extra attribute
+        foreach ($attribute_list as $attribute) {
+            if (!empty($attribute)) {
+                $temp_attribute['user_id']      = $uid;
+                $temp_attribute['dict_data_id'] = $attribute;
+                $this->db->insert($this->tables['user_attribute'], $temp_attribute);
             }
         }
         $this->db->trans_complete();
@@ -229,42 +226,7 @@ class User_model extends CI_Model
             return false;
         }
 
-        return true;
-    }
-
-    /**
-     * insert to user_attribute table
-     *
-     * @author freeair
-     * @DateTime 2020-01-19
-     * @param [uint] $uid
-     * @param [array] $extra_attributes
-     * @return bool
-     */
-    public function create_user_extra_attribute($uid = null, $extra_attributes = null)
-    {
-        if (empty($uid) || empty($extra_attributes)) {
-            return true;
-        }
-
-        $this->db->trans_start();
-        foreach ($extra_attributes as $v) {
-            if (!empty($v)) {
-                $data['user_id']      = $uid;
-                $data['dict_data_id'] = $v;
-                $this->db->insert($this->tables['user_attribute'], $data);
-            }
-        }
-        $this->db->trans_complete();
-
-        if ($this->db->trans_status() === false) {
-            $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-
-            return false;
-        }
-
-        return true;
+        return $uid;
     }
 
     /**
@@ -276,92 +238,43 @@ class User_model extends CI_Model
      * @param [array] $data
      * @return bool
      */
-    public function update_user($uid = null, $data = null)
+    public function update_user($uid = null, $user = null, $role_list = [], $attribute_list = [])
     {
-        if (empty($uid) || empty($data)) {
+        if (empty($uid)) {
             return true;
         }
-        $this->db->where('id', $uid);
-        $res = $this->db->update($this->tables['user'], $data);
 
-        if (!$res) {
+        $this->db->trans_start();
+        if ($this->db->where('id', $uid)->update($this->tables['user'], $user) === false) {
             $error = $this->db->error();
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * update users_roles table
-     *
-     * @author freeair
-     * @DateTime 2020-01-19
-     * @param [uint] $uid
-     * @param [array] $role_ids
-     * @return bool
-     */
-    public function update_user_role($uid = null, $role_ids = null)
-    {
-        if (empty($uid) || empty($role_ids)) {
-            return true;
         }
 
-        // delete old
+        // delete old role
         if ($this->db->where('user_id', $uid)->delete($this->tables['users_roles']) === false) {
             $error = $this->db->error();
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
         }
-
-        // insert new
-        $this->db->trans_start();
-        foreach ($role_ids as $v) {
-            if (!empty($v)) {
-                $data['user_id'] = $uid;
-                $data['role_id'] = $v;
-                $this->db->insert($this->tables['users_roles'], $data);
+        // insert new role
+        foreach ($role_list as $role) {
+            if (!empty($role)) {
+                $temp_role['user_id'] = $uid;
+                $temp_role['role_id'] = $role;
+                $this->db->insert($this->tables['users_roles'], $temp_role);
             }
         }
-        $this->db->trans_complete();
 
-        if ($this->db->trans_status() === false) {
-            $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * update user_attribute table
-     *
-     * @author freeair
-     * @DateTime 2020-01-19
-     * @param [uint] $uid
-     * @param [array] $extra_attributes
-     * @return bool
-     */
-    public function update_user_extra_attribute($uid = null, $extra_attributes = null)
-    {
-        if (empty($uid) || empty($extra_attributes)) {
-            return true;
-        }
-        // delete old
+        // delete old attribute
         if ($this->db->where('user_id', $uid)->delete($this->tables['user_attribute']) === false) {
             $error = $this->db->error();
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
         }
-
-        // insert new
-        $this->db->trans_start();
-        foreach ($extra_attributes as $v) {
-            if (!empty($v)) {
-                $data['user_id']      = $uid;
-                $data['dict_data_id'] = $v;
-                $this->db->insert($this->tables['user_attribute'], $data);
+        // insert new attribute
+        foreach ($attribute_list as $attribute) {
+            if (!empty($attribute)) {
+                $temp_attribute['user_id']      = $uid;
+                $temp_attribute['dict_data_id'] = $attribute;
+                $this->db->insert($this->tables['user_attribute'], $temp_attribute);
             }
         }
         $this->db->trans_complete();
@@ -371,7 +284,6 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-
         return true;
     }
 
@@ -411,9 +323,9 @@ class User_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-     * @return array| bool
+     * @return mixed array| bool
      */
-    public function prepare_new_form()
+    public function get_form_by_user_create()
     {
         $res = [];
         // select dict.id, dict.label like name = user_attr_ from dict table
@@ -426,11 +338,11 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $dict = $query->result_array();
+        $user_attribute_category = $query->result_array();
 
         // select dict_data.id, dict_data.label where dict.id from dict_data table
-        $extra_attribute = [];
-        foreach ($dict as $v) {
+        $user_attribute_dynamic_list = [];
+        foreach ($user_attribute_category as $v) {
             $query = $this->db->select('id, label')
                 ->where('dict_id', $v['id'])
                 ->order_by('id', 'ASC')
@@ -440,12 +352,16 @@ class User_model extends CI_Model
                 SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
                 return false;
             }
-            $dict_data         = $query->result_array();
-            $extra_attribute[] =
-                [
-                "label"  => $v['label'],
-                "values" => $dict_data,
-            ];
+            $user_attribute_data = $query->result_array();
+
+            // 有A，但没有A1，A2，user_attribute_dynamic_list不填入A的部分
+            if (count($user_attribute_data) !== 0) {
+                $user_attribute_dynamic_list[] =
+                    [
+                    "label"    => $v['label'],
+                    "sub_list" => $user_attribute_data,
+                ];
+            }
         }
 
         // select role.id, role.label from role table
@@ -457,7 +373,7 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $role = $query->result_array();
+        $role_list = $query->result_array();
 
         // select dept.id, dept.label from dept table, make tree structure
         $query = $this->db->select('id, label, pid')
@@ -469,7 +385,7 @@ class User_model extends CI_Model
             return false;
         }
         $dept_temp = $query->result_array();
-        $dept      = $this->common_tools->arr2tree($dept_temp);
+        $dept_list = $this->common_tools->arr2tree($dept_temp);
 
         // select job.id, job.label from job table
         $query = $this->db->select('id, label')
@@ -480,12 +396,12 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $job = $query->result_array();
+        $job_list = $query->result_array();
 
-        $res['extra_attribute'] = $extra_attribute;
-        $res['role']            = $role;
-        $res['dept']            = $dept;
-        $res['job']             = $job;
+        $res['user_attribute_dynamic_list'] = $user_attribute_dynamic_list;
+        $res['role_list']                   = $role_list;
+        $res['dept_list']                   = $dept_list;
+        $res['job_list']                    = $job_list;
 
         return $res;
     }
@@ -497,16 +413,16 @@ class User_model extends CI_Model
      * @author freeair
      * @DateTime 2020-01-19
      * @param int $uid
-     * @return array
+     * @return mixed bool | array
      */
-    public function prepare_current_form($uid = null)
+    public function get_form_by_user_edit($uid = null)
     {
         if (empty($uid)) {
             return false;
         }
-        // get select list of roles, dept, job, extra_attribute
-        $lists = $this->prepare_new_form();
-        if ($lists === false) {
+        // get select list of roles, dept, job, attribute
+        $form_lists = $this->get_form_by_user_create();
+        if ($form_lists === false) {
             return false;
         }
 
@@ -521,7 +437,12 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $user = $query->result_array()[0];
+        // no data in db
+        if ($query->num_rows() === 0) {
+            return false;
+        }
+        // $user = $query->result_array()[0];
+        $user = $this->_replace_null_field_in_user_array($query->result_array()[0]);
 
         // select role_id from users_roles
         $query = $this->db->select('role_id')
@@ -533,16 +454,23 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $temp = $query->result_array();
-
-        $role_ids = [];
-        foreach ($temp as $v) {
-            $role_ids[] = $v['role_id'];
+        $temp_role = $query->result_array();
+        $roles     = [];
+        foreach ($temp_role as $v) {
+            $roles[] = $v['role_id'];
         }
 
-        // select dict_data_id from user_attribute
+        $dynamic_columns = $this->_get_dynamic_column_label();
+        if ($dynamic_columns === false) {
+            return false;
+        }
+        $user_attribute = [];
+        foreach ($dynamic_columns as $category) {
+            $user_attribute[] = '';
+        }
+
         $query = $this->db->select('dict_data_id')
-            ->where('user_id', $uid)
+            ->where('user_id', $user['id'])
             ->order_by('dict_data_id', 'ASC')
             ->get($this->tables['user_attribute']);
         if ($query === false) {
@@ -550,18 +478,42 @@ class User_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $temp = $query->result_array();
+        $uid_to_attribute = $query->result_array();
+        // 非必填字段
+        if (count($uid_to_attribute) !== 0) {
+            $where_in = $this->_get_sql_ci_where_in_by_ci_result($uid_to_attribute, 'dict_data_id');
 
-        $extra_attributes = [];
-        foreach ($temp as $v) {
-            $extra_attributes[] = $v['dict_data_id'];
+            $query = $this->db->select('id, name')
+                ->where_in('id', $where_in)
+                ->get($this->tables['dict_data']);
+            if ($query === false) {
+                $error = $this->db->error();
+                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                return false;
+            }
+            $user_attribute_data = $query->result_array();
+
+            $i = 0;
+            foreach ($dynamic_columns as $category) {
+                foreach ($user_attribute_data as $item) {
+                    // 转小写字母
+                    if (strpos(strtolower($item['name']), strtolower($category['name'])) !== false) {
+                        $user_attribute[$i] = $item['id'];
+                    }
+                }
+                $i++;
+            }
         }
 
-        $user['role_ids']         = $role_ids;
-        $user['extra_attributes'] = $extra_attributes;
+        $user['roles']          = $roles;
+        $user['user_attribute'] = $user_attribute;
 
-        $res['lists'] = $lists;
-        $res['user']  = $user;
+        $res['user_attribute_dynamic_list'] = $form_lists['user_attribute_dynamic_list'];
+
+        $res['role_list'] = $form_lists['role_list'];
+        $res['dept_list'] = $form_lists['dept_list'];
+        $res['job_list']  = $form_lists['job_list'];
+        $res['form']      = $user;
 
         return $res;
     }
@@ -861,13 +813,13 @@ class User_model extends CI_Model
     }
 
     /**
-     * prepare user extra attribute columns
+     * user dynamic attribute columns label
      *
      * @author freeair
      * @DateTime 2020-01-27
      * @return mixed bool | array
      */
-    protected function _get_user_extra_columns()
+    protected function _get_dynamic_column_label()
     {
         // select dict.id, dict.label like name = user_attr_ from dict table
         $query = $this->db->select('name, label')
@@ -880,5 +832,27 @@ class User_model extends CI_Model
             return false;
         }
         return $query->result_array();
+    }
+
+    /**
+     * replace null field with '' for select result from user table
+     *
+     * @author freeair
+     * @DateTime 2020-01-29
+     * @param array $array
+     * @return mixed array | bool
+     */
+    protected function _replace_null_field_in_user_array($array = [])
+    {
+        if (empty($array)) {
+            return true;
+        }
+
+        foreach ($array as &$v) {
+            if ($v === null) {
+                $v = '';
+            }
+        }
+        return $array;
     }
 }

@@ -12,15 +12,17 @@
 4. [done]设定页面crud流程
 5. 用户管理页面  
    [done]数据显示区分页，新增，编辑，删除操作，显示变化如何呈现用户  
-   [done]前后端输入验证  
-   用户管理页面 检索功能，适应多条件组合  
+   [done]用户管理页面 检索功能，适应多条件组合  
+   [done]后端输入验证  
+   [done]前端post, put, delete请求 content-type ；application/json，后端需支持json输入
    埋点  
 6. 后端log  
 7. 前端log  
 8. [done]编写用户头像功能   
 9. [done]table列动态显示/隐藏功能  
 
-
+. 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
+. 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
 . 参照用户管理页面，更新 app其他页面文件  
 . 编写动态路由，权限管理  
   用户认证，访问api权限认证  
@@ -28,10 +30,19 @@
 . 后端，用户数据/文件的存放文件位置，和访问权限。  
   数据库权限，centos文件路径权限  
 
+create时，没有选择job_id，前端‘’，后端处理，当‘’时，insert语句不含job_id，而table定义时，job_id default null, 则读取时，后端返回前端 job_id null
+update时
 
 ---
 ### 置顶
 ```
+# JS
+  1 Undefined类型只有一个值，即undefined。当声明的变量还未被初始化时，变量的默认值为undefined。
+    Null类型也只有一个值，即null。null用来表示尚未存在的对象，常用来表示函数企图返回一个不存在的对象。
+    
+  2 qs 序列化
+    undefined或空数组，axios post 提交时，qs不填入http body。
+
 # PHP
   1 检查多维数组入参。比如；a = [[], []], empty(a) false
   2 isset - 检测变量是否已设置并且非 NULL。比如；isset('') true
@@ -46,6 +57,11 @@
       array() (一个空数组)
       $var; (一个声明了，但是没有值的变量)
   4 未申明变量，empty($a) - true, isset($a) - false
+  
+  5 后端api验证client数据
+    1 client数据中，包含规定的字段，valide 检查合法。
+    2 client数据中，不包含规定的字段，valide 检查存在。
+    3 client数据中，包含不规定的字段，只取valide 通过的规定字段。
   
 # CI  
   1 ci 查询数据表结果->result_array()，为数组结构。
@@ -62,7 +78,7 @@
         当client没有参数a时，php提示Undefined index: a。 一般作为正式的网站会把提示关掉的，甚至连错误信息也被关掉。
   
 # DB
-  1 外键字段，写入值的数据类型。比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
+  1 外键字段，比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
   2 select语句完整语法
       SELECT 
       DISTINCT <select_list>
@@ -391,59 +407,13 @@
       user，user_attribute，users_roles
         dict_data，dict
         role
-
-  4 新建：
-    4.1 步骤：
-      检索dict表name字段含user_attr_，得到dict.id, dict.label （array-1）
-      dict.label作为form单项label
-      通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label （array-2）
-      （array-2）作为form表单项select content
-      
-      读dict, dict_data，role，dept, job得到select 列表
-      写user，user_attribute，users_roles
-      
-      # 确保额外属性项在 dict 和 user_attribute 的读，写 顺序一致，与页面显示一致，特别核对“编辑”
-    4.2 数据格式：
-    [
-      {
-        dict.label,
-        [
-          {
-            dict_data.id,
-            dict_data.label
-          },
-          {
-            dict_data.id,
-            dict_data.label
-          }
-        ]
-      },
-      {
-        dict.label,
-        [
-          {
-            dict_data.id,
-            dict_data.label
-          },
-          {
-            dict_data.id,
-            dict_data.label
-          }
-        ]
-      },
-    ]
-    
-    extraAttribute: []
-    
-    4.3 API:
-    apiGetUser, params: wanted: new_form
   
-  5 页面用户信息包含多条，单个表单显示，画面较长，划分两个表单，使用el-tabs 切换表单。
+  4 页面用户信息包含多条，单个表单显示，画面较长，划分两个表单，使用el-tabs 切换表单。
     # 注意，单个表单的validate和tab的跳转。
   
-  6 db操作，比如 批量insert多条，其中一条失败后，事务处理测试
+  5 db操作，比如 批量insert多条，其中一条失败，事务处理测试
   
-  7 确保额外属性项在 dict 和 user_attribute 的读，写 顺序一致，与页面显示一致，特别核对“编辑”
+  6 确保额外属性项在 dict 和 user_attribute 的读，写 顺序一致，与页面显示一致，特别核对“编辑”
     # 新增时，id递增；查询时，order by id保证顺序；外键引用id，约束保证删除一致。更新时，id不变，仅label变化，对应顺序一致。
       分析如下：
       # 读 dict 按ida升序
@@ -467,133 +437,282 @@
       删除ida或idb
       user_attribute table 引用 dict_data table 引用 dict table  外键约束
   
-  8. 编辑：
-  8.1 步骤：
-      检索dict表name字段含user_attr_，得到dict.id, dict.label （array-1）
-      dict.label作为form单项label
-      通过dict.id 检索dict_data 表，得到dict_data.id, dict_data.label （array-2）
-      （array-2）作为form表单项select content
+  7 流程：
+      dict table:
+      attribute 类
       
-      读dict, dict_data，role，dept, job得到select 列表，读user，user_attribute，users_roles
-      写user，user_attribute，users_roles
+      dict data table       fk dict
+      attribute 可选值
+      
+      user_extra table:     fk dict data
+      uid, dict data id
+      
+      示例：
+      A，B两类
+      A类，可选值 有A1 A2
+      B类，可选值 有B1 B2
+      
+      dict table：
+      1 A
+      2 B
+      
+      dict data table：
+      1 A1 (fk 1)
+      2 A2 (fk 1)
+      3 B1 (fk 2)
+      4 B2 (fk 2)
+      
+      新加用户form显示正确。
+      当A域不选，B域选B1，前台提交 extra_attributes: [null, 4]
+      # 影响查询，新建，编辑方法
+      
+      
+      约定：
+      dict 表name字段 -- user_attr_AA
+      dict_data 表name字段 -- user_attr_AA_BBBB
+      
+      方案：
+      1 pre create: form
+        后端
+        user_attribute_category = select id, label from dict where name like user_attr_% order by id
+        foreach user_attribute_category
+          user_attribute_data = select id, label from dict data where fk = user_attribute_category.id
+          
+        【response】user_attribute_dynamic_list = [
+                                [label: user_attribute_category.label,
+                                 sub_list: user_attribute_data
+                                ],
+                              ]
+        示例：
+        [
+          [A,
+           [[1, A1], [2, A2]]
+          ],
+          [B,
+           [[3, B1], [4, B2]]
+          ]
+        ]
+        
+        【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分
+        【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能？？？？
+      
+        前端：
+        length = user_attribute_dynamic_list
+        【表单v-model】user_attribute = array(length).fill('')
+        
+      2 do create: 
+        前端:
+        提交 user_attribute
+        
+        示例：
+        ['', ''] 或 ['', B2] 或 [A1, ''] 或 [A2, B1]
+        
+        后端：
+        '' 不写入table
+        
+      3 查询：
+        后端：
+        【response】dynamic_columns = select label, name from dict where name like user_attr_%
+
+        uid = select id from user where ... order by sort
+        
+        uid_to_attribute = select dict data id from user attribute where user id = uid
+        
+        user_attribute_data = slect label, name from dict data where id in uid_to_attribute.id
+        
+        foreach ($dynamic_columns as $category) {
+            $user[$category['name']] = '';
+        }
+        foreach ($dynamic_columns as $category) {
+            foreach ($user_attribute_data as $item) {
+                // 转小写字母
+                if (strpos(strtolower($item['name']), strtolower($category['name'])) !== false) {
+                    $user[$category['name']] = $item['label'];
+                }
+            }
+        }
+        
+      4 pre update:
+        前端：
+        提交uid
+        
+        后端：
+        pre create: form
+        
+        //
+        dynamic_columns = select label, name from dict where name like user_attr_%
+        
+        uid_to_attribute = select dict data id from user attribute where user id = uid
+        
+        user_attribute_data = slect id, name from dict data where id in uid_to_attribute.id
+        
+        $i = 0;
+        foreach ($dynamic_columns as $category) {
+            foreach ($user_attribute_data as $item) {
+                // 转小写字母
+                if (strpos(strtolower($item['name']), strtolower($category['name'])) !== false) {
+                    $user_attribute[$i] = $item['id'];
+                }
+            }
+            $i++;
+        }
+        
+        【response】$user_attribute
   
-  8.2 API:
-    apiGetUser, params: wanted: current_form
-  
-  8.3 password
+  8 password
       不是必改项，后端识别password = ‘’，跳过hash_password
   
-  9 insert, update 入参检查
-    # 注意检查多维数组入参。比如；a = [[], []], empty(a)不为空
-    # 注意 外键字段，写入值的数据类型，比如外键某个id，前端表单没有输入，后端收到的是''，写数据表时，将报错。
-    
   10. 删除: 
       开启事务
       user_attribute，users_roles, user
-      
-  11. 前后端输入验证
-      # CI库：
-        $this->load->library('form_validation');
-        $this->form_validation->set_rules('username', 'Username', 'required');
-        if ($this->form_validation->run() == FALSE)
-        
-        验证系统支持设置你自己的验证函数，要调用一个回调函数(限制只能定义在控制器中)只需把函数名加一个 "callback_" 前缀 并放在验证规则里
-        使用任何可调用的方法作为验证规则，任何 is_callable() 函数返回 TRUE 的东西都可以作为规则，使用任何对象和方法来接收域值作为第一个参数
-        
-        你可能希望对一个单纯的数组进行验证，而不是对 $_POST 数组。
-          $data = array(
-              'username' => 'johndoe',
-              'password' => 'mypassword',
-              'passconf' => 'mypassword'
-          );
-          $this->form_validation->reset_validation();
-          $this->form_validation->set_data($data);
-          $this->form_validation->set_rules('rules');
-          $this->form_validation->run()
+  
+  11. 前端post, put, delete请求 content-type ；application/json，后端需支持json输入
+      1 背景：当params含空数组时，qs序列化，自动去除空数组，扰乱了后端基于前后端 数据定义的输入验证。调整前端post, put, delete请求body使用json格式，get请求仍使用qs序列化参数。
+      2 调整点：
+        1 前端，@/src/utils/request.js文件，headers: { 'Content-Type': 'application/json' },
+          const service = axios.create({
+            baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+            withCredentials: true, // send cookies when cross-domain requests
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 5000 // request timeout
+          })
           
+          JSON.stringify(data)
+          service.defaults.transformRequest = [function(data) {
+            return JSON.stringify(data)
+          }]
           
-          如果你想验证多个数组，那么你应该在验证下一个新数组之前先调用 reset_validation() 方法。
+        2 后端CI api，采用chriskacerguis restful组件(不支持解析json输入)，在控制器post,put,delete方法入口
+          $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+          $client       = json_decode($stream_clean, true);
           
-          多个规则组织成规则集，你需要将它们放置到子数组中。调用特定组的验证规则，你可以将它的名称传给 run() 方法。
+  12. 后端验证
+      1 CI库提供了form validation library，处于以下需求，手动修改了CI原生form validation适应GET,POST,PUT,DELETE请求数据，且检查数据为空数组。
+        1 在前后端分离模式下，原生实现中判断了HTTP method post，导致相同输入数据，在post api和put api的验证输出不一致。
+        2 当PUT数据为空数组时，比如PUT []，原生跳过验证。前后端分离和restful api场景，前端更新表单，PUT方法提交数据，需校验字段是否存在。
+      2 修改form validation library
+        1 复制form validation.php 文件至@/application/app/library，命名为App_form validation.php，同步修改class名App_form_validation
+        2 校验规则集文件，@/application/app/config/app_form_validation.php，CI机制，load library时，类的construct函数会自己动加载config路径下同名配置文件。
+        3 修改App_form_validation类
+          1 去掉入口的if
+            public function set_rules($field, $label = '', $rules = array(), $errors = array())
+            {
+              // No reason to set rules if we have no POST data
+              // or a validation array has not been specified
+              if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
+              {
+                return $this;
+              }
+          2 直接赋值$this->validation_data，不用POST数组。
+            public function run($group = '')
+            {
+              $validation_array = empty($this->validation_data)
+                ? $_POST
+                : $this->validation_data;
+            .
+            .
+            .
+            屏蔽 $this->_reset_post_array()
+            // Now we need to re-set the POST data with the new, processed data
+            empty($this->validation_data) && $this->_reset_post_array();
+            
           
-          CI预置规则也可以作为独立的函数被调用，例如:你也可以使用任何一个接受两个参数的原生 PHP 函数（其中至少有一个参数是必须的，用于传递域值）
-          $this->form_validation->required($string);
-      
-      # 后端验证流程：
-        1 定好 每个api 提交的数据结构
-        2 根据提交的数据结构，定义校验规则集 - 将控制器方法和规则集关联在一起
+          【注意】修改后，当输入某个域的值为[]时，比如PUT ['idx': []]，规则检查idx域返回true。
+          
+      3 后端验证约定：
+        1 前后端协商定义每个api 请求的数据结构
+        2 根据请求数据结构，定义校验规则集
         3 api入口，获取提交的数据
-        4 进行校验
+        4 进行校验，分场景：
+          1 client数据中，包含规定的字段，valide 字段合法。
+          2 client数据中，不包含规定的字段，valide 字段存在。
+          3 client数据中，包含不规定的字段（不在验证规则集中，不会检查），只取valide 通过的规定字段，忽略超出规定的字段。
+        5 流程：
+          获取输入 -- 执行数据验证 -- 验证失败，响应client -- 验证通过，业务处理，失败，响应client。
+          当验证通过，业务处理结束，api结束时，response合理的信息。
         
-      # 示例：
+      4 示例：
         1 api方法入口：
             public function index_get()
             {
                 $client = $this->get();
-
                 $valid = $this->common_tools->valid_client_data($client, 'user_index_get');
-                if ($valid !== true) {
-                    $res['code'] = App_Code::PARAMS_INVALID;
-                    $res['msg']  = $valid;
-                    $this->response($res, 200);
-                }
-                
-        2 application/app/libraries/Common_tools.php 
-          /**
-           * valid client data
-           *
-           * @author freeair
-           * @DateTime 2020-01-26
-           * @param [associative array] $array
-           * @param [string] $rules
-           * @return mixed bool | string
-           */
-          public function valid_client_data($array = [], $rules = '')
-          {
-              if (empty($rules)) {
-                  return false;
-              }
-              if (empty($array)) {
-                  return true;
-              }
-
-              $this->form_validation->reset_validation();
-              $this->form_validation->set_data($array);
-              if ($this->form_validation->run($rules) == false) {
-                  return $this->form_validation->error_string();
-              } else {
-                  return true;
-              }
-          }
+            
+            public function index_post()
+            {
+                $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+                $client       = json_decode($stream_clean, true);
+                $valid = $this->common_tools->valid_client_data($client, 'user_index_post');
         
-        3 application/app/config/form_validation.php  
+        2 @/application/app/libraries/Common_tools.php 
+            public function valid_client_data($array = [], $rules = '')
+            {
+                if (empty($rules)) {
+                    return false;
+                }
+                $this->form_validation->reset_validation();
+                $this->form_validation->set_data($array);
+                if ($this->form_validation->run($rules) == false) {
+                    return $this->form_validation->error_string();
+                } else {
+                    return true;
+                }
+            }
+        
+        3 @/application/app/config/app_form_validation.php  
+          支持域值为 数组类型，当某个域的值为[]时，比如PUT ['idx': []]，规则检查idx域返回true。
             $config = [
-                'user_index_get' => [
+                'user_index_post' => [
                     [
-                        'field'  => 'limit',
-                        'label'  => 'limit',
+                        'field'  => 'role_ids[]',
+                        'label'  => 'role_ids',
                         'rules'  => [
-                            ['valid_limit',
+                            ['valid_role_ids',
                                 function ($str = null) {
-                                    // not include limit field, for non-required item
+                                    // field is required
                                     if (!isset($str)) {
-                                        return true;
+                                        return false;
                                     }
-                                    // include limit field, e.g. match 5_10
-                                    return (bool) preg_match('/^\d{1,2}_\d{1,3}$/', $str);
+                                    // e.g. number no zero
+                                    return ($str != 0 && ctype_digit((string) $str));
                                 },
                             ],
                         ],
-                        'errors' => ['valid_limit' => '请求参数非法！'],
+                        'errors' => ['valid_role_ids' => '请求参数非法！role_ids'],
                     ],
-                ],
-            ];
+
 
             $config['error_prefix'] = '';
             $config['error_suffix'] = '';
             
+      5 新建时，job域不填，提交域值''，后端写DB时判断===''，跳过该字段，而table该字段default null.
+        编辑时，读取到job域值null，不影响页面显示含义。保持job域不变，提交编辑，后端验证不通过。
+        原因：查询时后端返回null，不影响页面显示，但提交null，验证不通过。
+        方案：前端接收''，不影响页面显示的含义，后端查询返回前，遍历结果，将null 替换为''。
+          @/application/app/model/user_model.php  
+            public function get_form_by_user_edit
+              $user = $this->_replace_null_field_in_user_array($query->result_array()[0]);
+            
+            protected function _replace_null_field_in_user_array($array = [])
+            {
+                if (empty($array)) {
+                    return true;
+                }
+
+                foreach ($array as &$v) {
+                    if ($v === null) {
+                        $v = '';
+                    }
+            }
+            return $array;
+            }
+            
+        对于dept_id域，不能按此方案处理。
+        原因：dept_id域绑定 treeselect组件（不选时，组件返回undefined），而undefined域值，在json序列化时，去除了此域，则后端接收不到此域。
+        方案：前端dept域必填，初始默认值。
+        
   
-  12. table 增加显示extra attribute列
+  12. table 增加显示attribute列
       # 流程
         查询user table
         !empty(user)

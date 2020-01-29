@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 00:43:03
+ * @LastEditTime : 2020-01-28 16:02:41
  */
 namespace App_Settings;
 
@@ -14,7 +14,8 @@ class App_Code
     const PARAMS_INVALID      = 101;
     const USERS_TOKEN_INVALID = 110;
 
-    const HASH_PASSWORD_FAILED              = 150;
+    const PASSWORD_IS_EMPTY                 = 150;
+    const HASH_PASSWORD_FAILED              = 151;
     const TBL_USER_CREATE_FAILED            = 200;
     const TBL_USER_ROLE_CREATE_FAILED       = 201;
     const TBL_USER_EXTRA_ATTR_CREATE_FAILED = 202;

@@ -1,0 +1,16 @@
+2020-01-28 12:54:25 (1580187265.452) [ERROR] [Common_tools.php:93] [Common_tools::hash_password] 5732 | 5e2fbe816b47d | /api/user | POST | APP_code:  - input of func hash_password checked failed 
+2020-01-28 12:54:25 (1580187265.453) [ERROR] [User.php:119] [User::index_post] 5732 | 5e2fbe816b47d | /api/user | POST | APP_code: 150 - 密码hash处理失败，请稍后重试！ 
+2020-01-28 16:30:22 (1580200222.79) [ERROR] [User_model.php:192] [User_model::create_user] 5732 | 5e2ff11e04567 | /api/user | POST | DB_code: 1452 - Cannot add or update a child row: a foreign key constraint fails (`binglang`.`app_user`, CONSTRAINT `fk_user_ref_dept_id` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`)) 
+2020-01-28 16:30:22 (1580200222.80) [ERROR] [User.php:131] [User::index_post] 5732 | 5e2ff11e04567 | /api/user | POST | APP_code: 200 - 数据表USER新加失败，请稍后重试！ 
+2020-01-28 16:30:40 (1580200240.315) [ERROR] [User_model.php:192] [User_model::create_user] 5732 | 5e2ff1303c5f3 | /api/user | POST | DB_code: 1452 - Cannot add or update a child row: a foreign key constraint fails (`binglang`.`app_user`, CONSTRAINT `fk_user_ref_dept_id` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`)) 
+2020-01-28 16:30:40 (1580200240.315) [ERROR] [User.php:131] [User::index_post] 5732 | 5e2ff1303c5f3 | /api/user | POST | APP_code: 200 - 数据表USER新加失败，请稍后重试！ 
+2020-01-28 17:01:51 (1580202111.554) [ERROR] [User_model.php:192] [User_model::create_user] 5732 | 5e2ff87f7910b | /api/user | POST | DB_code: 1062 - Duplicate entry '8' for key 'uc_user_sort' 
+2020-01-28 17:01:51 (1580202111.555) [ERROR] [User.php:129] [User::index_post] 5732 | 5e2ff87f7910b | /api/user | POST | APP_code: 200 - 数据表USER新加失败，请稍后重试！ 
+2020-01-28 17:09:20 (1580202560.113) [ERROR] [User_model.php:192] [User_model::create_user] 5732 | 5e2ffa400d95c | /api/user | POST | DB_code: 1062 - Duplicate entry '7' for key 'uc_user_sort' 
+2020-01-28 17:09:20 (1580202560.113) [ERROR] [User.php:129] [User::index_post] 5732 | 5e2ffa400d95c | /api/user | POST | APP_code: 200 - 数据表USER新加失败，请稍后重试！ 
+2020-01-28 18:23:00 (1580206980.537) [ERROR] [Common_tools.php:93] [Common_tools::hash_password] 5732 | 5e300b847bece | /api/user | POST | APP_code:  - input of func hash_password checked failed 
+2020-01-28 18:23:00 (1580206980.538) [ERROR] [User.php:100] [User::index_post] 5732 | 5e300b847bece | /api/user | POST | APP_code: 151 - 密码hash处理失败，请稍后重试！ 
+2020-01-28 18:24:05 (1580207045.305) [ERROR] [Common_tools.php:93] [Common_tools::hash_password] 5732 | 5e300bc543588 | /api/user | POST | APP_code:  - input of func hash_password checked failed 
+2020-01-28 18:24:05 (1580207045.305) [ERROR] [User.php:100] [User::index_post] 5732 | 5e300bc543588 | /api/user | POST | APP_code: 151 - 密码hash处理失败，请稍后重试！ 
+2020-01-28 18:29:50 (1580207390.904) [ERROR] [Common_tools.php:93] [Common_tools::hash_password] 5732 | 5e300d1ed766d | /api/user | POST | APP_code:  - input of func hash_password checked failed 
+2020-01-28 18:29:50 (1580207390.904) [ERROR] [User.php:100] [User::index_post] 5732 | 5e300d1ed766d | /api/user | POST | APP_code: 151 - 密码hash处理失败，请稍后重试！ 

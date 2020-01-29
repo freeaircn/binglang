@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 21:02:38
+ * @LastEditTime : 2020-01-29 09:58:37
  */
 import axios from 'axios'
 import qs from 'qs'
@@ -15,17 +15,14 @@ import { getToken } from '@/utils/auth'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   withCredentials: true, // send cookies when cross-domain requests
+  headers: { 'Content-Type': 'application/json' },
   timeout: 5000 // request timeout
 })
 
+// service.defaults.headers.post['Content-Type'] = 'application/json'
 service.defaults.transformRequest = [function(data) {
-  // let ret = ''
-  // let it = ''
-  // for (it in data) {
-  //   ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-  // }
-  // return ret
-  return qs.stringify(data, { arrayFormat: 'indices' })
+  // return qs.stringify(data, { arrayFormat: 'indices' })
+  return JSON.stringify(data)
 }]
 
 service.defaults.paramsSerializer = function(params) {

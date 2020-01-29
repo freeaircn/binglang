@@ -4,12 +4,12 @@
  * @Author: freeair
  * @Date: 2020-01-25 23:39:38
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-28 21:48:56
+ * @LastEditTime : 2020-01-29 12:58:42
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
 $config = [
-    'user_index_get'  => [
+    'user_index_get'    => [
         [
             'field'  => 'limit',
             'label'  => 'limit',
@@ -167,7 +167,7 @@ $config = [
             'errors' => ['valid_uid' => '请求参数非法！'],
         ],
     ],
-    'user_index_post' => [
+    'user_index_post'   => [
         [
             'field'  => 'id',
             'label'  => 'id',
@@ -178,7 +178,7 @@ $config = [
                         if (!isset($str)) {
                             return false;
                         }
-                        // e.g. number no zero
+                        // e.g. '', or number no zero
                         return $str === '' ? true : ($str != 0 && ctype_digit((string) $str));
                     },
                 ],
@@ -305,12 +305,12 @@ $config = [
             'errors' => ['valid_enabled' => '提交数据非法！enabled'],
         ],
         [
-            'field'  => 'role_ids[]',
-            'label'  => 'role_ids',
+            'field'  => 'roles[]',
+            'label'  => 'roles',
             'rules'  => [
-                ['valid_role_ids',
+                ['valid_roles',
                     function ($str = null) {
-                        // field is not required
+                        // field is required
                         if (!isset($str)) {
                             return false;
                         }
@@ -319,7 +319,7 @@ $config = [
                     },
                 ],
             ],
-            'errors' => ['valid_role_ids' => '请求参数非法！role_ids'],
+            'errors' => ['valid_roles' => '请求参数非法！roles'],
         ],
         [
             'field'  => 'identity_document_number',
@@ -344,12 +344,12 @@ $config = [
             'rules'  => [
                 ['valid_dept_id',
                     function ($str = null) {
-                        // field is not required
+                        // field is required
                         if (!isset($str)) {
-                            return true;
+                            return false;
                         }
                         // e.g. number no zero
-                        return ($str === '') ? true : ($str != 0 && ctype_digit((string) $str));
+                        return ($str != 0 && ctype_digit((string) $str));
                     },
                 ],
             ],
@@ -373,12 +373,31 @@ $config = [
             'errors' => ['valid_job_id' => '提交数据非法！job_id'],
         ],
         [
-            'field'  => 'role_ids[]',
-            'label'  => 'role_ids',
+            'field'  => 'user_attribute[]',
+            'label'  => 'user_attribute',
             'rules'  => [
-                ['valid_role_ids',
+                ['valid_user_attribute',
                     function ($str = null) {
                         // field is not required
+                        if (!isset($str)) {
+                            return false;
+                        }
+                        // e.g. number no zero
+                        return ($str === '') ? true : ($str != 0 && ctype_digit((string) $str));
+                    },
+                ],
+            ],
+            'errors' => ['valid_user_attribute' => '提交数据非法！user_attribute'],
+        ],
+    ],
+    'user_index_delete' => [
+        [
+            'field'  => 'id',
+            'label'  => 'id',
+            'rules'  => [
+                ['valid_id',
+                    function ($str = null) {
+                        // field is required
                         if (!isset($str)) {
                             return false;
                         }
@@ -387,7 +406,7 @@ $config = [
                     },
                 ],
             ],
-            'errors' => ['valid_role_ids' => '提交数据非法！extra_attributes'],
+            'errors' => ['valid_id' => '提交数据非法！id'],
         ],
     ],
 ];

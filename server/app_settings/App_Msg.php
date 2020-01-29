@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 00:42:40
+ * @LastEditTime : 2020-01-28 16:03:12
  */
 namespace App_Settings;
 
@@ -14,6 +14,7 @@ class App_Msg
 
     const SUCCESS = '操作成功！';
 
+    const PASSWORD_IS_EMPTY                 = '密码不能为空！';
     const HASH_PASSWORD_FAILED              = '密码hash处理失败，请稍后重试！';
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';
     const TBL_USER_ROLE_CREATE_FAILED       = '数据表USER_ROLE新加失败，请稍后重试！';
