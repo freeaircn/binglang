@@ -39,8 +39,20 @@ update时
 # JS
   1 Undefined类型只有一个值，即undefined。当声明的变量还未被初始化时，变量的默认值为undefined。
     Null类型也只有一个值，即null。null用来表示尚未存在的对象，常用来表示函数企图返回一个不存在的对象。
+  2 对象属性的访问一般是通过obj.attr的方式来访问的，或者是obj[attr]的方式来进行操作.
+    属性访问的时候，当对象存在而对象中没有这一属性的时候，如果程序中访问了当前的属性的话我们，js的解析器将会返回undefined的数值.
+    但是如果当前需要访问的对象是不存在的，这个时候js就会返回一个类型错误
+  3 JS 空对象
+    空引用：obj=null 是指变量值指向null变量，当然在js默认不赋值的情况下，一个变量为undefined.
+    原型：原型上包括了继承属性，有可以枚举的属性和不可以枚举的属性。默认对象都继承了Object。
+    自身：自身属性同样包括了可枚举的属性和不可枚举的属性。
     
-  2 qs 序列化
+    Object.keys(obj)返回不包括原型上的可枚举属性，即自身的可枚举属性。
+      Object.keys(data).length === 0;
+    Objcet.getOwnPropertyNames(obj)返回不包括原型上的所有自身属性(包括不可枚举的属性)
+      Object.getOwnPropertyNames(data)===0;
+  
+  4 qs 序列化
     undefined或空数组，axios post 提交时，qs不填入http body。
 
 # PHP

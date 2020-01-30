@@ -3,9 +3,9 @@
  * @Author: freeair
  * @Date: 2020-01-23 19:35:05
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-24 12:49:49
+ * @LastEditTime : 2020-01-31 00:47:16
  */
-import Vue from 'vue'
+// import Vue from 'vue'
 
 function hideColumns() {
   function obColumns(columns) {
@@ -54,7 +54,7 @@ function hideColumns() {
           }
 
           if (!found) {
-            Vue.set(this.columns, e.property, {
+            this.$set(this.columns, e.property, {
               label: e.label,
               visible: true
             })

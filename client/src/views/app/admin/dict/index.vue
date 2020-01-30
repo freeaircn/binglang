@@ -2,6 +2,7 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
+      <SearchOptions :inputs="searchOptionsInputs" :selects="searchOptionsSelects" :buttons="searchOptionsButtons" @search-event="xx" />
       <div>
         <!-- 搜索 -->
         <el-input v-model="query.words" clearable size="small" placeholder="搜索" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
@@ -82,7 +83,9 @@
 </template>
 
 <script>
-// import 第三方组件
+// import 组件
+import SearchOptions from '@/components/app/SearchOptions/index'
+import searchOptionsInit from '@/views/app/admin/dict/dict-search-mixin'
 
 // import 公共method
 import { validQueryWords, validLabel } from '@/utils/app/validator/common'
@@ -92,11 +95,14 @@ import { apiGetDict, apiCreateDict, apiUpdateDict, apiDelDict } from '@/api/app/
 
 export default {
   name: 'AdminDict',
+  components: { SearchOptions },
+  mixins: [searchOptionsInit()],
   data() {
     return {
       query: {
         words: ''
       },
+      test: { test: '' },
 
       tableLoading: false,
       tableData: [],
@@ -305,6 +311,12 @@ export default {
     },
     pageIdxChange(val) {
       this.pageIdx = val
+    },
+
+    xx(query) {
+      console.log('# parent ')
+      console.log(query)
+      apiGetDict(query)
     }
   }
 }

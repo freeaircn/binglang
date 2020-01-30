@@ -215,7 +215,7 @@
 </template>
 
 <script>
-// import 第三方组件
+// import 组件
 import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
