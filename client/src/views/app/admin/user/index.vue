@@ -5,51 +5,9 @@
       <el-row>
         <!-- 搜索 -->
         <el-col :span="20">
-          <el-form ref="form_query" :model="query" :rules="rules_form_query" :inline="true" size="mini" label-width="80px">
-            <el-form-item prop="individual">
-              <el-tooltip effect="dark" content="查询字段:工号，姓名，手机号，邮箱，身份证号" placement="top">
-                <el-input v-model="query.individual" clearable placeholder="工号，姓名，手机号..." />
-              </el-tooltip>
-            </el-form-item>
-
-            <el-form-item prop="sex">
-              <el-tooltip effect="dark" content="查询字段:性别" placement="top">
-                <el-select v-model="query.sex" clearable placeholder="性别" style="width:80px;">
-                  <el-option label="男" value="0" />
-                  <el-option label="女" value="1" />
-                </el-select>
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item prop="dept">
-              <el-tooltip effect="dark" content="查询字段:部门" placement="top">
-                <el-input v-model="query.dept" clearable placeholder="字段：部门" style="width:150px;" />
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item prop="job">
-              <el-tooltip effect="dark" content="查询字段:岗位" placement="top">
-                <el-input v-model="query.job" clearable placeholder="字段：岗位" style="width:150px;" />
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item prop="politic">
-              <el-tooltip effect="dark" content="查询字段:党派" placement="top">
-                <el-input v-model="query.politic" clearable placeholder="字段：党派" style="width:150px;" />
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item prop="professional_title">
-              <el-tooltip effect="dark" content="查询字段:职称" placement="top">
-                <el-input v-model="query.professional_title" clearable placeholder="字段：职称" style="width:150px;" />
-              </el-tooltip>
-            </el-form-item>
-
-            <el-form-item>
-              <el-tooltip effect="dark" content="各字段按“与”组合查询" placement="top">
-                <el-button type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
-              </el-tooltip>
-              <el-button type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
-              <el-button type="primary" icon="el-icon-plus" @click="x1">x1</el-button>
-              <el-button type="primary" icon="el-icon-plus" @click="x2">x2</el-button>
-            </el-form-item>
-          </el-form>
+          <SearchOptions :inputs="searchOptionsInputs" :selects="searchOptionsSelects" @click-search="handleSearch" @change="searchChange" />
+          <el-button type="success" size="mini" icon="el-icon-plus" @click="preCreate">新增</el-button>
+          <el-button type="success" size="mini" @click="xx">Console</el-button>
         </el-col>
         <el-col :span="4">
           <TableOptions :table-columns="columns" />
@@ -215,41 +173,37 @@
 </template>
 
 <script>
-// import 组件
+// import components
 import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 import TableOptions from '@/components/app/TableOptions/index'
 import hideColumns from '@/components/app/TableOptions/hide-columns'
+import SearchOptions from '@/components/app/SearchOptions/index'
+import searchOptionsConfig from '@/views/app/admin/user/user-search-mixin'
 
-// import 公共method
+// import utils
 import { validChineseChar, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
 
 // import api
-import { apiGetUser, apiCreateUser, apiUpdateUser, apiDelUser } from '@/api/app/admin/user'
+import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/user'
 
 export default {
   name: 'AdminUser',
-  components: { treeSelect, TableOptions },
-  mixins: [hideColumns()],
+  components: { treeSelect, TableOptions, SearchOptions },
+  mixins: [searchOptionsConfig(), hideColumns()],
   data() {
     return {
-      query: {
-        individual: '',
-        sex: '',
-        dept: '',
-        job: '',
-        politic: '',
-        professional_title: ''
-      },
+      query: {},
 
       tableLoading: false,
       tableData: [],
+      tableTotalRows: 0,
+
       dynamic_columns: [],
       initTableDone: false,
 
-      tableTotalRows: 0,
-      pageSize: 5,
+      pageSize: 10,
       pageIdx: 1,
 
       dialogVisible: false,
@@ -276,7 +230,7 @@ export default {
         user_attribute: []
       },
 
-      // 关联其他table，获取data
+      // form内下拉列表
       role_list: [],
       user_attribute_dynamic_list: [],
       dept_list: [],
@@ -295,32 +249,22 @@ export default {
       return this.pageSize.toString() + '_' + ((this.pageIdx - 1) * this.pageSize).toString()
     }
   },
-  created() {
-    this.refreshTblDisplay()
-  },
+  // mounted: function() {
+  //   this.refreshTblDisplay()
+  // },
   methods: {
     // CRUD core
     /**
      * @description: success response, tableData be updated; failed response, tableData be cleared
-     * @param {type}
+     * @param array
      * @return:
      */
-    refreshTblDisplay() {
+    refreshTblDisplay(params = {}) {
       this.tableLoading = true
 
-      var params = []
-      if (this.isQueryEmpty()) {
-        params['limit'] = this.limit
-      } else {
-        params['limit'] = this.limit
-        params['individual'] = this.query.individual
-        params['sex'] = this.query.sex
-        params['dept'] = this.query.dept
-        params['job'] = this.query.job
-        params['politic'] = this.query.politic
-        params['professional_title'] = this.query.professional_title
-      }
-      apiGetUser(params)
+      var temp = JSON.parse(JSON.stringify(params))
+      temp['limit'] = this.limit
+      apiGet(temp)
         .then(function(data) {
           this.tableTotalRows = data.total_rows
           this.tableData.splice(0)
@@ -347,7 +291,7 @@ export default {
     },
 
     /**
-     * @description: reset formData, request a blank user profile, show dialog
+     * @description: reset formData, request a blank form, show dialog
      * @param {type}
      * @return:
      */
@@ -359,7 +303,7 @@ export default {
       this.user_attribute_dynamic_list.splice(0)
 
       this.tabIndex = 'tab_one'
-      apiGetUser({ form: 'user_create' })
+      apiGet({ form: 'user_create' })
         .then(function(data) {
           this.role_list = data.role_list.slice(0)
           this.dept_list = data.dept_list.slice(0)
@@ -415,7 +359,7 @@ export default {
       this.$refs['form_tab_two'].validate((valid) => {
         if (valid) {
           // API create
-          apiCreateUser(this.formData)
+          apiCreate(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
@@ -423,7 +367,7 @@ export default {
 
               this.$nextTick(() => {
                 this.rstFormData()
-                this.refreshTblDisplay()
+                this.refreshTblDisplay(this.query)
               })
             }.bind(this))
             .catch(function(err) {
@@ -437,7 +381,7 @@ export default {
     },
 
     /**
-     * @description: reset formData, select list, request a current user profile, show dialog
+     * @description: reset formData, select list, request current row, show dialog
      * @param {type}
      * @return:
      */
@@ -449,7 +393,7 @@ export default {
       this.user_attribute_dynamic_list.splice(0)
 
       this.tabIndex = 'tab_one'
-      apiGetUser({ form: 'user_edit', uid: id })
+      apiGet({ form: 'user_edit', uid: id })
         .then(function(data) {
           this.role_list = data.role_list.slice(0)
           this.dept_list = data.dept_list.slice(0)
@@ -481,14 +425,14 @@ export default {
       this.$refs['form_tab_two'].validate((valid) => {
         if (valid) {
           // API update
-          apiUpdateUser(this.formData)
+          apiUpdate(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
 
               this.$nextTick(() => {
                 this.rstFormData()
-                this.refreshTblDisplay()
+                this.refreshTblDisplay(this.query)
               })
             }.bind(this))
             .catch(function(err) {
@@ -514,13 +458,13 @@ export default {
         center: true
       })
         .then(() => {
-          apiDelUser(id)
+          apiDelete(id)
             .then(function() {
               if (this.tableTotalRows > 0) {
                 this.tableTotalRows = this.tableTotalRows - 1
               }
               this.$nextTick(() => {
-                this.refreshTblDisplay()
+                this.refreshTblDisplay(this.query)
               })
             }.bind(this))
             .catch(function(err) {
@@ -575,53 +519,29 @@ export default {
 
     pageSizeChange(val) {
       this.pageSize = val
-      this.refreshTblDisplay()
+      this.refreshTblDisplay(this.query)
     },
     pageIdxChange(val) {
       this.pageIdx = val
-      this.refreshTblDisplay()
+      this.refreshTblDisplay(this.query)
     },
 
-    handleQuery() {
-      // API param - this.word，输入检验
+    handleSearch(search) {
+      this.query = JSON.parse(JSON.stringify(search))
+
       this.pageIdx = 1
-      this.refreshTblDisplay()
+      this.refreshTblDisplay(this.query)
+    },
+    searchChange(search) {
+      this.query = JSON.parse(JSON.stringify(search))
+
+      this.pageIdx = 1
+      this.refreshTblDisplay(this.query)
     },
 
-    isQueryEmpty() {
-      var empty = []
-      if (this.query.individual !== '') {
-        empty.push(1)
-      }
-      if (this.query.sex !== '') {
-        empty.push(1)
-      }
-      if (this.query.dept !== '') {
-        empty.push(1)
-      }
-      if (this.query.job !== '') {
-        empty.push(1)
-      }
-      if (this.query.politic !== '') {
-        empty.push(1)
-      }
-      if (this.query.professional_title !== '') {
-        empty.push(1)
-      }
-
-      if (empty.length === 0) {
-        return true
-      } else {
-        return false
-      }
-    },
-    x1() {
-      console.log('# apiCreateUser ')
-      apiCreateUser({ 'roles': [] })
-    },
-    x2() {
-      console.log('# apiUpdateUser ')
-      apiUpdateUser({ 'roles': [] })
+    xx() {
+      console.log('# debug ')
+      console.log('page id: ' + this.pageIdx)
     }
   }
 }

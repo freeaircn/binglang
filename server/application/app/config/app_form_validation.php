@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-25 23:39:38
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-29 12:58:42
+ * @LastEditTime : 2020-01-31 12:41:49
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -16,9 +16,9 @@ $config = [
             'rules'  => [
                 ['valid_limit',
                     function ($str = null) {
-                        // field is not required
+                        // field is required
                         if (!isset($str)) {
-                            return true;
+                            return false;
                         }
                         // e.g. 5_10
                         return $str === '' ? true : (bool) preg_match('/^\d{1,2}_\d{1,3}$/', $str);
@@ -37,6 +37,7 @@ $config = [
                         if (!isset($str) || $str === '') {
                             return true;
                         }
+
                         // e.g. Chinese name
                         if ((bool) preg_match('/^([\x{4e00}-\x{9fa5}]{1,6})$/u', $str)) {
                             return true;
@@ -148,6 +149,23 @@ $config = [
                 ],
             ],
             'errors' => ['valid_professional_title' => '请求参数非法！'],
+        ],
+        [
+            'field'  => 'form',
+            'label'  => 'form',
+            'rules'  => [
+                ['valid_form',
+                    function ($str = null) {
+                        // field is not required
+                        if (!isset($str)) {
+                            return true;
+                        }
+                        // e.g. user_create or user_edit
+                        return ($str === 'user_create' || $str === 'user_edit');
+                    },
+                ],
+            ],
+            'errors' => ['valid_form' => '请求参数非法！'],
         ],
         [
             'field'  => 'uid',

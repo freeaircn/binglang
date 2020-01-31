@@ -21,6 +21,7 @@
 8. [done]编写用户头像功能   
 9. [done]table列动态显示/隐藏功能  
 
+.  search 组件，输入框change事件，触发多条发往后端请求。
 . 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
 . 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
 . 参照用户管理页面，更新 app其他页面文件  
@@ -788,8 +789,22 @@ update时
           this.tableTotalRows - 1 改变总行数，触发el-pagination组件内更新current-page，借助current-page.sync，更新反馈给父组件。
           this.$nextTick 等待current-page更新，再调用api刷新table显示区        
   
-  14. 页面 检索功能，适应多条件组合，
-      # 查询语句
+  14. 页面 检索功能，适应多条件组合
+      # 约定
+        1 前端提交查询条件数据，后端验证
+        2 前端使用GET方法场景：
+          1 新加用户时，请求后端填表信息。
+          2 编辑用户时，请求后端用户信息。
+          3 查询时，将查询条件提交后端。
+        3 基于GET方法场景，约定：
+          1 不同场景下GET方法，params不一样，含不同字段。
+          2 每个场景，每个字段需包含在params内。若页面输入框等，用户不填写，前端处理对应字段为''。
+          3 后端验证：
+            1 规则定义：每个字段isset() == false or == ''，return true
+            2 业务func：前端提交的数据通过valid后，业务func对接收到的前端数据再判断，isset() == true，执行业务处理。
+          
+          
+      1 查询语句
         SELECT 
         <select_list>  -- 需适配 select: string
         FROM <left_table>  -- api指定访问的table
@@ -801,7 +816,7 @@ update时
         ORDER BY <order_by_condition>
         LIMIT <limit_number>  -- 需适配 分页读取 limit: string e.g. num_offset
       
-      # 查询条件分类；
+      2 查询条件分类；
         1 A 个性，比如：工号，中文名，手机号，身份证号，邮箱
         2 B1，B2，B3 共性，多条件组合“且”关系，比如：性别，部门，岗位，党派，职称
         
@@ -811,14 +826,14 @@ update时
           
           分页，页面跳转如何携带 查询条件？？
       
-      # 原则：
-        1 A ！= empty，（ where 工号 like A or 中文名 like A ）
-        2 B1 ！= empty， （ where 工号 like A or 中文名 like A ） and  性别 = B1
-        3 B2 ！= empty， （ where 工号 like A or 中文名 like A ） and  性别 = B1 and 部门 like B2
+      3 场景：
+        1 A ！= ''，（ where 工号 like A or 中文名 like A ）
+        2 B1 ！= ''， （ where 工号 like A or 中文名 like A ） and  性别 = B1
+        3 B2 ！= ''， （ where 工号 like A or 中文名 like A ） and  性别 = B1 and 部门 like B2
         4 ...
         
-      # 实现：
-        1 A ！= empty，（ where 工号 like A or 中文名 like A ）
+      4 实现：
+        1 A ！= ''，（ where 工号 like A or 中文名 like A ）
           【去重】？？？
         
         2 字段-部门，树形结构，比如，工作室以下有小组1，小组2。当查询 工作室时，需要其下所有子节点的user。

@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-16 23:05:40
+ * @LastEditTime : 2020-01-31 20:09:21
  */
 import request from '@/utils/request'
 
-export function apiGetUser(params) {
+export function apiGet(params) {
   return request({
     url: '/api/user',
     method: 'get',
@@ -15,7 +15,7 @@ export function apiGetUser(params) {
   })
 }
 
-export function apiCreateUser(formData) {
+export function apiCreate(formData) {
   return request({
     url: '/api/user',
     method: 'post',
@@ -23,7 +23,7 @@ export function apiCreateUser(formData) {
   })
 }
 
-export function apiUpdateUser(formData) {
+export function apiUpdate(formData) {
   return request({
     url: '/api/user',
     method: 'put',
@@ -31,7 +31,7 @@ export function apiUpdateUser(formData) {
   })
 }
 
-export function apiDelUser(id) {
+export function apiDelete(id) {
   return request.delete('/api/user', {
     data: {
       id

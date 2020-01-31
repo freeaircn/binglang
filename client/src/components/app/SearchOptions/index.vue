@@ -3,18 +3,18 @@
  * @Author: freeair
  * @Date: 2020-01-30 18:31:36
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-31 00:54:37
+ * @LastEditTime : 2020-01-31 18:33:14
  -->
 <template>
   <div class="search-options">
-    <el-form ref="form" :model="query" :rules="rules" :inline="true" size="mini" label-width="80px">
+    <el-form ref="form" :model="query" :rules="rules" :inline="true" size="mini">
       <el-form-item
         v-for="(item, index) in inputs"
         :key="item.prop+'_'+index"
         :prop="item.prop"
       >
         <el-tooltip effect="dark" :content="item.tooltip" placement="top">
-          <el-input v-model="query[item.prop]" clearable :placeholder="item.placeholder" />
+          <el-input v-model="query[item.prop]" clearable :placeholder="item.placeholder" :style="{width:item.width+'px'}" />
         </el-tooltip>
       </el-form-item>
 
@@ -24,7 +24,7 @@
         :prop="item.prop"
       >
         <el-tooltip effect="dark" :content="item.tooltip" placement="top">
-          <el-select v-model="query[item.prop]" clearable :placeholder="item.placeholder" style="width:80px;">
+          <el-select v-model="query[item.prop]" clearable :placeholder="item.placeholder" :style="{width:item.width+'px'}">
             <el-option
               v-for="(option, key) in item.options"
               :key="item.prop+'_'+index+'_'+key"
@@ -35,14 +35,11 @@
         </el-tooltip>
       </el-form-item>
 
-      <el-form-item
-        v-for="(item, index) in buttons"
-        :key="'btn_'+index"
-      >
-        <el-tooltip effect="dark" :content="item.tooltip" placement="top">
-          <el-button :type="item.type" :icon="item.icon" @click="handleQuery">{{ item.label }}</el-button>
+      <el-form-item>
+        <el-tooltip effect="dark" content="各字段按“与”组合查询" placement="top">
+          <el-button type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
         </el-tooltip>
-        <el-button type="info" icon="el-icon-refresh-left" @click.prevent="resetForm">重置</el-button>
+        <el-button type="primary" plain icon="el-icon-refresh-left" @click.prevent="resetForm">清空</el-button>
       </el-form-item>
 
     </el-form>
@@ -60,15 +57,21 @@ export default {
     selects: {
       type: Array,
       default: () => { return [] }
-    },
-    buttons: {
-      type: Array,
-      default: () => { return [] }
     }
+    // buttons: {
+    //   type: Array,
+    //   default: () => { return [] }
+    // }
   },
   data() {
     return {
       query: {}
+    }
+  },
+  watch: {
+    query: {
+      handler: function(val, oldVal) { this.$emit('change', this.query) },
+      deep: true
     }
   },
   created: function() {
@@ -81,7 +84,7 @@ export default {
   },
   methods: {
     handleQuery() {
-      this.$emit('search-event', this.query)
+      this.$emit('click-search', this.query)
     },
     resetForm() {
       this.$refs['form'].resetFields()

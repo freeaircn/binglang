@@ -180,7 +180,7 @@ class User_model extends CI_Model
     }
 
     /**
-     * insert to user table
+     * insert to table
      *
      * @author freeair
      * @DateTime 2020-01-19

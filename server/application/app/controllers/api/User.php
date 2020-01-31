@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-29 12:56:32
+ * @LastEditTime : 2020-01-31 21:53:13
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -59,7 +59,7 @@ class User extends RestController
             $this->response($res, 200);
         }
 
-        if (isset($client['limit'])) {
+        if (isset($client['limit']) && isset($client['individual'])) {
             $data = $this->user_model->read($client);
             if ($data === false) {
                 $res['code'] = App_Code::TBL_USER_READ_FAILED;
@@ -216,9 +216,9 @@ class User extends RestController
             $this->response($res, 200);
         }
 
-        $id     = $client['id'];
-        $result = $this->user_model->delete($id);
-        if ($result === true) {
+        $id  = $client['id'];
+        $rtn = $this->user_model->delete($id);
+        if ($rtn === true) {
             $res['code'] = App_Code::SUCCESS;
             $res['msg']  = App_Msg::SUCCESS;
         } else {

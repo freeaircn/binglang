@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-26 11:30:33
+ * @LastEditTime : 2020-01-31 21:56:04
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -149,4 +149,31 @@ class Common_tools extends CI_Model
 
         return $params;
     }
+
+    /**
+     * 根据id便利数据表，输出包括输入id的所有子节点id
+     * @param int $id
+     * @return array string
+     */
+    // function get_all_children_ids($id)
+    // {
+    //     $array[] = (string)$id;
+    //     $temp_arr[] = (string)$id;
+    //     do
+    //     {
+    //         $this->db->select('id');
+    //         $this->db->where_in('pid', $temp_arr);
+    //         $query = $this->db->get($this->tables['dict']);
+    //         $res = $query->result_array();
+    //         unset($temp_arr);
+    //         foreach ($res as $k=>$v)
+    //         {
+    //             $array[] = (string)$v['id'];
+    //             $temp_arr[] = (string)$v['id'];
+    //         }
+    //     }
+    //     while (!empty($res));
+
+    //     return $array;
+    // }
 }
