@@ -2,7 +2,7 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
-      <SearchOptions :inputs="searchOptionsInputs" @click-search="handleSearch" @change="searchChange" />
+      <SearchOptions :inputs="searchOptionsInputs" :rules="searchOptionsRules" @click-search="handleSearch" @change="searchChange" />
       <el-button type="success" size="mini" icon="el-icon-plus" @click="preCreate">新增</el-button>
     </div>
     <el-divider><i class="el-icon-arrow-down" /></el-divider>
@@ -16,9 +16,9 @@
       size="small"
       :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
-      <el-table-column prop="sort" label="排序" />
-      <el-table-column :show-overflow-tooltip="true" prop="label" label="标签" />
-      <el-table-column :show-overflow-tooltip="true" prop="name" label="类名" />
+      <el-table-column prop="sort" label="序号" />
+      <el-table-column :show-overflow-tooltip="true" prop="label" label="词典名" />
+      <el-table-column :show-overflow-tooltip="true" prop="name" label="注释" />
 
       <el-table-column prop="enabled" label="是否启用" align="center">
         <template slot-scope="scope">
@@ -50,13 +50,13 @@
     <!--表单渲染-->
     <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px">
       <el-form ref="form" :model="formData" :rules="rules" size="mini" label-width="80px">
-        <el-form-item label="排序" prop="sort">
-          <el-input-number v-model="formData.sort" clearable />
+        <el-form-item label="序号" prop="sort">
+          <el-input-number v-model="formData.sort" />
         </el-form-item>
-        <el-form-item label="标签" prop="label">
+        <el-form-item label="词典名" prop="label">
           <el-input v-model="formData.label" clearable />
         </el-form-item>
-        <el-form-item label="类名" prop="name">
+        <el-form-item label="注释" prop="name">
           <el-input v-model="formData.name" clearable />
         </el-form-item>
 
@@ -81,7 +81,7 @@ import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/dict/dict-search-mixin'
 
 // import utils
-// import { validChineseChar, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
+import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dict'
@@ -89,7 +89,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dict'
 export default {
   name: 'AdminDict',
   components: { SearchOptions },
-  mixins: [searchOptionsConfig()],
+  mixins: [searchOptionsConfig],
   data() {
     return {
       query: {},
@@ -109,14 +109,16 @@ export default {
       },
       formData: {
         id: '',
-        sort: '',
+        sort: '1',
         label: '',
         name: '',
         enabled: '1'
+      },
+      rules: {
+        sort: [{ required: true, validator: validSort, trigger: 'change' }],
+        label: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
+        name: [{ required: true, validator: validLowerLetterUnderline, trigger: 'change' }]
       }
-      // rules: {
-      //   label: [{ required: true, validator: validLabel, trigger: 'change' }]
-      // }
     }
   },
   computed: {
@@ -171,7 +173,7 @@ export default {
     },
 
     /**
-     * @description: validate form in tab_two, post new form, update data display area
+     * @description: validate form, post, update data display area
      * @param {type}
      * @return:
      */
@@ -225,7 +227,7 @@ export default {
     },
 
     /**
-     * @description: validate form in tab_two, post update form, update data display area
+     * @description: validate form, post, update data display area
      * @param {type}
      * @return:
      */
@@ -292,7 +294,7 @@ export default {
       this.formData.label = ''
       this.formData.name = ''
       this.formData.enabled = '1'
-      this.formData.sort = ''
+      this.formData.sort = '1'
     },
     updateFormData(form) {
       this.formData.id = form.id

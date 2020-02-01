@@ -39,11 +39,14 @@ DROP TABLE IF EXISTS `app_dict`;
 CREATE TABLE IF NOT EXISTS `app_dict` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
-  `label` varchar(31) NOT NULL COMMENT '类型名',
-  `name` varchar(255) NOT NULL COMMENT '键名',
+  `label` varchar(20) NOT NULL COMMENT '类型名',
+  `name` varchar(63) NOT NULL COMMENT '键名',
   `enabled` bit(1) NOT NULL,
   `update_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `key_dict_sort` (`sort`) USING BTREE,
+  UNIQUE KEY `uc_dict_label` (`label`) USING BTREE,
+  UNIQUE KEY `uc_dict_name` (`name`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='数据字典' ROW_FORMAT=COMPACT;
 
 --
@@ -73,6 +76,9 @@ CREATE TABLE IF NOT EXISTS `app_dict_data` (
   `dict_id` int(11) UNSIGNED NOT NULL COMMENT '所属字典id',
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
+  KEY `key_dict_data_sort` (`sort`) USING BTREE,
+  UNIQUE KEY `uc_dict_data_label` (`label`) USING BTREE,
+  UNIQUE KEY `uc_dict_data_name` (`name`) USING BTREE,
   KEY `fk_dict_data_ref_dict_id` (`dict_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='数据字典详情' ROW_FORMAT=COMPACT;
 

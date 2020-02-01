@@ -4,18 +4,35 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-28 16:03:12
+ * @LastEditTime : 2020-02-01 17:02:26
  */
 namespace App_Settings;
 
 class App_Msg
 {
-    const TEST_MSG = 'Constant Here';
+    const TEST_MSG = 'Hello World !';
 
     const SUCCESS = '操作成功！';
 
-    const PASSWORD_IS_EMPTY                 = '密码不能为空！';
-    const HASH_PASSWORD_FAILED              = '密码hash处理失败，请稍后重试！';
+    const PARAMS_INVALID       = '请求参数非法！';
+    const GET_SOURCE_NOT_EXIST = '请求的资源不存在！';
+    const PASSWORD_IS_EMPTY    = '密码不能为空！';
+    const HASH_PASSWORD_FAILED = '密码hash失败，请稍后重试！';
+
+    const GET_USER_FAILED                = '用户信息，查询失败，请稍后重试！';
+    const GET_FORM_BY_USER_CREATE_FAILED = '用户信息的空表单，获取失败，请稍后重试！';
+    const GET_FORM_BY_USER_EDIT_FAILED   = '用户信息表单，获取失败，请稍后重试！';
+    const CREATE_USER_FAILED             = '新建用户，操作失败，请稍后重试！';
+    const UPDATE_USER_FAILED             = '编辑用户，操作失败，请稍后重试！';
+    const DELETE_USER_FAILED             = '删除用户，操作失败，请稍后重试！';
+
+    const GET_DICT_FAILED          = '字典信息，查询失败，请稍后重试！';
+    const GET_DICT_FOR_EDIT_FAILED = '字典信息表单，获取失败，请稍后重试！';
+    const CREATE_DICT_FAILED       = '新建字典，操作失败，请稍后重试！';
+    const UPDATE_DICT_FAILED       = '编辑字典，操作失败，请稍后重试！';
+    const DELETE_DICT_FAILED       = '删除字典，操作失败，请稍后重试！';
+
+    // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';
     const TBL_USER_ROLE_CREATE_FAILED       = '数据表USER_ROLE新加失败，请稍后重试！';
     const TBL_USER_EXTRA_ATTR_CREATE_FAILED = '数据表USER_EXTRA_ATTR新加失败，请稍后重试！';

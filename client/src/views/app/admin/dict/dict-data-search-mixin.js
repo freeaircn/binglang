@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-30 19:26:36
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 20:43:33
+ * @LastEditTime : 2020-02-01 21:53:45
  */
 import { validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/search-com'
 
@@ -13,15 +13,15 @@ var searchOptionsConfig = {
       searchOptionsInputs: [
         {
           prop: 'label',
-          placeholder: '字段：标签',
-          tooltip: '查询字段：标签',
+          placeholder: '字段：词条名',
+          tooltip: '查询字段：词条名',
           maxlength: 15,
           width: 150
         },
         {
           prop: 'name',
-          placeholder: '字段：类名',
-          tooltip: '查询字段：类名',
+          placeholder: '字段：注释',
+          tooltip: '查询字段：注释',
           maxlength: 60,
           width: 150
         }

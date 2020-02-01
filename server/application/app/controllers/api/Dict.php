@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-31 21:53:05
+ * @LastEditTime : 2020-02-01 21:37:21
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -28,18 +28,30 @@ class Dict extends RestController
     {
         $client = $this->get();
 
-        // $valid = $this->common_tools->valid_client_data($client, 'user_index_get');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_get');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         if (isset($client['limit']) && isset($client['label'])) {
             $data = $this->dict_model->read($client);
             if ($data === false) {
-                $res['code'] = App_Code::TBL_USER_READ_FAILED;
-                $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
+                $res['code'] = App_Code::GET_DICT_FAILED;
+                $res['msg']  = App_Msg::GET_DICT_FAILED;
+            } else {
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $data;
+            }
+            $this->response($res, 200);
+        }
+
+        if (isset($client['sender']) && $client['sender'] === 'dict_data') {
+            $data = $this->dict_model->read($client);
+            if ($data === false) {
+                $res['code'] = App_Code::GET_DICT_FAILED;
+                $res['msg']  = App_Msg::GET_DICT_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -50,8 +62,8 @@ class Dict extends RestController
         if (isset($client['id'])) {
             $data = $this->dict_model->read_by_id($client['id']);
             if ($data === false) {
-                $res['code'] = App_Code::TBL_USER_READ_FAILED;
-                $res['msg']  = App_Msg::TBL_USER_READ_FAILED;
+                $res['code'] = App_Code::GET_DICT_FOR_EDIT_FAILED;
+                $res['msg']  = App_Msg::GET_DICT_FOR_EDIT_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -59,8 +71,8 @@ class Dict extends RestController
             $this->response($res, 200);
         }
 
-        $res['code'] = App_Code::PARAMS_INVALID;
-        $res['msg']  = '请求资源不存在！';
+        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
+        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
         $this->response($res, 200);
     }
 
@@ -69,12 +81,12 @@ class Dict extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'user_index_post');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_post');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         $data['sort']        = $client['sort'];
         $data['label']       = $client['label'];
@@ -85,8 +97,8 @@ class Dict extends RestController
         // insert table
         $id = $this->dict_model->create($data);
         if ($id === false) {
-            $res['code'] = App_Code::TBL_USER_CREATE_FAILED;
-            $res['msg']  = App_Msg::TBL_USER_CREATE_FAILED;
+            $res['code'] = App_Code::CREATE_DICT_FAILED;
+            $res['msg']  = App_Msg::CREATE_DICT_FAILED;
             SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
@@ -103,12 +115,12 @@ class Dict extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'user_index_post');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_post');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         $id                  = $client['id'];
         $data['sort']        = $client['sort'];
@@ -120,15 +132,15 @@ class Dict extends RestController
         // post和put 共用一份输入验证规则
         if ($id === '') {
             $res['code'] = App_Code::PARAMS_INVALID;
-            $res['msg']  = '提交数据非法！';
+            $res['msg']  = App_Msg::PARAMS_INVALID;
 
             $this->response($res, 200);
         }
 
         $rtn = $this->dict_model->update($id, $data);
         if ($rtn === false) {
-            $res['code'] = App_Code::TBL_USER_UPDATE_FAILED;
-            $res['msg']  = App_Msg::TBL_USER_UPDATE_FAILED;
+            $res['code'] = App_Code::UPDATE_DICT_FAILED;
+            $res['msg']  = App_Msg::UPDATE_DICT_FAILED;
             SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
@@ -145,12 +157,12 @@ class Dict extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'user_index_delete');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_delete');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         $id  = $client['id'];
         $rtn = $this->dict_model->delete($id);
@@ -158,8 +170,8 @@ class Dict extends RestController
             $res['code'] = App_Code::SUCCESS;
             $res['msg']  = App_Msg::SUCCESS;
         } else {
-            $res['code'] = App_Code::TBL_USER_DELETE_FAILED;
-            $res['msg']  = App_Msg::TBL_USER_DELETE_FAILED;
+            $res['code'] = App_Code::DELETE_DICT_FAILED;
+            $res['msg']  = App_Msg::DELETE_DICT_FAILED;
             SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
         }
 

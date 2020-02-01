@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 09:13:33
+ * @LastEditTime : 2020-02-01 21:25:59
  */
 import request from '@/utils/request'
 
-export function apiGetDictData(params) {
+export function apiGet(params) {
   return request({
     url: '/api/dict-data',
     method: 'get',
@@ -15,7 +15,7 @@ export function apiGetDictData(params) {
   })
 }
 
-export function apiCreateDictData(formData) {
+export function apiCreate(formData) {
   return request({
     url: '/api/dict-data',
     method: 'post',
@@ -23,7 +23,7 @@ export function apiCreateDictData(formData) {
   })
 }
 
-export function apiUpdateDictData(formData) {
+export function apiUpdate(formData) {
   return request({
     url: '/api/dict-data',
     method: 'put',
@@ -31,7 +31,7 @@ export function apiUpdateDictData(formData) {
   })
 }
 
-export function apiDelDictData(id) {
+export function apiDelete(id) {
   return request.delete('/api/dict-data', {
     data: {
       id

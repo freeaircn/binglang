@@ -4,26 +4,35 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-28 16:02:41
+ * @LastEditTime : 2020-02-01 17:06:45
  */
 namespace App_Settings;
 
 class App_Code
 {
-    const SUCCESS             = 0;
-    const PARAMS_INVALID      = 101;
-    const USERS_TOKEN_INVALID = 110;
+    const SUCCESS = 0;
 
-    const PASSWORD_IS_EMPTY                 = 150;
-    const HASH_PASSWORD_FAILED              = 151;
-    const TBL_USER_CREATE_FAILED            = 200;
-    const TBL_USER_ROLE_CREATE_FAILED       = 201;
-    const TBL_USER_EXTRA_ATTR_CREATE_FAILED = 202;
-    const TBL_USER_UPDATE_FAILED            = 203;
-    const TBL_USER_ROLE_UPDATE_FAILED       = 204;
-    const TBL_USER_EXTRA_ATTR_UPDATE_FAILED = 205;
-    const TBL_USER_DELETE_FAILED            = 206;
-    const TBL_USER_READ_FAILED              = 207;
+    const PARAMS_INVALID       = 100;
+    const GET_SOURCE_NOT_EXIST = 110;
+    const PASSWORD_IS_EMPTY    = 120;
+    const HASH_PASSWORD_FAILED = 121;
+
+    // api user
+    const GET_USER_FAILED                = 200;
+    const GET_FORM_BY_USER_CREATE_FAILED = 201;
+    const GET_FORM_BY_USER_EDIT_FAILED   = 202;
+    const CREATE_USER_FAILED             = 203;
+    const UPDATE_USER_FAILED             = 204;
+    const DELETE_USER_FAILED             = 205;
+    // api dict
+    const GET_DICT_FAILED          = 220;
+    const GET_DICT_FOR_EDIT_FAILED = 221;
+    const CREATE_DICT_FAILED       = 222;
+    const UPDATE_DICT_FAILED       = 223;
+    const DELETE_DICT_FAILED       = 224;
+
+    // old
+    const USERS_TOKEN_INVALID = 110;
 
     // ! 变量名组成：控制器名_流程_描述
     // ! Users Signup流程 code：201~249

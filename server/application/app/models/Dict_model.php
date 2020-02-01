@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-31 21:54:52
+ * @LastEditTime : 2020-02-01 22:09:20
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -22,6 +22,8 @@ class Dict_model extends CI_Model
         $this->config->load('app_config', true);
         $db_name      = $this->config->item('db_name', 'app_config');
         $this->tables = $this->config->item('tables', 'app_config');
+
+        $this->load->library('common_tools');
 
         if (empty($db_name)) {
             $CI       = &get_instance();
@@ -52,6 +54,7 @@ class Dict_model extends CI_Model
         if ($where_str !== '') {
             $this->db->where($where_str);
         }
+        // 查询一次，获取total
         $query = $this->db->get($this->tables['dict']);
         if ($query === false) {
             $error = $this->db->error();
@@ -66,10 +69,11 @@ class Dict_model extends CI_Model
             return $res;
         }
 
+        // 查询结果>0，再查询一次
         $this->db->select('id, sort, label, name, enabled, update_time');
         if ($where_str !== '') {
             $temp_id = $query->result_array();
-            $this->db->where_in('id', $this->_get_sql_ci_where_in_by_ci_result($temp_id, 'id'));
+            $this->db->where_in('id', $this->common_tools->get_sql_ci_where_in_by_ci_result($temp_id, 'id'));
         }
         $this->db->order_by('sort', 'ASC');
         $this->db->order_by('id', 'ASC');
@@ -86,9 +90,9 @@ class Dict_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $dict = $query->result_array();
+        $result = $query->result_array();
 
-        $res['dict']       = $dict;
+        $res['dict']       = $result;
         $res['total_rows'] = $total_rows;
 
         return $res;
@@ -202,31 +206,6 @@ class Dict_model extends CI_Model
             return false;
         }
         return true;
-    }
-
-    /**
-     * makeup where in string of sql
-     * e.g. array like ['1', '3', '4']
-     *
-     * @author freeair
-     * @DateTime 2020-01-27
-     * @param array $array - 2 dimensions
-     * @param string $key
-     * @return array
-     */
-    protected function _get_sql_ci_where_in_by_ci_result($array = [], $key = '')
-    {
-        if (empty($array || $key === '')) {
-            return [];
-        }
-
-        $res = [];
-        foreach ($array as $item) {
-            if (isset($item[$key])) {
-                $res[] = (string) $item[$key];
-            }
-        }
-        return $res;
     }
 
     /**

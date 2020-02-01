@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-30 18:31:36
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-31 18:33:14
+ * @LastEditTime : 2020-02-01 20:47:22
  -->
 <template>
   <div class="search-options">
@@ -14,7 +14,7 @@
         :prop="item.prop"
       >
         <el-tooltip effect="dark" :content="item.tooltip" placement="top">
-          <el-input v-model="query[item.prop]" clearable :placeholder="item.placeholder" :style="{width:item.width+'px'}" />
+          <el-input v-model="query[item.prop]" :placeholder="item.placeholder" :maxlength="item.maxlength" :style="{width:item.width+'px'}" @change="inputChange" />
         </el-tooltip>
       </el-form-item>
 
@@ -24,7 +24,7 @@
         :prop="item.prop"
       >
         <el-tooltip effect="dark" :content="item.tooltip" placement="top">
-          <el-select v-model="query[item.prop]" clearable :placeholder="item.placeholder" :style="{width:item.width+'px'}">
+          <el-select v-model="query[item.prop]" :placeholder="item.placeholder" :style="{width:item.width+'px'}" @change="selectChange">
             <el-option
               v-for="(option, key) in item.options"
               :key="item.prop+'_'+index+'_'+key"
@@ -57,6 +57,10 @@ export default {
     selects: {
       type: Array,
       default: () => { return [] }
+    },
+    rules: {
+      type: Array,
+      default: () => { return [] }
     }
     // buttons: {
     //   type: Array,
@@ -68,12 +72,6 @@ export default {
       query: {}
     }
   },
-  watch: {
-    query: {
-      handler: function(val, oldVal) { this.$emit('change', this.query) },
-      deep: true
-    }
-  },
   created: function() {
     for (var i in this.inputs) {
       this.$set(this.query, this.inputs[i].prop, '')
@@ -82,14 +80,50 @@ export default {
       this.$set(this.query, this.selects[k].prop, '')
     }
   },
+  mounted: function() {
+    this.$emit('change', this.query)
+  },
   methods: {
+    inputChange() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.$emit('change', this.query)
+        }
+      })
+    },
+    // inputClear() {
+    //   this.$refs['form'].validate((valid) => {
+    //     if (valid) {
+    //       this.$emit('change', this.query)
+    //     }
+    //   })
+    // },
+    selectChange() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.$emit('change', this.query)
+        }
+      })
+    },
+    // selectClear() {
+    //   this.$refs['form'].validate((valid) => {
+    //     if (valid) {
+    //       this.$emit('change', this.query)
+    //     }
+    //   })
+    // },
+
     handleQuery() {
-      this.$emit('click-search', this.query)
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.$emit('change', this.query)
+        }
+      })
     },
     resetForm() {
       this.$refs['form'].resetFields()
+      this.$emit('change', this.query)
     }
-
   }
 }
 </script>

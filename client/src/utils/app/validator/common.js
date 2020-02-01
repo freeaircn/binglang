@@ -3,23 +3,43 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-28 10:26:03
+ * @LastEditTime : 2020-02-01 20:49:35
  */
 
-const regexChineseChar = /^([\u4e00-\u9fa5]){2,8}$/
+const regexSort = /^([1-9][0-9]*)$/
+const regexChineseChar = /^([\u4e00-\u9fa5]){1,15}$/
+const regexLowerLetterUnderline = /^[a-z_]{1,60}$/
 const regexPhone = /^[1][3,4,5,7,8][0-9]{9}$/
 const regexEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/
 // const regexChineseChar = /^[0-9]{1,2}$/
 // const regexPhone = /^[0-9]{1,2}$/
 // const regexEmail = /^[0-9]{1,2}$/
-const regexSort = /^[0-9]{1,2}$/
-const regexQueryWord = /^([0-9a-zA-Z\u4e00-\u9fa5]){1,40}$/
 
-export function validChineseChar(rule, value, callback) {
+export function validSort(rule, value, callback) {
   if (!value) {
-    return callback(new Error('请输入中文，字数2~8'))
+    return callback(new Error('请输入正整数'))
+  } else if (!regexSort.test(value)) {
+    return callback(new Error('请输入正整数'))
+  } else {
+    callback()
+  }
+}
+
+export function validChineseLetter(rule, value, callback) {
+  if (!value) {
+    return callback(new Error('请输入中文，最多15个'))
   } else if (!regexChineseChar.test(value)) {
-    return callback(new Error('请输入中文，字数2~8'))
+    return callback(new Error('请输入中文，最多15个'))
+  } else {
+    callback()
+  }
+}
+
+export function validLowerLetterUnderline(rule, value, callback) {
+  if (!value) {
+    return callback(new Error('请输入小写字母或下划线，最多60个'))
+  } else if (!regexLowerLetterUnderline.test(value)) {
+    return callback(new Error('请输入小写字母或下划线，最多60个'))
   } else {
     callback()
   }
@@ -43,29 +63,4 @@ export function validEmail(rule, value, callback) {
   } else {
     callback()
   }
-}
-
-export function validSort(rule, value, callback) {
-  if (!value) {
-    return callback(new Error('请输入数字'))
-  } else if (!regexSort.test(value)) {
-    return callback(new Error('请输入数字'))
-  } else {
-    callback()
-  }
-}
-
-export function validQueryWords(value) {
-  if (!value) {
-    return true
-  } else if (regexQueryWord.test(value)) {
-    return true
-  } else {
-    return '请输入中文/英文/数字，长度1~40'
-  }
-}
-
-export function isValidPhone(str) {
-  const regexPhone = regexPhone
-  return regexPhone.test(str)
 }

@@ -84,7 +84,7 @@ class User_model extends CI_Model
         $this->db->select('id, sort, username, sex, phone, email, identity_document_number, dept_id, job_id, enabled, last_login, ip_address, update_time');
         if ($where_str !== '') {
             $temp_uid = $query->result_array();
-            $this->db->where_in('id', $this->_get_sql_ci_where_in_by_ci_result($temp_uid, 'id'));
+            $this->db->where_in('id', $this->common_tools->get_sql_ci_where_in_by_ci_result($temp_uid, 'id'));
         }
         $this->db->order_by('sort', 'ASC');
         if (isset($client['limit']) && $client['limit'] !== '') {
@@ -150,7 +150,7 @@ class User_model extends CI_Model
                 }
                 // 动态属性，非必填字段
                 if (count($uid_to_attribute) !== 0) {
-                    $where_in = $this->_get_sql_ci_where_in_by_ci_result($uid_to_attribute, 'dict_data_id');
+                    $where_in = $this->common_tools->get_sql_ci_where_in_by_ci_result($uid_to_attribute, 'dict_data_id');
                     $query    = $this->db->select('label, name')
                         ->where_in('id', $where_in)
                         ->get($this->tables['dict_data']);
@@ -481,7 +481,7 @@ class User_model extends CI_Model
         $uid_to_attribute = $query->result_array();
         // 非必填字段
         if (count($uid_to_attribute) !== 0) {
-            $where_in = $this->_get_sql_ci_where_in_by_ci_result($uid_to_attribute, 'dict_data_id');
+            $where_in = $this->common_tools->get_sql_ci_where_in_by_ci_result($uid_to_attribute, 'dict_data_id');
 
             $query = $this->db->select('id, name')
                 ->where_in('id', $where_in)
@@ -643,31 +643,6 @@ class User_model extends CI_Model
     }
 
     /**
-     * makeup where in string of sql
-     * e.g. array like ['1', '3', '4']
-     *
-     * @author freeair
-     * @DateTime 2020-01-27
-     * @param array $array - 2 dimensions
-     * @param string $key
-     * @return array
-     */
-    protected function _get_sql_ci_where_in_by_ci_result($array = [], $key = '')
-    {
-        if (empty($array || $key === '')) {
-            return [];
-        }
-
-        $res = [];
-        foreach ($array as $item) {
-            if (isset($item[$key])) {
-                $res[] = (string) $item[$key];
-            }
-        }
-        return $res;
-    }
-
-    /**
      * makeup where sub-statement of sql by client data
      *
      * @author freeair
@@ -754,7 +729,7 @@ class User_model extends CI_Model
             } else {
                 $politic_ids = $query_politic_id->result_array();
                 if (!empty($politic_ids)) {
-                    $politic_ids_str       = $this->_get_sql_ci_where_in_by_ci_result($politic_ids, 'id');
+                    $politic_ids_str       = $this->common_tools->get_sql_ci_where_in_by_ci_result($politic_ids, 'id');
                     $query_politic_user_id = $this->db->select('user_id')->where_in('dict_data_id', $politic_ids_str)->group_by('user_id')->get($this->tables['user_attribute']);
                     if ($query_politic_user_id === false) {
                         $error = $this->db->error();
@@ -786,7 +761,7 @@ class User_model extends CI_Model
             } else {
                 $professional_titles = $query_professional_title->result_array();
                 if (!empty($professional_titles)) {
-                    $professional_titles_str = $this->_get_sql_ci_where_in_by_ci_result($professional_titles, 'id');
+                    $professional_titles_str = $this->common_tools->get_sql_ci_where_in_by_ci_result($professional_titles, 'id');
                     $query_user              = $this->db->select('user_id')->where_in('dict_data_id', $professional_titles_str)->group_by('user_id')->get($this->tables['user_attribute']);
                     if ($query_user === false) {
                         $error = $this->db->error();

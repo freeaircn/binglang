@@ -5,7 +5,7 @@
       <el-row>
         <!-- 搜索 -->
         <el-col :span="20">
-          <SearchOptions :inputs="searchOptionsInputs" :selects="searchOptionsSelects" @click-search="handleSearch" @change="searchChange" />
+          <SearchOptions :inputs="searchOptionsInputs" :selects="searchOptionsSelects" :rules="searchOptionsRules" @click-search="handleSearch" @change="searchChange" />
           <el-button type="success" size="mini" icon="el-icon-plus" @click="preCreate">新增</el-button>
           <el-button type="success" size="mini" @click="xx">Console</el-button>
         </el-col>
@@ -183,7 +183,7 @@ import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/user/user-search-mixin'
 
 // import utils
-import { validChineseChar, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
+import { validChineseLetter, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/user'
@@ -191,7 +191,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/user'
 export default {
   name: 'AdminUser',
   components: { treeSelect, TableOptions, SearchOptions },
-  mixins: [searchOptionsConfig(), hideColumns()],
+  mixins: [searchOptionsConfig, hideColumns()],
   data() {
     return {
       query: {},
@@ -238,7 +238,7 @@ export default {
 
       rules_tab_one: {
         sort: [{ required: true, validator: validSort, trigger: 'change' }],
-        username: [{ required: true, validator: validChineseChar, trigger: 'change' }],
+        username: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
         phone: [{ required: true, validator: validPhone, trigger: 'change' }],
         email: [{ required: true, validator: validEmail, trigger: 'change' }]
       }

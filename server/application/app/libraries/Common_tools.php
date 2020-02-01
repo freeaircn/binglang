@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-31 21:56:04
+ * @LastEditTime : 2020-02-01 22:29:35
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -17,7 +17,6 @@ class Common_tools extends CI_Model
     {
         // Check compat first
         $this->config->load('app_config', true);
-        $this->load->library('app_form_validation');
     }
 
     /**
@@ -50,20 +49,27 @@ class Common_tools extends CI_Model
      * valid client data
      *
      * @author freeair
-     * @DateTime 2020-01-26
-     * @param [associative array] $array
-     * @param [string] $rules
-     * @return mixed bool | string
+     * @DateTime 2020-02-01
+     * @param array $array
+     * @param string $rule_config - rule config file, e.g client_validation/api_user.php
+     * @param string $rule_item - defined by api method, e.g. index_get, index_post ...
+     * @return void
      */
-    public function valid_client_data($array = [], $rules = '')
+    public function valid_client_data($array = [], $rule_config = '', $rule_item = '')
     {
-        if (empty($rules)) {
+        if (empty($rule_config) || empty($rule_item)) {
             return false;
         }
 
+        $this->config->load($rule_config, true);
+        $rules = $this->config->item($rule_item, $rule_config);
+
+        $this->load->library('app_form_validation', $rules);
+
         $this->app_form_validation->reset_validation();
         $this->app_form_validation->set_data($array);
-        if ($this->app_form_validation->run($rules) === false) {
+
+        if ($this->app_form_validation->run($rule_item) === false) {
             return $this->app_form_validation->error_string();
         } else {
             return true;
@@ -176,4 +182,29 @@ class Common_tools extends CI_Model
 
     //     return $array;
     // }
+
+    /**
+     * makeup where in string array of sql
+     * e.g. array like ['1', '3', '4']
+     *
+     * @author freeair
+     * @DateTime 2020-01-27
+     * @param array $array - 2 dimensions
+     * @param string $key
+     * @return array
+     */
+    public function get_sql_ci_where_in_by_ci_result($array = [], $key = '')
+    {
+        if (empty($array) || $key === '') {
+            return [];
+        }
+
+        $res = [];
+        foreach ($array as $item) {
+            if (isset($item[$key])) {
+                $res[] = (string) $item[$key];
+            }
+        }
+        return $res;
+    }
 }
