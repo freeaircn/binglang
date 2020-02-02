@@ -191,7 +191,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/user'
 export default {
   name: 'AdminUser',
   components: { treeSelect, TableOptions, SearchOptions },
-  mixins: [searchOptionsConfig, hideColumns()],
+  mixins: [searchOptionsConfig(), hideColumns()],
   data() {
     return {
       query: {},

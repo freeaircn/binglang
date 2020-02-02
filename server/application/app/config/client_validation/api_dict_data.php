@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-25 23:39:38
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-02 20:43:34
+ * @LastEditTime : 2020-02-02 20:47:03
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -81,6 +81,23 @@ $config['index_get'] = [
         'errors' => ['valid_name' => '请求参数非法！'],
     ],
     [
+        'field'  => 'dict',
+        'label'  => 'dict',
+        'rules'  => [
+            ['valid_dict',
+                function ($str = null) {
+                    // field is not required
+                    if (!isset($str)) {
+                        return true;
+                    }
+                    // e.g. number no zero
+                    return $str === '' ? true : ($str != 0 && ctype_digit((string) $str));
+                },
+            ],
+        ],
+        'errors' => ['valid_dict' => '请求参数非法！'],
+    ],
+    [
         'field'  => 'id',
         'label'  => 'id',
         'rules'  => [
@@ -96,23 +113,6 @@ $config['index_get'] = [
             ],
         ],
         'errors' => ['valid_id' => '提交数据非法！'],
-    ],
-    [
-        'field'  => 'req',
-        'label'  => 'req',
-        'rules'  => [
-            ['valid_req',
-                function ($str = null) {
-                    // field is not required
-                    if (!isset($str)) {
-                        return true;
-                    }
-                    // e.g. '', or number no zero
-                    return $str === '' ? true : ($str === 'id_label');
-                },
-            ],
-        ],
-        'errors' => ['valid_req' => '提交数据非法！'],
     ],
 ];
 
@@ -186,6 +186,23 @@ $config['index_post'] = [
         'errors' => ['valid_name' => '请求参数非法！name'],
     ],
     [
+        'field'  => 'code',
+        'label'  => 'code',
+        'rules'  => [
+            ['valid_code',
+                function ($str = null) {
+                    // field is required
+                    if (!isset($str)) {
+                        return false;
+                    }
+                    // e.g. number no zero
+                    return ($str != 0 && ctype_digit((string) $str));
+                },
+            ],
+        ],
+        'errors' => ['valid_code' => '提交数据非法！'],
+    ],
+    [
         'field'  => 'enabled',
         'label'  => 'enabled',
         'rules'  => [
@@ -200,6 +217,23 @@ $config['index_post'] = [
                 },
             ],
         ],
-        'errors' => ['valid_enabled' => '提交数据非法！enabled'],
+        'errors' => ['valid_enabled' => '提交数据非法！'],
+    ],
+    [
+        'field'  => 'dict_id',
+        'label'  => 'dict_id',
+        'rules'  => [
+            ['valid_dict_id',
+                function ($str = null) {
+                    // field is required
+                    if (!isset($str)) {
+                        return false;
+                    }
+                    // e.g. number no zero
+                    return ($str != 0 && ctype_digit((string) $str));
+                },
+            ],
+        ],
+        'errors' => ['valid_dict_id' => '提交数据非法！'],
     ],
 ];

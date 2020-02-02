@@ -1,0 +1,2 @@
+2020-02-02 20:57:59 (1580648279.878) [ERROR] [Dict_data_model.php:206] [Dict_data_model::delete] 2428 | 5e36c757cf6ab | /api/dict-data | DELETE | DB_code: 0 -  
+2020-02-02 20:57:59 (1580648279.878) [ERROR] [Dict_data.php:168] [Dict_data::index_delete] 2428 | 5e36c757cf6ab | /api/dict-data | DELETE | APP_code: 234 - 删除词条，操作失败，请稍后重试！ 

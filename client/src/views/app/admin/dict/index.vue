@@ -89,7 +89,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dict'
 export default {
   name: 'AdminDict',
   components: { SearchOptions },
-  mixins: [searchOptionsConfig],
+  mixins: [searchOptionsConfig()],
   data() {
     return {
       query: {},

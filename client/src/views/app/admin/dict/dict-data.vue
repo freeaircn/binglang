@@ -2,7 +2,7 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
-      <SearchOptions :inputs="searchOptionsInputs" :rules="searchOptionsRules" @click-search="handleSearch" @change="searchChange" />
+      <SearchOptions :inputs="searchOptionsInputs" :selects="searchOptionsSelects" :rules="searchOptionsRules" @click-search="handleSearch" @change="searchChange" />
       <el-button type="success" size="mini" icon="el-icon-plus" @click="preCreate">新增</el-button>
     </div>
     <el-divider><i class="el-icon-arrow-down" /></el-divider>
@@ -98,7 +98,7 @@ import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/dict/dict-data-search-mixin'
 
 // import utils
-// import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/common'
+import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dict-data'
@@ -107,7 +107,7 @@ import { apiGet as apiGetDict } from '@/api/app/admin/dict'
 export default {
   name: 'AdminDictData',
   components: { SearchOptions },
-  mixins: [searchOptionsConfig],
+  mixins: [searchOptionsConfig()],
   data() {
     return {
       query: {},
@@ -137,7 +137,10 @@ export default {
         dict_id: ''
       },
       rules: {
-        // label: [{ required: true, validator: validLabel, trigger: 'change' }]
+        sort: [{ required: true, validator: validSort, trigger: 'change' }],
+        label: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
+        name: [{ required: true, validator: validLowerLetterUnderline, trigger: 'change' }],
+        code: [{ required: true, validator: validSort, trigger: 'change' }]
       }
     }
   },
@@ -146,9 +149,10 @@ export default {
       return this.pageSize.toString() + '_' + ((this.pageIdx - 1) * this.pageSize).toString()
     }
   },
-  // mounted: function() {
-  //   this.refreshTblDisplay()
-  // },
+  mounted: function() {
+    // this.refreshTblDisplay()
+    this.getDictList()
+  },
   methods: {
     // CRUD core
 
@@ -187,10 +191,12 @@ export default {
      */
     preCreate() {
       this.rstFormData()
-      apiGetDict({ sender: 'dict_data' })
+      apiGetDict({ req: 'id_label' })
         .then(function(data) {
           this.treeData.splice(0)
           this.treeData = data.dict.slice(0)
+          // 更新搜索区域
+          this.updateDictList(this.treeData)
           //
           this.dialogAction = 'create'
           this.dialogVisible = true
@@ -243,12 +249,14 @@ export default {
      */
     preUpdate(id) {
       this.rstFormData()
-      Promise.all([apiGetDict({ sender: 'dict_data' }), apiGet({ id: id })])
+      Promise.all([apiGetDict({ req: 'id_label' }), apiGet({ id: id })])
         .then(function(res) {
           this.treeData.splice(0)
           this.treeData = res[0].dict.slice(0)
+          // 更新搜索区域
+          this.updateDictList(this.treeData)
           //
-          this.updateFormData(res[1][0])
+          this.updateFormData(res[1]['form'])
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
@@ -371,6 +379,34 @@ export default {
 
       this.pageIdx = 1
       this.refreshTblDisplay(this.query)
+    },
+
+    getDictList() {
+      apiGetDict({ req: 'id_label' })
+        .then(function(data) {
+          this.updateDictList(data.dict.slice(0))
+        }.bind(this))
+        .catch(function(err) {
+          this.tableData.splice(0)
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
+    },
+
+    updateDictList(dict) {
+      for (const i in this.searchOptionsSelects) {
+        if (this.searchOptionsSelects[i]['prop'] === 'dict') {
+          this.searchOptionsSelects[i].options.splice(0)
+          for (const j in dict) {
+            this.searchOptionsSelects[i].options.push({
+              value: dict[j].id,
+              label: dict[j].label
+            })
+          }
+        }
+      }
     }
   }
 }

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 17:06:45
+ * @LastEditTime : 2020-02-02 20:51:26
  */
 namespace App_Settings;
 
@@ -30,6 +30,12 @@ class App_Code
     const CREATE_DICT_FAILED       = 222;
     const UPDATE_DICT_FAILED       = 223;
     const DELETE_DICT_FAILED       = 224;
+    // api dict_data
+    const GET_DICT_DATA_FAILED          = 230;
+    const GET_DICT_DATA_FOR_EDIT_FAILED = 231;
+    const CREATE_DICT_DATA_FAILED       = 232;
+    const UPDATE_DICT_DATA_FAILED       = 233;
+    const DELETE_DICT_DATA_FAILED       = 234;
 
     // old
     const USERS_TOKEN_INVALID = 110;

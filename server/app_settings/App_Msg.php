@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 17:02:26
+ * @LastEditTime : 2020-02-02 20:52:25
  */
 namespace App_Settings;
 
@@ -26,11 +26,17 @@ class App_Msg
     const UPDATE_USER_FAILED             = '编辑用户，操作失败，请稍后重试！';
     const DELETE_USER_FAILED             = '删除用户，操作失败，请稍后重试！';
 
-    const GET_DICT_FAILED          = '字典信息，查询失败，请稍后重试！';
-    const GET_DICT_FOR_EDIT_FAILED = '字典信息表单，获取失败，请稍后重试！';
-    const CREATE_DICT_FAILED       = '新建字典，操作失败，请稍后重试！';
-    const UPDATE_DICT_FAILED       = '编辑字典，操作失败，请稍后重试！';
-    const DELETE_DICT_FAILED       = '删除字典，操作失败，请稍后重试！';
+    const GET_DICT_FAILED          = '词典信息，查询失败，请稍后重试！';
+    const GET_DICT_FOR_EDIT_FAILED = '词典信息表单，获取失败，请稍后重试！';
+    const CREATE_DICT_FAILED       = '新建词典，操作失败，请稍后重试！';
+    const UPDATE_DICT_FAILED       = '编辑词典，操作失败，请稍后重试！';
+    const DELETE_DICT_FAILED       = '删除词典，操作失败，请稍后重试！';
+
+    const GET_DICT_DATA_FAILED          = '词条信息，查询失败，请稍后重试！';
+    const GET_DICT_DATA_FOR_EDIT_FAILED = '词条信息表单，获取失败，请稍后重试！';
+    const CREATE_DICT_DATA_FAILED       = '新建词条，操作失败，请稍后重试！';
+    const UPDATE_DICT_DATA_FAILED       = '编辑词条，操作失败，请稍后重试！';
+    const DELETE_DICT_DATA_FAILED       = '删除词条，操作失败，请稍后重试！';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';

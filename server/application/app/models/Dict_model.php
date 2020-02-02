@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 22:09:20
+ * @LastEditTime : 2020-02-02 15:26:01
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -126,10 +126,33 @@ class Dict_model extends CI_Model
         if ($query->num_rows() === 0) {
             return false;
         }
-        $dict = $query->result_array()[0];
+        $res['form'] = $query->result_array()[0];
 
-        $res['form'] = $dict;
+        return $res;
+    }
 
+    /**
+     * read request from dict_data process, get id, label of dict
+     *
+     * @author freeair
+     * @DateTime 2020-02-02
+     * @return mixed bool | array
+     */
+    public function select_by_req($sel = '')
+    {
+        if (empty($sel)) {
+            return false;
+        }
+
+        $this->db->select($sel);
+        $query = $this->db->get($this->tables['dict']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+
+        $res['dict'] = $query->result_array();
         return $res;
     }
 
@@ -169,7 +192,7 @@ class Dict_model extends CI_Model
      */
     public function update($id, $data)
     {
-        if (empty($id)) {
+        if (empty($id) || empty($data)) {
             return true;
         }
 

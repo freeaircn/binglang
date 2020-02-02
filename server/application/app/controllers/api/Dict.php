@@ -47,8 +47,8 @@ class Dict extends RestController
             $this->response($res, 200);
         }
 
-        if (isset($client['sender']) && $client['sender'] === 'dict_data') {
-            $data = $this->dict_model->read($client);
+        if (isset($client['req']) && $client['req'] === 'id_label') {
+            $data = $this->dict_model->select_by_req('id, label');
             if ($data === false) {
                 $res['code'] = App_Code::GET_DICT_FAILED;
                 $res['msg']  = App_Msg::GET_DICT_FAILED;

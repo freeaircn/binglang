@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 22:35:16
+ * @LastEditTime : 2020-02-02 20:27:38
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -101,44 +101,113 @@ class Dict_data_model extends CI_Model
         return $res;
     }
 
-    public function create($data)
+    /**
+     * read_by_id
+     *
+     * @author freeair
+     * @DateTime 2020-02-02
+     * @param [type] $id
+     * @return mixed bool | array
+     */
+    public function read_by_id($id = null)
     {
-        $this->db->insert($this->tables['dict_data'], $data);
-        $id = $this->db->insert_id($this->tables['dict_data'] . '_id_seq');
+        if (!isset($id) || $id == 0) {
+            return false;
+        }
 
-        return (isset($id)) ? $id : false;
-    }
-
-    public function update($id, $data)
-    {
+        // $this->db->select('id, sort, label, name, enabled');
         $this->db->where('id', $id);
-        $this->db->update($this->tables['dict_data'], $data);
+        $query = $this->db->get($this->tables['dict_data']);
 
-        $res = $this->db->affected_rows();
-        return ($res > 0) ? true : false;
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+
+        // no data in db
+        if ($query->num_rows() === 0) {
+            return false;
+        }
+        $res['form'] = $query->result_array()[0];
+
+        return $res;
     }
 
     /**
+     * insert
      *
-     * @param array $id
-     * @return array
+     * @author freeair
+     * @DateTime 2020-02-02
+     * @param [array] $data
+     * @return void
+     */
+    public function create($data)
+    {
+        if (empty($data)) {
+            return true;
+        }
+
+        $id = false;
+        if (!$this->db->insert($this->tables['dict_data'], $data)) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+        } else {
+            $id = $this->db->insert_id($this->tables['dict_data'] . '_id_seq');
+        }
+
+        return $id;
+    }
+
+    /**
+     * update
+     *
+     * @author freeair
+     * @DateTime 2020-02-02
+     * @param [int] $id
+     * @param [array] $data
+     * @return bool
+     */
+    public function update($id, $data)
+    {
+        if (empty($id) || empty($data)) {
+            return true;
+        }
+
+        if ($this->db->where('id', $id)->update($this->tables['dict_data'], $data) === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * delete
+     *
+     * @author freeair
+     * @DateTime 2020-02-02
+     * @param [int] $id
+     * @return bool
      */
     public function delete($id)
     {
-        // $result = $this->db->where_in('id', $ids)->delete($this->tables['dict_data']);
-        $result = $this->db->where('id', $id)->delete($this->tables['dict_data']);
+        if (!isset($id)) {
+            return false;
+        }
 
-        return $result;
+        $this->db->trans_start();
+        $this->db->where('id', $id)->delete($this->tables['dict_data']);
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        return true;
     }
-
-    /**
-     * makeup where sub-statement of sql by client data
-     *
-     * @author freeair
-     * @DateTime 2020-01-27
-     * @param [associated array] $client
-     * @return mixed bool | string , true indicates no data in db table
-     */
 
     /**
      * makeup where sub-statement of sql by client data
@@ -166,6 +235,15 @@ class Dict_data_model extends CI_Model
                 $where_str .= "name LIKE '%" . $client['name'] . "%' ";
             } else {
                 $where_str .= "name LIKE '%" . $client['name'] . "%' ";
+            }
+            $continue = true;
+        }
+        if (isset($client['dict']) && $client['dict'] !== '') {
+            if ($continue) {
+                $where_str .= " AND ";
+                $where_str .= "dict_id =" . $client['dict'];
+            } else {
+                $where_str .= "dict_id =" . $client['dict'];
             }
             $continue = true;
         }

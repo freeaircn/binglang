@@ -21,11 +21,11 @@
 8. [done]编写用户头像功能   
 9. [done]table列动态显示/隐藏功能  
 10. 参照用户管理页面，更新 app其他页面文件
-    创建search组件
+    [done]创建search组件
     [done]search 组件，watch输入框，输入字母时，触发多次change事件，导致发往后端多条无效请求。  
     [done]search组件传递表单验证rule。   
-
-.  dict data 已测试read，待测试create，update，del，增加检索字段。     
+    更新admin-dept
+    
 . 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
 . 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
 . 参照用户管理页面，更新 app其他页面文件  
@@ -1082,18 +1082,21 @@ update时
 ```
   1 前端：
     1 模板
-      1 添加表头search区，定义search字段，验证规则
+      1 添加表头search区，定义search字段
       2 添加分页
       3 调整table和dialog-form
     2 JS
-      1 import 组件，输入框验证方法，修改api方法名
-      2 调整CRUD方法
-      3 调整分页，查询方法
+      1 import 组件，修改api方法名
+      2 调整查询区域
+      3 调整CRUD方法
+      4 form输入框验证方法
+      5 search区 验证规则
   
   2 后端：
-    1 定义前端数据验证规则
-    2 调整api方法：输入验证，响应code和msg定义
-    3 调整model，CRUD
+    1 调整api方法
+    2 调整model
+    3 定义规则，验证前端数据
+    4 定义响应code和msg定义
       
   3 search 组件，watch输入框，输入字母时，触发多次change事件，导致发往后端多条无效请求。 
     # 方案：
