@@ -43,6 +43,39 @@ git clone git@github.com:freeaircn/binglang.git
 5. 更新本地仓库  
 
 git pull
+
+【使用】
+1 PC1新建仓库
+
+2 PC1关联remote，用cmd
+
+3 PC1本地master提交版本，push至remote master
+
+4 PC1本地创建分支 f1，PC1本地提交分支f1，并push分支f1至remote
+
+5 PC1本地合并分支f1，用cmd
+
+6 PC1本地删除分支f1，用cmd，remote侧分支无变化
+
+7 PC1发起remote删除分支f1
+
+
+？？8 PC2 拉取remote 所有分支，含master，其他分支
+  PC2创建仓库，用cmd
+  PC2关联remote，用cmd
+  PC2 pull remote指定分支
+
+
+
+两条线：
+master
+dev
+
+
+1 基于master 创建dev分支
+2 本地pull remote/dev分支进行修改，本地push 至remote/dev
+3 本地修改dev完毕，本地合并dev分支至master，再push至remote/master
+
 ```
 
 ---
