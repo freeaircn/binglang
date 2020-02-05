@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 16:20:21
+ * @LastEditTime : 2020-02-04 22:38:33
  */
 import request from '@/utils/request'
 
-export function apiGetDept(params) {
+export function apiGet(params) {
   return request({
     url: '/api/dept',
     method: 'get',
@@ -15,7 +15,7 @@ export function apiGetDept(params) {
   })
 }
 
-export function apiCreateDept(formData) {
+export function apiCreate(formData) {
   return request({
     url: '/api/dept',
     method: 'post',
@@ -23,7 +23,7 @@ export function apiCreateDept(formData) {
   })
 }
 
-export function apiUpdateDept(formData) {
+export function apiUpdate(formData) {
   return request({
     url: '/api/dept',
     method: 'put',
@@ -31,7 +31,7 @@ export function apiUpdateDept(formData) {
   })
 }
 
-export function apiDelDept(id) {
+export function apiDelete(id) {
   return request.delete('/api/dept', {
     data: {
       id

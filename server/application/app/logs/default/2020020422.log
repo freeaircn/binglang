@@ -1,0 +1,4 @@
+2020-02-04 22:49:57 | CRITICAL | 1636 | 5e3984955922e | 1580827797.365 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-pwmzevxyf.php - line:152 - msg:Cannot redeclare Dept_model::select_by_req()
+2020-02-04 22:50:18 | CRITICAL | 13964 | 5e3984aa895b4 | 1580827818.563 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-bsfkkuf.php - line:169 - msg:Cannot redeclare Dept_model::create()
+2020-02-04 22:50:30 | CRITICAL | 9124 | 5e3984b6cbfe1 | 1580827830.836 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-ewbetbrf.php - line:177 - msg:Cannot redeclare Dept_model::create()
+2020-02-04 22:50:39 | CRITICAL | 4472 | 5e3984bf7ee45 | 1580827839.520 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-esuogoec.php - line:177 - msg:Cannot redeclare Dept_model::create()

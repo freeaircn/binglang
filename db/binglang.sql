@@ -13,6 +13,7 @@ USE `binglang`;
 DROP TABLE IF EXISTS `app_dept`;
 CREATE TABLE IF NOT EXISTS `app_dept` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
   `label` varchar(63) NOT NULL COMMENT '名称',
   `pid` int(11) UNSIGNED NOT NULL COMMENT '上级节点',
   `enabled` bit(1) NOT NULL,
@@ -24,10 +25,10 @@ CREATE TABLE IF NOT EXISTS `app_dept` (
 -- 转存表中的数据 `app_dept`
 --
 
-INSERT INTO `app_dept` (`id`, `label`, `pid`, `enabled`, `update_time`) VALUES
-(1, 'FreeAir工作室', 0, b'1', '2020-01-01 09:14:05'),
-(2, '开发组', 1, b'1', '2020-01-17 20:04:23'),
-(3, '测试组', 1, b'1', '2020-01-17 20:04:29');
+INSERT INTO `app_dept` (`id`, `sort`, `label`, `pid`, `enabled`, `update_time`) VALUES
+(1, 1, 'FreeAir工作室', 0, b'1', '2020-01-01 09:14:05'),
+(2, 2, '开发组', 1, b'1', '2020-01-17 20:04:23'),
+(3, 3, '测试组', 1, b'1', '2020-01-17 20:04:29');
 
 -- --------------------------------------------------------
 
@@ -103,9 +104,9 @@ INSERT INTO `app_dict_data` (`id`, `sort`, `label`, `name`, `code`, `enabled`, `
 DROP TABLE IF EXISTS `app_job`;
 CREATE TABLE IF NOT EXISTS `app_job` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
   `label` varchar(31) NOT NULL COMMENT '中文名称',
   `enabled` bit(1) NOT NULL,
-  `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='岗位' ROW_FORMAT=COMPACT;
@@ -114,9 +115,9 @@ CREATE TABLE IF NOT EXISTS `app_job` (
 -- 转存表中的数据 `app_job`
 --
 
-INSERT INTO `app_job` (`id`, `label`, `enabled`, `sort`, `update_time`) VALUES
-(1, '开发员', b'1', 1, '2020-01-01 09:14:05'),
-(2, '测试员', b'1', 2, '2020-01-01 09:14:05');
+INSERT INTO `app_job` (`id`, `sort`, `label`, `enabled`, `update_time`) VALUES
+(1, 1, '开发员', b'1', '2020-01-01 09:14:05'),
+(2, 2, '测试员', b'1', '2020-01-01 09:14:05');
 
 -- --------------------------------------------------------
 

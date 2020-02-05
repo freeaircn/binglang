@@ -99,7 +99,7 @@ class Dict_model extends CI_Model
     }
 
     /**
-     * read data in table
+     * select where id = $id
      *
      * @author freeair
      * @DateTime 2020-01-19
