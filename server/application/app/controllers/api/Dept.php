@@ -28,18 +28,18 @@ class Dept extends RestController
     {
         $client = $this->get();
 
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict_data', 'index_get');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dept', 'index_get');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         if (isset($client['label'])) {
             $data = $this->dept_model->read($client);
             if ($data === false) {
-                $res['code'] = App_Code::GET_DICT_DATA_FAILED;
-                $res['msg']  = App_Msg::GET_DICT_DATA_FAILED;
+                $res['code'] = App_Code::GET_DEPT_FAILED;
+                $res['msg']  = App_Msg::GET_DEPT_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -50,8 +50,8 @@ class Dept extends RestController
         if (isset($client['req']) && $client['req'] === 'id_label_pid') {
             $data = $this->dept_model->select_by_req('id, label, pid');
             if ($data === false) {
-                $res['code'] = App_Code::GET_DICT_FAILED;
-                $res['msg']  = App_Msg::GET_DICT_FAILED;
+                $res['code'] = App_Code::GET_DEPT_FAILED;
+                $res['msg']  = App_Msg::GET_DEPT_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -62,8 +62,8 @@ class Dept extends RestController
         if (isset($client['id'])) {
             $data = $this->dept_model->read_by_id($client['id']);
             if ($data === false) {
-                $res['code'] = App_Code::GET_DICT_DATA_FOR_EDIT_FAILED;
-                $res['msg']  = App_Msg::GET_DICT_DATA_FOR_EDIT_FAILED;
+                $res['code'] = App_Code::GET_DEPT_FOR_EDIT_FAILED;
+                $res['msg']  = App_Msg::GET_DEPT_FOR_EDIT_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -81,12 +81,12 @@ class Dept extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict_data', 'index_post');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dept', 'index_post');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         $data['sort']    = $client['sort'];
         $data['label']   = $client['label'];
@@ -97,8 +97,8 @@ class Dept extends RestController
 
         $id = $this->dept_model->create($data);
         if ($id === false) {
-            $res['code'] = App_Code::CREATE_DICT_DATA_FAILED;
-            $res['msg']  = App_Msg::CREATE_DICT_DATA_FAILED;
+            $res['code'] = App_Code::CREATE_DEPT_FAILED;
+            $res['msg']  = App_Msg::CREATE_DEPT_FAILED;
             SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
@@ -115,12 +115,12 @@ class Dept extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_post');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dept', 'index_post');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         $id              = $client['id'];
         $data['sort']    = $client['sort'];
@@ -140,8 +140,8 @@ class Dept extends RestController
 
         $rtn = $this->dept_model->update($id, $data);
         if ($rtn === false) {
-            $res['code'] = App_Code::UPDATE_DICT_FAILED;
-            $res['msg']  = App_Msg::UPDATE_DICT_FAILED;
+            $res['code'] = App_Code::UPDATE_DEPT_FAILED;
+            $res['msg']  = App_Msg::UPDATE_DEPT_FAILED;
             SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
             $this->response($res, 200);
@@ -158,12 +158,12 @@ class Dept extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_delete');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dept', 'index_delete');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
         $id = $client['id'];
 
@@ -173,8 +173,8 @@ class Dept extends RestController
             $res['code'] = App_Code::SUCCESS;
             $res['msg']  = App_Msg::SUCCESS;
         } else {
-            $res['code'] = App_Code::DELETE_DICT_FAILED;
-            $res['msg']  = App_Msg::DELETE_DICT_FAILED;
+            $res['code'] = App_Code::DELETE_DEPT_FAILED;
+            $res['msg']  = App_Msg::DELETE_DEPT_FAILED;
             SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
         }
 

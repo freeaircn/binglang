@@ -74,7 +74,7 @@ import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import utils
-// import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/common'
+import { validSort, validEnglishChineseLetter } from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dept'
@@ -105,8 +105,8 @@ export default {
         pid: '1'
       },
       rules: {
-        // sort: [{ required: true, validator: validSort, trigger: 'change' }],
-        // label: [{ required: true, validator: validChineseLetter, trigger: 'change' }]
+        sort: [{ required: true, validator: validSort, trigger: 'change' }],
+        label: [{ required: true, validator: validEnglishChineseLetter, trigger: 'change' }]
       }
     }
   },

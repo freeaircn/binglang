@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS `app_dept` (
   `pid` int(11) UNSIGNED NOT NULL COMMENT '上级节点',
   `enabled` bit(1) NOT NULL,
   `update_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY (`sort`) USING BTREE,
+  KEY (`pid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='部门' ROW_FORMAT=COMPACT;
 
 --
@@ -48,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `app_dict` (
   KEY `key_dict_sort` (`sort`) USING BTREE,
   UNIQUE KEY `uc_dict_label` (`label`) USING BTREE,
   UNIQUE KEY `uc_dict_name` (`name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='数据字典' ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='数据词典' ROW_FORMAT=COMPACT;
 
 --
 -- 转存表中的数据 `app_dict`
@@ -81,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `app_dict_data` (
   UNIQUE KEY `uc_dict_data_label` (`label`) USING BTREE,
   UNIQUE KEY `uc_dict_data_name` (`name`) USING BTREE,
   KEY `fk_dict_data_ref_dict_id` (`dict_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='数据字典详情' ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='数据词条' ROW_FORMAT=COMPACT;
 
 --
 -- 转存表中的数据 `app_dict_data`

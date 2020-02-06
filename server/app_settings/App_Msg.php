@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-02 20:52:25
+ * @LastEditTime : 2020-02-06 22:11:42
  */
 namespace App_Settings;
 
@@ -37,6 +37,12 @@ class App_Msg
     const CREATE_DICT_DATA_FAILED       = '新建词条，操作失败，请稍后重试！';
     const UPDATE_DICT_DATA_FAILED       = '编辑词条，操作失败，请稍后重试！';
     const DELETE_DICT_DATA_FAILED       = '删除词条，操作失败，请稍后重试！';
+
+    const GET_DEPT_FAILED          = '部门信息，查询失败，请稍后重试！';
+    const GET_DEPT_FOR_EDIT_FAILED = '部门信息表单，获取失败，请稍后重试！';
+    const CREATE_DEPT_FAILED       = '新建部门，操作失败，请稍后重试！';
+    const UPDATE_DEPT_FAILED       = '编辑部门，操作失败，请稍后重试！';
+    const DELETE_DEPT_FAILED       = '删除部门，操作失败，请稍后重试！';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';

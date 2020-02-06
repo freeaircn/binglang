@@ -3,11 +3,12 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 20:49:35
+ * @LastEditTime : 2020-02-06 22:04:59
  */
 
 const regexSort = /^([1-9][0-9]*)$/
 const regexChineseChar = /^([\u4e00-\u9fa5]){1,15}$/
+const regexEnglishChineseChar = /^([a-zA-z\u4e00-\u9fa5]{1,40})$/u
 const regexLowerLetterUnderline = /^[a-z_]{1,60}$/
 const regexPhone = /^[1][3,4,5,7,8][0-9]{9}$/
 const regexEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/
@@ -30,6 +31,16 @@ export function validChineseLetter(rule, value, callback) {
     return callback(new Error('请输入中文，最多15个'))
   } else if (!regexChineseChar.test(value)) {
     return callback(new Error('请输入中文，最多15个'))
+  } else {
+    callback()
+  }
+}
+
+export function validEnglishChineseLetter(rule, value, callback) {
+  if (!value) {
+    return callback(new Error('请输入中文或英文，最多40个'))
+  } else if (!regexEnglishChineseChar.test(value)) {
+    return callback(new Error('请输入中文或英文，最多40个'))
   } else {
     callback()
   }

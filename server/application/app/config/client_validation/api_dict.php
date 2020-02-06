@@ -91,7 +91,7 @@ $config['index_get'] = [
                         return true;
                     }
                     // e.g. '', or number no zero
-                    return $str === '' ? true : ($str != 0 && ctype_digit((string) $str));
+                    return ($str != 0 && ctype_digit((string) $str));
                 },
             ],
         ],
@@ -108,7 +108,7 @@ $config['index_get'] = [
                         return true;
                     }
                     // e.g. '', or number no zero
-                    return $str === '' ? true : ($str === 'id_label');
+                    return ($str === 'id_label');
                 },
             ],
         ],
