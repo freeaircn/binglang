@@ -2,13 +2,8 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
-      <div>
-        <!-- 搜索 -->
-        <el-input v-model="query.words" clearable size="small" placeholder="搜索菜单名" style="width: 200px;" class="filter-item" @keyup.enter.native="handleQuery" />
-        <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="handleQuery">查询</el-button>
-        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="preCreate">新增</el-button>
-        <el-button class="filter-item" size="mini" type="info" icon="el-icon-download" @click="handleExport">导出</el-button>
-      </div>
+      <SearchOptions :inputs="searchOptionsInputs" :rules="searchOptionsRules" @click-search="handleSearch" @change="searchChange" />
+      <el-button type="success" size="mini" icon="el-icon-plus" @click="preCreate">新增</el-button>
     </div>
     <el-divider><i class="el-icon-arrow-down" /></el-divider>
     <!--表格渲染-->
@@ -17,16 +12,13 @@
       v-loading="tableLoading"
       :data="tableData"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :default-expand-all="true"
       row-key="id"
       size="small"
       :header-cell-style="{background:'#F2F6FC', color:'#606266'}"
     >
       <el-table-column :show-overflow-tooltip="true" prop="title" label="标题" width="125px" />
-      <el-table-column prop="sort" label="排序" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.sort }}
-        </template>
-      </el-table-column>
+      <el-table-column prop="sort" label="序号" />
       <el-table-column :show-overflow-tooltip="true" prop="path" label="url地址" />
       <el-table-column :show-overflow-tooltip="true" prop="name" label="组件名" />
       <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
@@ -58,7 +50,7 @@
       </el-table-column>
 
       <el-table-column :show-overflow-tooltip="true" prop="roles" label="权限标识" />
-      <el-table-column prop="update_time" label="创建日期" width="135px" />
+      <el-table-column prop="update_time" label="更新日期" width="135px" />
 
       <el-table-column label="操作" width="130px" align="center" fixed="right">
         <template slot-scope="{row}">
@@ -74,7 +66,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="类型" prop="type">
-              <el-radio-group v-model="formData.type" size="mini" style="">
+              <el-radio-group v-model="formData.type" size="mini">
                 <el-radio-button label="1">菜单</el-radio-button>
                 <el-radio-button label="2">按钮</el-radio-button>
               </el-radio-group>
@@ -85,19 +77,24 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="标题" prop="title">
-              <el-input v-model="formData.title" style="" />
+              <el-input v-model="formData.title" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="序号" prop="sort">
+              <el-input-number v-model="formData.sort" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="formData.type.toString() === '1'" label="url地址" prop="path">
+            <el-form-item v-if="formData.type === '1'" label="url地址" prop="path">
               <el-input v-model="formData.path" placeholder="路由地址" style="" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="重定向" prop="redirect">
+            <el-form-item v-show="formData.type === '1'" label="重定向" prop="redirect">
               <el-input v-model="formData.redirect" style="" placeholder="重定向地址" />
             </el-form-item>
           </el-col>
@@ -105,12 +102,12 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="组件名称" prop="name">
+            <el-form-item v-show="formData.type === '1'" label="组件名称" prop="name">
               <el-input v-model="formData.name" style="" placeholder="路由/组件Name" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="组件路径" prop="component">
+            <el-form-item v-show="formData.type === '1'" label="组件路径" prop="component">
               <el-input v-model="formData.component" style="" placeholder="组件路径" />
             </el-form-item>
           </el-col>
@@ -118,7 +115,7 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="侧边可见" prop="hidden">
+            <el-form-item v-show="formData.type === '1'" label="侧边可见" prop="hidden">
               <el-radio-group v-model="formData.hidden" size="mini">
                 <el-radio-button label="0">是</el-radio-button>
                 <el-radio-button label="1">否</el-radio-button>
@@ -126,7 +123,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="顶级可见" prop="alwaysShow">
+            <el-form-item v-show="formData.type === '1'" label="顶级可见" prop="alwaysShow">
               <el-radio-group v-model="formData.alwaysShow" size="mini">
                 <el-radio-button label="1">是</el-radio-button>
                 <el-radio-button label="0">否</el-radio-button>
@@ -137,7 +134,7 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="页面缓存" prop="noCache">
+            <el-form-item v-show="formData.type === '1'" label="缓存页面" prop="noCache">
               <el-radio-group v-model="formData.noCache" size="mini">
                 <el-radio-button label="0">是</el-radio-button>
                 <el-radio-button label="1">否</el-radio-button>
@@ -145,7 +142,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-show="formData.type.toString() === '1'" label="面包屑" prop="breadcrumb">
+            <el-form-item v-show="formData.type === '1'" label="面包屑" prop="breadcrumb">
               <el-radio-group v-model="formData.breadcrumb" size="mini">
                 <el-radio-button label="1">是</el-radio-button>
                 <el-radio-button label="0">否</el-radio-button>
@@ -154,20 +151,11 @@
           </el-col>
         </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="权限标识" prop="roles">
-              <el-input v-model="formData.roles" placeholder="xx:list" style="" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="排序" prop="sort">
-              <el-input-number v-model.number="formData.sort" :min="0" :max="999" controls-position="right" style="" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="权限标识" prop="roles">
+          <el-input v-model="formData.roles" placeholder="xx:list" style="width: 450px;" />
+        </el-form-item>
 
-        <el-form-item v-show="formData.type.toString() === '1'" label="图标" prop="icon">
+        <el-form-item v-show="formData.type === '1'" label="图标" prop="icon">
           <el-popover
             placement="bottom-start"
             width="450"
@@ -188,7 +176,7 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
+        <el-button size="mini" @click="cancelDialog()">取消</el-button>
         <el-button type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提交</el-button>
       </div>
     </el-dialog>
@@ -196,31 +184,30 @@
 </template>
 
 <script>
-// import 第三方组件
+// import components
+import SearchOptions from '@/components/app/SearchOptions/index'
+import searchOptionsConfig from '@/views/app/admin/menu/menu-search-mixin'
 import IconSelect from '@/components/app/IconSelect'
 import treeSelect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
-// import 公共method
-import { validQueryWords } from '@/utils/app/validator/common'
+// import utils
+import { validSort, validChineseLetter } from '@/utils/app/validator/common'
 
 // import api
-import { apiGetMenu, apiCreateMenu, apiUpdateMenu, apiDelMenu } from '@/api/app/admin/menu'
-
-// Import validator
-// import { validName, validPath } from '@/utils/app/validator/menu-form'
+import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/menu'
 
 export default {
   name: 'AdminMenu',
-  components: { IconSelect, treeSelect },
+  components: { SearchOptions, IconSelect, treeSelect },
+  mixins: [searchOptionsConfig()],
   data() {
     return {
-      query: {
-        words: ''
-      },
+      query: {},
 
       tableLoading: false,
       tableData: [],
+
       treeData: [{
         id: 0,
         label: '顶级类目',
@@ -234,99 +221,74 @@ export default {
         create: '新建'
       },
       formData: {
-        id: null,
-        type: 1,
-        name: null,
-        path: null,
-        component: null,
-        redirect: null,
+        id: '',
+        type: '1',
+        name: '',
+        path: '',
+        component: '',
+        redirect: '',
         hidden: '0',
         alwaysShow: '0',
-        title: null,
-        icon: null,
+        title: '',
+        icon: '',
         noCache: '1',
         breadcrumb: '1',
-        roles: null,
-        sort: 999,
-        pid: 0,
-        update_time: null
+        roles: '',
+        sort: '1',
+        pid: '0'
+      },
+      rules: {
+        sort: [{ required: true, validator: validSort, trigger: 'change' }],
+        title: [{ required: true, validator: validChineseLetter, trigger: 'change' }]
+        // name: [{ required: true, validator: validName, trigger: 'change' }],
+        // path: [{ required: true, validator: validPath, trigger: 'change' }],
+        // permission: [{ validator: validName, trigger: 'change' }],
+        // component_name: [{ validator: validName, trigger: 'change' }],
+        // component: [{ validator: validName, trigger: 'change' }]
       }
-      // rules: {
-      //   name: [{ required: true, validator: validName, trigger: 'change' }],
-      //   path: [{ required: true, validator: validPath, trigger: 'change' }],
-      //   permission: [{ validator: validName, trigger: 'change' }],
-      //   component_name: [{ validator: validName, trigger: 'change' }],
-      //   component: [{ validator: validName, trigger: 'change' }]
-      // }
     }
   },
-  created() {
-    this.updateTbl(null)
-  },
+  // mounted: function() {
+  //   this.refreshTblDisplay()
+  // },
   methods: {
-    // CRUD core
-    updateTbl(params) {
+    /**
+     * @description: success response, tableData be updated; failed response, tableData be cleared
+     * @param array
+     * @return:
+     */
+    refreshTblDisplay(params = {}) {
       this.tableLoading = true
 
-      if (params === null) {
-        params = {
-          select_col: null,
-          method: null,
-          cond: null,
-          cond_col: null
-        }
-      }
-      apiGetMenu(params)
+      var temp = JSON.parse(JSON.stringify(params))
+      apiGet(temp)
         .then(function(data) {
           this.tableData.splice(0)
-          this.tableData = data.slice(0)
+          this.tableData = data.menu.slice(0)
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.tableData.splice(0)
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
         .finally(function() {
           this.tableLoading = false
         }.bind(this))
     },
-    handleQuery() {
-      // API param - this.word，输入检验
-      if (this.query.words === '') {
-        this.updateTbl(null)
-      } else {
-        const res = validQueryWords(this.query.words)
-        if (res === true) {
-          var params = {
-            select_col: null,
-            method: 'like',
-            cond: { 'title': this.query.words },
-            cond_col: null
-          }
-          this.updateTbl(params)
-        } else {
-          this.$notify.error({
-            title: '错误',
-            message: res,
-            duration: 2000
-          })
-        }
-      }
-    },
 
-    // 请求后台menu tree，组装tree数据结构
-    // 表单formData清空
-    // 显示dialog
+    /**
+     * @description: reset formData, a blank form, show dialog
+     * @param {type}
+     * @return:
+     */
     preCreate() {
       this.rstFormData()
-      var params = {
-        select_col: 'id, title, pid',
-        method: null,
-        cond: null,
-        cond_col: null
-      }
-      apiGetMenu(params)
+      apiGet({ req: 'id_title_pid' })
         .then(function(data) {
           this.treeData[0].children.splice(0)
-          this.treeData[0].children = data.slice(0)
+          this.treeData[0].children = data.menu_list.slice(0)
           //
           this.dialogAction = 'create'
           this.dialogVisible = true
@@ -335,51 +297,57 @@ export default {
           })
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.tableData.splice(0)
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
     },
-    // validate 表单输入，请求后台
-    // 接收response
-    // 200，获取整个数据表，更新显示
+    /**
+     * @description: validate form, post, update data display area
+     * @param {type}
+     * @return:
+     */
     doCreate() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // API create
-          apiCreateMenu(this.formData)
+          apiCreate(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.updateTbl(null)
+
+              this.$nextTick(() => {
+                this.rstFormData()
+                this.refreshTblDisplay(this.query)
+              })
             }.bind(this))
             .catch(function(err) {
-              console.log(err)
-            })
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
         }
       })
     },
 
-    // 请求后台menu tree，组装tree数据结构
-    // 取row.id，请求后台，填写表单formData
-    // 显示dialog
-    preUpdate(rowID) {
-      var params1 = {
-        select_col: 'id, title, pid',
-        method: null,
-        cond: null,
-        cond_col: null
-      }
-      var params2 = {
-        select_col: null,
-        method: 'where',
-        cond: { 'id': rowID },
-        cond_col: null
-      }
-      Promise.all([apiGetMenu(params1), apiGetMenu(params2)])
+    /**
+     * @description: reset formData, request current row and dict list, show dialog
+     * @param {type}
+     * @return:
+     */
+    preUpdate(id) {
+      this.rstFormData()
+      Promise.all([apiGet({ req: 'id_title_pid' }), apiGet({ id: id })])
         .then(function(res) {
           this.treeData[0].children.splice(0)
-          this.treeData[0].children = res[0].slice(0)
+          this.treeData[0].children = res[0].menu_list.slice(0)
+          // 更新搜索区域
+          // this.updateDictList(this.treeData)
           //
-          this.copyFormData(res[1][0])
+          this.updateFormData(res[1]['form'])
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
@@ -387,50 +355,66 @@ export default {
           })
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
     },
-    // validate 表单输入，请求后台
-    // 接收response，更新显示
+    /**
+     * @description: validate form, post, update data display area
+     * @param {type}
+     * @return:
+     */
     doUpdate() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.formData)
           // API update
-          apiUpdateMenu(tempData)
+          apiUpdate(this.formData)
             .then(function(data) {
               this.dialogAction = ''
               this.dialogVisible = false
-              this.updateTbl(null)
+
+              this.$nextTick(() => {
+                this.rstFormData()
+                this.refreshTblDisplay(this.query)
+              })
             }.bind(this))
             .catch(function(err) {
-              console.log(err)
-            })
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
         }
       })
     },
 
-    // 子节点删除处理
-    // 接收response，更新显示
+    /**
+     * @description: delete by id, update data display area
+     * @param {type}
+     * @return:
+     */
     doDelete(id) {
-      this.$confirm('确定删除吗？子节点会同时删除，此操作不能撤销！', '提示', {
+      this.$confirm('确定删除吗？将同时删除子节点', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
         center: true
       })
         .then(() => {
-          apiDelMenu(id)
+          apiDelete(id)
             .then(function(data) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
+              this.$nextTick(() => {
+                this.refreshTblDisplay(this.query)
               })
-              this.updateTbl(null)
             }.bind(this))
             .catch(function(err) {
-              console.log(err)
-            })
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
         })
         .catch(() => {
         })
@@ -440,44 +424,54 @@ export default {
     selected(name) {
       this.formData.icon = name
     },
-    handleExport() {
-
-    },
     rstFormData() {
-      this.formData.id = null
-      this.formData.type = 1
-      this.formData.name = null
-      this.formData.path = null
-      this.formData.component = null
-      this.formData.redirect = null
+      this.formData.id = ''
+      this.formData.type = '1'
+      this.formData.name = ''
+      this.formData.path = ''
+      this.formData.component = ''
+      this.formData.redirect = ''
       this.formData.hidden = '0'
       this.formData.alwaysShow = '0'
-      this.formData.title = null
-      this.formData.icon = null
+      this.formData.title = ''
+      this.formData.icon = ''
       this.formData.noCache = '1'
       this.formData.breadcrumb = '1'
-      this.formData.roles = null
-      this.formData.sort = 999
-      this.formData.pid = 0
-      this.formData.update_time = null
+      this.formData.roles = ''
+      this.formData.sort = '1'
+      this.formData.pid = '0'
     },
-    copyFormData(data) {
-      this.formData.id = data.id
-      this.formData.type = data.type
-      this.formData.name = data.name
-      this.formData.path = data.path
-      this.formData.component = data.component
-      this.formData.redirect = data.redirect
-      this.formData.hidden = data.hidden
-      this.formData.alwaysShow = data.alwaysShow
-      this.formData.title = data.title
-      this.formData.icon = data.icon
-      this.formData.noCache = data.noCache
-      this.formData.breadcrumb = data.breadcrumb
-      this.formData.roles = data.roles
-      this.formData.sort = data.sort
-      this.formData.pid = data.pid
-      this.formData.update_time = data.update_time
+    updateFormData(form) {
+      this.formData.id = form.id
+      this.formData.type = form.type
+      this.formData.name = form.name
+      this.formData.path = form.path
+      this.formData.component = form.component
+      this.formData.redirect = form.redirect
+      this.formData.hidden = form.hidden
+      this.formData.alwaysShow = form.alwaysShow
+      this.formData.title = form.title
+      this.formData.icon = form.icon
+      this.formData.noCache = form.noCache
+      this.formData.breadcrumb = form.breadcrumb
+      this.formData.roles = form.roles
+      this.formData.sort = form.sort
+      this.formData.pid = form.pid
+    },
+
+    cancelDialog() {
+      this.dialogAction = ''
+      this.dialogVisible = false
+      this.rstFormData()
+    },
+
+    handleSearch(search) {
+      this.query = JSON.parse(JSON.stringify(search))
+      this.refreshTblDisplay(this.query)
+    },
+    searchChange(search) {
+      this.query = JSON.parse(JSON.stringify(search))
+      this.refreshTblDisplay(this.query)
     }
   }
 }

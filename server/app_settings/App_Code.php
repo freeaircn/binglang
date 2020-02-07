@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-07 21:21:30
+ * @LastEditTime : 2020-02-07 22:39:33
  */
 namespace App_Settings;
 
@@ -48,6 +48,12 @@ class App_Code
     const CREATE_JOB_FAILED       = 252;
     const UPDATE_JOB_FAILED       = 253;
     const DELETE_JOB_FAILED       = 254;
+    // api menu
+    const GET_MENU_FAILED          = 260;
+    const GET_MENU_FOR_EDIT_FAILED = 261;
+    const CREATE_MENU_FAILED       = 262;
+    const UPDATE_MENU_FAILED       = 263;
+    const DELETE_MENU_FAILED       = 264;
     // api role
     const GET_ROLE_FAILED          = 270;
     const GET_ROLE_FOR_EDIT_FAILED = 271;

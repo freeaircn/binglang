@@ -110,7 +110,7 @@ import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/util
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/role'
 import { apiGetRoleMenu, apiCreateRoleMenu } from '@/api/app/admin/role-menu'
-import { apiGetMenu } from '@/api/app/admin/menu'
+import { apiGet as apiGetMenu } from '@/api/app/admin/menu'
 
 export default {
   name: 'AdminRole',

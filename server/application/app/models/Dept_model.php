@@ -128,8 +128,8 @@ class Dept_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-02-04
-     * @param [array] $data
-     * @return [mixed] bool | id
+     * @param array $data
+     * @return mixed bool | id
      */
     public function create($data)
     {
@@ -153,7 +153,7 @@ class Dept_model extends CI_Model
      * @author freeair
      * @DateTime 2020-02-04
      * @param int $id
-     * @param [array] $data
+     * @param array $data
      * @return bool
      */
     public function update($id, $data)

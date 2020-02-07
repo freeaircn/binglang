@@ -59,7 +59,7 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
+        <el-button size="mini" @click="cancelDialog()">取消</el-button>
         <el-button type="primary" size="mini" @click="dialogAction==='create'?doCreate():doUpdate()">提交</el-button>
       </div>
     </el-dialog>
@@ -194,6 +194,7 @@ export default {
         }
       })
     },
+
     /**
      * @description: reset formData, request current row and dict list, show dialog
      * @param {type}
@@ -250,6 +251,7 @@ export default {
         }
       })
     },
+
     /**
      * @description: delete by id, update data display area
      * @param {type}
