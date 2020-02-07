@@ -1,0 +1,6 @@
+2020-02-07 21:21:15 | CRITICAL | 1056 | 5e3d644b7ad53 | 1581081675.503 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-gesjp.php - line:52 - msg:Cannot redefine class constant App_Settings\App_Code::GET_JOB_FAILED
+2020-02-07 21:21:16 | CRITICAL | 9948 | 5e3d644c13037 | 1581081676.78 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-deforht.php - line:52 - msg:Cannot redefine class constant App_Settings\App_Code::GET_JOB_FAILED
+2020-02-07 21:31:20 | CRITICAL | 11368 | 5e3d66a822b3f | 1581082280.142 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-hanfiwig.php - line:53 - msg:syntax error, unexpected '/'
+2020-02-07 21:33:46 | CRITICAL | 8308 | 5e3d673accf3e | 1581082426.840 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-wlhrzj.php - line:184 - msg:Cannot redeclare Role_model::create()
+2020-02-07 21:34:27 | CRITICAL | 1052 | 5e3d6763ed14b | 1581082467.971 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-oaqcdvvyj.php - line:239 - msg:Cannot redeclare Role_model::delete()
+2020-02-07 21:34:33 | CRITICAL | 7736 | 5e3d67696c0ab | 1581082473.443 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-vkzxv.php - line:239 - msg:Cannot redeclare Role_model::delete()

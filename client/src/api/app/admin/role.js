@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 19:36:36
+ * @LastEditTime : 2020-02-07 21:38:23
  */
 import request from '@/utils/request'
 
-export function apiGetRole(params) {
+export function apiGet(params) {
   return request({
     url: '/api/role',
     method: 'get',
@@ -15,7 +15,7 @@ export function apiGetRole(params) {
   })
 }
 
-export function apiCreateRole(formData) {
+export function apiCreate(formData) {
   return request({
     url: '/api/role',
     method: 'post',
@@ -23,7 +23,7 @@ export function apiCreateRole(formData) {
   })
 }
 
-export function apiUpdateRole(formData) {
+export function apiUpdate(formData) {
   return request({
     url: '/api/role',
     method: 'put',
@@ -31,7 +31,7 @@ export function apiUpdateRole(formData) {
   })
 }
 
-export function apiDelRole(id) {
+export function apiDelete(id) {
   return request.delete('/api/role', {
     data: {
       id

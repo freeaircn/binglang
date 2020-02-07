@@ -24,7 +24,7 @@
     [done]创建search组件
     [done]search 组件，watch输入框，输入字母时，触发多次change事件，导致发往后端多条无效请求。  
     [done]search组件传递表单验证rule。   
-    更新admin-job, role, menu
+    更新admin-menu, role
     
 . 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
 . 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
