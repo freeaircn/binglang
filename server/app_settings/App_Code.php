@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-06 22:11:15
+ * @LastEditTime : 2020-02-07 20:25:11
  */
 namespace App_Settings;
 
@@ -42,6 +42,12 @@ class App_Code
     const CREATE_DEPT_FAILED       = 242;
     const UPDATE_DEPT_FAILED       = 243;
     const DELETE_DEPT_FAILED       = 244;
+    // api job
+    const GET_JOB_FAILED          = 250;
+    const GET_JOB_FOR_EDIT_FAILED = 251;
+    const CREATE_JOB_FAILED       = 252;
+    const UPDATE_JOB_FAILED       = 253;
+    const DELETE_JOB_FAILED       = 254;
 
     // old
     const USERS_TOKEN_INVALID = 110;

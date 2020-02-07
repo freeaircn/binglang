@@ -4,11 +4,13 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-19 15:48:19
+ * @LastEditTime : 2020-02-07 20:43:19
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
+use \App_Settings\App_Code as App_Code;
+use \App_Settings\App_Msg as App_Msg;
 
 class Job extends RestController
 {
@@ -19,76 +21,147 @@ class Job extends RestController
         parent::__construct();
 
         $this->load->model('job_model');
-        // $this->load->model('dept_model');
         $this->load->library('common_tools');
     }
 
     public function index_get()
     {
-        $select_col = $this->get('select_col');
-        $method     = $this->get('method');
-        $cond       = $this->get('cond');
-        $cond_col   = $this->get('cond_col');
+        $client = $this->get();
 
-        $res = $this->job_model->read($select_col, $method, $cond, $cond_col);
-        // foreach ($res as &$item)
-        // {
-        //     $dept_id = $item['dept_id'];
-        //     $dept_arr = $this->dept_model->get_all_parents_label($dept_id);
-        //     $dept = '';
-        //     for ($i = count($dept_arr)-1; $i >= 0; $i--)
-        //     {
-        //         $dept = $dept . ' / ' . $dept_arr[$i];
-        //     }
-        //     $dept = substr($dept, 3, strlen($dept));
-        //     $item['dept'] = $dept;
-        // }
-        // $res = $this->common_tools->arr2tree($result);
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_job', 'index_get');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
+
+        if (isset($client['limit']) && isset($client['label'])) {
+            $data = $this->job_model->read($client);
+            if ($data === false) {
+                $res['code'] = App_Code::GET_JOB_FAILED;
+                $res['msg']  = App_Msg::GET_JOB_FAILED;
+            } else {
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $data;
+            }
+            $this->response($res, 200);
+        }
+
+        if (isset($client['id'])) {
+            $data = $this->job_model->read_by_id($client['id']);
+            if ($data === false) {
+                $res['code'] = App_Code::GET_JOB_FOR_EDIT_FAILED;
+                $res['msg']  = App_Msg::GET_JOB_FOR_EDIT_FAILED;
+            } else {
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $data;
+            }
+            $this->response($res, 200);
+        }
+
+        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
+        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
         $this->response($res, 200);
     }
 
     public function index_post()
     {
-        $data['label']   = $this->post('label');
-        $data['enabled'] = ($this->post('enabled') === '1') ? 1 : 0;
-        $data['sort']    = $this->post('sort');
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_job', 'index_post');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
+
+        $data['sort']    = $client['sort'];
+        $data['label']   = $client['label'];
+        $data['enabled'] = (int) $client['enabled'];
 
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
-        $result = $this->job_model->create($data);
-        if ($result === false) {
-            $this->response([], 500);
-        } else {
-            $this->response($result, 201);
-        }
+        $id = $this->job_model->create($data);
+        if ($id === false) {
+            $res['code'] = App_Code::CREATE_JOB_FAILED;
+            $res['msg']  = App_Msg::CREATE_JOB_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
 
+            $this->response($res, 200);
+        }
+        $res['code'] = App_Code::SUCCESS;
+        $res['msg']  = App_Msg::SUCCESS;
+
+        $this->response($res, 201);
     }
 
     public function index_put()
     {
-        $id              = $this->put('id');
-        $data['label']   = $this->put('label');
-        $data['enabled'] = ($this->put('enabled') === '1') ? 1 : 0;
-        $data['sort']    = $this->put('sort');
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_job', 'index_post');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
+
+        $id              = $client['id'];
+        $data['sort']    = $client['sort'];
+        $data['label']   = $client['label'];
+        $data['enabled'] = (int) $client['enabled'];
 
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
-        $result = $this->job_model->update($id, $data);
-        if ($result === false) {
-            $this->response([], 500);
-        } else {
-            $this->response($result, 200);
+        // post和put 共用一份输入验证规则
+        if ($id === '') {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+
+            $this->response($res, 200);
         }
+
+        $rtn = $this->job_model->update($id, $data);
+        if ($rtn === false) {
+            $res['code'] = App_Code::UPDATE_JOB_FAILED;
+            $res['msg']  = App_Msg::UPDATE_JOB_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+
+            $this->response($res, 200);
+        }
+
+        $res['code'] = App_Code::SUCCESS;
+        $res['msg']  = App_Msg::SUCCESS;
+
+        $this->response($res, 200);
     }
 
     public function index_delete()
     {
-        $id = $this->delete('id');
-        // $ids = (string)$id;
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
 
-        // $ids = $this->job_model->get_all_children_ids($id);
-        $result = $this->job_model->delete($id);
+        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_job', 'index_delete');
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = $valid;
+            $this->response($res, 200);
+        }
 
-        $this->response($result, 200);
+        $id = $client['id'];
+
+        $rtn = $this->job_model->delete($id);
+        if ($rtn === true) {
+            $res['code'] = App_Code::SUCCESS;
+            $res['msg']  = App_Msg::SUCCESS;
+        } else {
+            $res['code'] = App_Code::DELETE_JOB_FAILED;
+            $res['msg']  = App_Msg::DELETE_JOB_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+        }
+
+        $this->response($res, 200);
     }
 }

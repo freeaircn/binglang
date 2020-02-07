@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 17:42:09
+ * @LastEditTime : 2020-02-07 20:02:03
  */
 import request from '@/utils/request'
 
-export function apiGetJob(params) {
+export function apiGet(params) {
   return request({
     url: '/api/job',
     method: 'get',
@@ -15,7 +15,7 @@ export function apiGetJob(params) {
   })
 }
 
-export function apiCreateJob(formData) {
+export function apiCreate(formData) {
   return request({
     url: '/api/job',
     method: 'post',
@@ -23,7 +23,7 @@ export function apiCreateJob(formData) {
   })
 }
 
-export function apiUpdateJob(formData) {
+export function apiUpdate(formData) {
   return request({
     url: '/api/job',
     method: 'put',
@@ -31,7 +31,7 @@ export function apiUpdateJob(formData) {
   })
 }
 
-export function apiDelJob(id) {
+export function apiDelete(id) {
   return request.delete('/api/job', {
     data: {
       id

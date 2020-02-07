@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-06 22:11:42
+ * @LastEditTime : 2020-02-07 20:25:35
  */
 namespace App_Settings;
 
@@ -43,6 +43,12 @@ class App_Msg
     const CREATE_DEPT_FAILED       = '新建部门，操作失败，请稍后重试！';
     const UPDATE_DEPT_FAILED       = '编辑部门，操作失败，请稍后重试！';
     const DELETE_DEPT_FAILED       = '删除部门，操作失败，请稍后重试！';
+
+    const GET_JOB_FAILED          = '岗位信息，查询失败，请稍后重试！';
+    const GET_JOB_FOR_EDIT_FAILED = '岗位信息表单，获取失败，请稍后重试！';
+    const CREATE_JOB_FAILED       = '新建岗位，操作失败，请稍后重试！';
+    const UPDATE_JOB_FAILED       = '编辑岗位，操作失败，请稍后重试！';
+    const DELETE_JOB_FAILED       = '删除岗位，操作失败，请稍后重试！';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';
