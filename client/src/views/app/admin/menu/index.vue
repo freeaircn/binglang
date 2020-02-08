@@ -4,6 +4,7 @@
     <div class="head-container">
       <SearchOptions :inputs="searchOptionsInputs" :rules="searchOptionsRules" @click-search="handleSearch" @change="searchChange" />
       <el-button type="success" size="mini" icon="el-icon-plus" @click="preCreate">新增</el-button>
+      <el-button type="success" size="mini" icon="el-icon-plus" @click="buildMenu">Build Menu</el-button>
     </div>
     <el-divider><i class="el-icon-arrow-down" /></el-divider>
     <!--表格渲染-->
@@ -19,7 +20,7 @@
     >
       <el-table-column :show-overflow-tooltip="true" prop="title" label="标题" width="125px" />
       <el-table-column prop="sort" label="序号" />
-      <el-table-column :show-overflow-tooltip="true" prop="path" label="url地址" />
+      <el-table-column :show-overflow-tooltip="true" prop="path" label="url路径" />
       <el-table-column :show-overflow-tooltip="true" prop="name" label="组件名" />
       <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
       <el-table-column :show-overflow-tooltip="true" prop="redirect" label="重定向" />
@@ -74,9 +75,23 @@
           </el-col>
         </el-row>
 
+        <!-- <el-form-item label="所属" prop="pid">
+          <treeSelect v-model="formData.pid" :options="treeData" style="width: 450px;" placeholder="选择所属上一级" />
+        </el-form-item> -->
+
+        <el-form-item label="所属" prop="pid">
+          <TreeSelectE
+            :selected.sync="formData.pid"
+            :data="treeData"
+            :default-props="{ children: 'children', label: 'title' }"
+            :placeholder="'选择所属上一级'"
+            clearable
+          />
+        </el-form-item>
+
         <el-row>
           <el-col :span="12">
-            <el-form-item label="标题" prop="title">
+            <el-form-item m label="标题" prop="title">
               <el-input v-model="formData.title" />
             </el-form-item>
           </el-col>
@@ -89,13 +104,13 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="formData.type === '1'" label="url地址" prop="path">
-              <el-input v-model="formData.path" placeholder="路由地址" style="" />
+            <el-form-item v-if="formData.type === '1'" label="url路径" prop="path">
+              <el-input v-model="formData.path" placeholder="路由地址" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-show="formData.type === '1'" label="重定向" prop="redirect">
-              <el-input v-model="formData.redirect" style="" placeholder="重定向地址" />
+              <el-input v-model="formData.redirect" placeholder="重定向地址" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -103,12 +118,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item v-show="formData.type === '1'" label="组件名称" prop="name">
-              <el-input v-model="formData.name" style="" placeholder="路由/组件Name" />
+              <el-input v-model="formData.name" placeholder="组件Name" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-show="formData.type === '1'" label="组件路径" prop="component">
-              <el-input v-model="formData.component" style="" placeholder="组件路径" />
+              <el-input v-model="formData.component" placeholder="组件路径" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -170,9 +185,6 @@
           </el-popover>
         </el-form-item>
 
-        <el-form-item label="上级类目" prop="pid">
-          <treeSelect v-model="formData.pid" :options="treeData" style="width: 450px;" placeholder="选择上级类目" />
-        </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -185,21 +197,23 @@
 
 <script>
 // import components
+import TreeSelectE from '@/components/app/TreeSelect/index'
 import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/menu/menu-search-mixin'
 import IconSelect from '@/components/app/IconSelect'
-import treeSelect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+// import treeSelect from '@riophae/vue-treeselect'
+// import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import utils
 import { validSort, validChineseLetter } from '@/utils/app/validator/common'
+// import { filterAsyncRouter } from '@/utils/app/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/menu'
 
 export default {
   name: 'AdminMenu',
-  components: { SearchOptions, IconSelect, treeSelect },
+  components: { TreeSelectE, SearchOptions, IconSelect },
   mixins: [searchOptionsConfig()],
   data() {
     return {
@@ -209,8 +223,8 @@ export default {
       tableData: [],
 
       treeData: [{
-        id: 0,
-        label: '顶级类目',
+        id: '0',
+        title: '一级标题',
         children: []
       }],
 
@@ -226,7 +240,7 @@ export default {
         name: '',
         path: '',
         component: '',
-        redirect: '',
+        redirect: 'noRedirect',
         hidden: '0',
         alwaysShow: '0',
         title: '',
@@ -430,7 +444,7 @@ export default {
       this.formData.name = ''
       this.formData.path = ''
       this.formData.component = ''
-      this.formData.redirect = ''
+      this.formData.redirect = 'noRedirect'
       this.formData.hidden = '0'
       this.formData.alwaysShow = '0'
       this.formData.title = ''
@@ -462,7 +476,7 @@ export default {
     cancelDialog() {
       this.dialogAction = ''
       this.dialogVisible = false
-      this.rstFormData()
+      // this.rstFormData()
     },
 
     handleSearch(search) {
@@ -472,6 +486,26 @@ export default {
     searchChange(search) {
       this.query = JSON.parse(JSON.stringify(search))
       this.refreshTblDisplay(this.query)
+    },
+
+    buildMenu() {
+      console.log('Debug formData.pid: ')
+      console.log(this.formData.pid)
+      // apiGet({ req: 'build_menu' })
+      //   .then(function(data) {
+      //     var menu = data.menu.slice(0)
+      //     const asyncRouter = filterAsyncRouter(menu)
+      //     console.log('# build menus: ')
+      //     console.log(asyncRouter)
+      //     //
+      //   })
+      //   .catch(function(err) {
+      //     this.tableData.splice(0)
+      //     this.$message({
+      //       message: err,
+      //       type: 'warning'
+      //     })
+      //   }.bind(this))
     }
   }
 }

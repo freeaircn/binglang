@@ -74,7 +74,7 @@ $config['index_get'] = [
                         return true;
                     }
                     // e.g. '', or number no zero
-                    return ($str === 'id_title_pid');
+                    return ($str === 'id_title_pid' || $str === 'build_menu');
                 },
             ],
         ],

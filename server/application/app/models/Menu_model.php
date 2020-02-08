@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-07 23:30:45
+ * @LastEditTime : 2020-02-08 21:30:23
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -55,52 +55,10 @@ class Menu_model extends CI_Model
             SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
-        $result = $query->result_array();
-
-        // foreach ($result as &$item) {
-        //     if (isset($item['title'])) {
-        //         // riophae/vue-treeselect组件，识别字段id,label,children
-        //         $item['label'] = $item['title'];
-        //     }
-        //     unset($item);
-        // }
-
+        $result      = $query->result_array();
         $res['menu'] = $this->common_tools->arr2tree($result);
 
         return $res;
-
-        // $this->db->order_by('sort', 'ASC');
-        // $this->db->order_by('id', 'ASC');
-
-        // if ($select_col !== null) {
-        //     $this->db->select($select_col);
-        // }
-
-        // if ($method !== null) {
-        //     if ($method === 'where' && (!empty($cond))) {
-        //         $this->db->where($cond);
-        //     }
-        //     if ($method === 'like' && (!empty($cond))) {
-        //         $this->db->like($cond);
-        //     }
-        //     if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col))) {
-        //         $this->db->where_in($cond_col, $cond);
-        //     }
-
-        // }
-
-        // $query  = $this->db->get($this->tables['menu']);
-        // $result = $query->result_array();
-        // if ($result) {
-        //     foreach ($result as &$item) {
-        //         if (isset($item['title'])) {
-        //             // riophae/vue-treeselect组件，识别字段id,label,children
-        //             $item['label'] = $item['title'];
-        //         }
-        //         unset($item);
-        //     }
-        // }
-        // return $result;
     }
 
     /**
@@ -128,13 +86,13 @@ class Menu_model extends CI_Model
         }
         $result = $query->result_array();
 
-        foreach ($result as &$item) {
-            if (isset($item['title'])) {
-                // riophae/vue-treeselect组件，识别字段id,label,children
-                $item['label'] = $item['title'];
-            }
-            unset($item);
-        }
+        // foreach ($result as &$item) {
+        //     if (isset($item['title'])) {
+        //         // riophae/vue-treeselect组件，识别字段id,label,children
+        //         $item['label'] = $item['title'];
+        //     }
+        //     unset($item);
+        // }
 
         $res['menu_list'] = $this->common_tools->arr2tree($result);
         return $res;
@@ -170,6 +128,47 @@ class Menu_model extends CI_Model
         }
         $res['form'] = $query->result_array()[0];
 
+        return $res;
+    }
+
+    /**
+     * build client menu - asyncRouter
+     *
+     * @author freeair
+     * @DateTime 2020-02-08
+     * @return mixed bool | array
+     */
+    public function build_menu()
+    {
+        $this->db->select('id, pid, path, component, name, hidden, alwaysShow, redirect');
+        $this->db->order_by('sort', 'ASC');
+        $this->db->order_by('id', 'ASC');
+        $query = $this->db->get($this->tables['menu']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $part_1 = $query->result_array();
+
+        $this->db->select('title, icon, noCache, breadcrumb');
+        $this->db->order_by('sort', 'ASC');
+        $this->db->order_by('id', 'ASC');
+        $query = $this->db->get($this->tables['menu']);
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $part_2 = $query->result_array();
+
+        $k = 0;
+        foreach ($part_1 as &$item) {
+            $item['meta'] = $part_2[$k];
+            $k++;
+        }
+
+        $res['menu'] = $this->common_tools->arr2tree($part_1);
         return $res;
     }
 
