@@ -37,7 +37,7 @@
     </el-table>
 
     <!--表单渲染-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px">
+    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px" @closed="closedDialog">
       <el-form ref="form" :model="formData" :rules="rules" size="small" label-width="80px">
         <el-form-item label="标签" prop="label">
           <el-input v-model="formData.label" />
@@ -54,7 +54,11 @@
         </el-form-item>
 
         <el-form-item label="上级部门" prop="pid">
-          <treeSelect v-model="formData.pid" :options="treeData" placeholder="选择上级部门" />
+          <TreeSelect
+            :value.sync="formData.pid"
+            :options="treeData"
+            :placeholder="'选择上级部门'"
+          />
         </el-form-item>
       </el-form>
 
@@ -70,8 +74,7 @@
 // import components
 import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/dept/dept-search-mixin'
-import treeSelect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import TreeSelect from '@/components/app/TreeSelect/index'
 
 // import utils
 import { validSort, validEnglishChineseLetter } from '@/utils/app/validator/common'
@@ -81,7 +84,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dept'
 
 export default {
   name: 'AdminDept',
-  components: { SearchOptions, treeSelect },
+  components: { SearchOptions, TreeSelect },
   mixins: [searchOptionsConfig()],
   data() {
     return {
@@ -102,7 +105,7 @@ export default {
         sort: '1',
         label: '',
         enabled: '1',
-        pid: '1'
+        pid: ''
       },
       rules: {
         sort: [{ required: true, validator: validSort, trigger: 'change' }],
@@ -288,7 +291,7 @@ export default {
       this.formData.sort = '1'
       this.formData.label = ''
       this.formData.enabled = '1'
-      this.formData.pid = '1'
+      this.formData.pid = ''
     },
     updateFormData(form) {
       this.formData.id = form.id
@@ -301,6 +304,9 @@ export default {
     cancelDialog() {
       this.dialogAction = ''
       this.dialogVisible = false
+    },
+
+    closedDialog() {
       this.rstFormData()
     },
 

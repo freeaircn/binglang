@@ -3,13 +3,12 @@
  * @Author: freeair
  * @Date: 2020-02-08 20:15:36
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-09 13:46:03
+ * @LastEditTime : 2020-02-09 23:00:32
  -->
 <template>
-  <el-select :value="valueId" :placeholder="placeholder">
+  <el-select ref="select" :value="valueId" :placeholder="placeholder" @visible-change="handleVisible">
     <el-option :value="valueId" :label="valueLabel">
       <el-tree
-        id="tree-option"
         ref="selectTree"
         :data="options"
         :props="props"
@@ -21,9 +20,8 @@
 </template>
 
 <script>
-
 export default {
-  name: 'TreeSelectE',
+  name: 'TreeSelect',
   props: {
     value: {
       type: String,
@@ -71,33 +69,45 @@ export default {
   },
   data() {
     return {
-
+      valueId: this.value,
+      valueLabel: ''
     }
   },
-  computed: {
-    valueId: function() {
-      return this.value
-    },
-    valueLabel: function() {
-      return this.value === '' ? '' : this.$refs.selectTree.getNode(this.value).data[this.props.label]
+  watch: {
+    value: function(val) {
+      this.$nextTick(() => {
+        if (this.$refs['selectTree'].getNode(val)) {
+          this.valueLabel = this.$refs['selectTree'].getNode(val).data[this.props.label]
+          this.valueId = val
+        } else {
+          this.valueLabel = ''
+          this.valueId = ''
+        }
+      })
+    }
+  },
+  mounted() {
+    if (this.$refs['selectTree'].getNode(this.valueId)) {
+      this.valueLabel = this.$refs['selectTree'].getNode(this.valueId).data[this.props.label]
+    } else {
+      this.valueLabel = ''
     }
   },
   methods: {
     // 切换选项
     handleNodeClick(node) {
       this.$emit('update:value', node[this.nodeKey])
+      this.$refs['select'].blur()
     }
   }
 }
 </script>
 
 <style scoped>
-  .el-scrollbar .el-scrollbar__view .el-select-dropdown__item{
-    height: auto;
-    max-height: 274px;
+  .el-select-dropdown__item{
     padding: 0;
+    height: auto;
     overflow: hidden;
-    overflow-y: auto;
   }
   .el-select-dropdown__item.selected{
     font-weight: normal;

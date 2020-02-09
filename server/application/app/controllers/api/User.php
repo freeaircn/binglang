@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 16:34:15
+ * @LastEditTime : 2020-02-09 22:59:22
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -121,7 +121,7 @@ class User extends RestController
         } else {
             $data['job_id'] = $client['job_id'];
         }
-        $data['update_time'] = date("Y-m-d H:i:s", tCREATE_USER_FALIEDime());
+        $data['update_time'] = date("Y-m-d H:i:s", time());
 
         // insert user table
         $uid = $this->user_model->create_user($data, $client['roles'], $client['user_attribute']);

@@ -80,7 +80,7 @@
     />
 
     <!--表单渲染-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="480px">
+    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="480px" @closed="closedDialog">
       <el-tabs v-model="tabIndex" tab-position="left" :before-leave="leaveTab">
         <el-tab-pane name="tab_one" label="基本信息">
           <el-form ref="form_tab_one" :model="formData" :rules="rules_tab_one" size="mini" label-width="80px">
@@ -131,7 +131,11 @@
               <el-input v-model="formData.identity_document_number" clearable />
             </el-form-item>
             <el-form-item label="部门" prop="dept_id">
-              <treeSelect v-model="formData.dept_id" :options="dept_list" placeholder="选择部门" />
+              <TreeSelect
+                :value.sync="formData.dept_id"
+                :options="dept_list"
+                :placeholder="'选择部门'"
+              />
             </el-form-item>
             <el-form-item label="岗位" prop="job_id">
               <el-select v-model="formData.job_id" placeholder="选择岗位" clearable>
@@ -174,8 +178,7 @@
 
 <script>
 // import components
-import treeSelect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import TreeSelect from '@/components/app/TreeSelect/index'
 
 import TableOptions from '@/components/app/TableOptions/index'
 import hideColumns from '@/components/app/TableOptions/hide-columns'
@@ -190,7 +193,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/user'
 
 export default {
   name: 'AdminUser',
-  components: { treeSelect, TableOptions, SearchOptions },
+  components: { TreeSelect, TableOptions, SearchOptions },
   mixins: [searchOptionsConfig(), hideColumns()],
   data() {
     return {
@@ -225,7 +228,7 @@ export default {
         roles: [],
         identity_document_number: '',
         sort: '',
-        dept_id: '1',
+        dept_id: '',
         job_id: '',
         user_attribute: []
       },
@@ -488,7 +491,7 @@ export default {
       this.formData.phone = ''
       this.formData.email = ''
       this.formData.enabled = '1'
-      this.formData.dept_id = '1'
+      this.formData.dept_id = ''
       this.formData.job_id = ''
       this.formData.password = ''
       this.formData.roles.splice(0)
@@ -514,6 +517,9 @@ export default {
     cancelDialog() {
       this.dialogAction = ''
       this.dialogVisible = false
+    },
+
+    closedDialog() {
       this.rstFormData()
     },
 

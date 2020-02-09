@@ -62,7 +62,7 @@
     </el-table>
 
     <!--表单渲染-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="600px">
+    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" :show-close="false" width="600px" @closed="closedDialog">
       <el-form ref="form" :model="formData" :rules="rules" size="small" label-width="80px">
         <el-row>
           <el-col :span="24">
@@ -469,6 +469,9 @@ export default {
     cancelDialog() {
       this.dialogAction = ''
       this.dialogVisible = false
+    },
+
+    closedDialog() {
       this.rstFormData()
     },
 
