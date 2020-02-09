@@ -75,17 +75,12 @@
           </el-col>
         </el-row>
 
-        <!-- <el-form-item label="所属" prop="pid">
-          <treeSelect v-model="formData.pid" :options="treeData" style="width: 450px;" placeholder="选择所属上一级" />
-        </el-form-item> -->
-
         <el-form-item label="所属" prop="pid">
-          <TreeSelectE
-            :selected.sync="formData.pid"
-            :data="treeData"
-            :default-props="{ children: 'children', label: 'title' }"
-            :placeholder="'选择所属上一级'"
-            clearable
+          <TreeSelect
+            :value.sync="formData.pid"
+            :options="treeData"
+            :props="{ children: 'children', label: 'title' }"
+            :placeholder="'选择标题级别'"
           />
         </el-form-item>
 
@@ -197,12 +192,10 @@
 
 <script>
 // import components
-import TreeSelectE from '@/components/app/TreeSelect/index'
 import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/menu/menu-search-mixin'
+import TreeSelect from '@/components/app/TreeSelect/index'
 import IconSelect from '@/components/app/IconSelect'
-// import treeSelect from '@riophae/vue-treeselect'
-// import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 // import utils
 import { validSort, validChineseLetter } from '@/utils/app/validator/common'
@@ -213,7 +206,7 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/menu'
 
 export default {
   name: 'AdminMenu',
-  components: { TreeSelectE, SearchOptions, IconSelect },
+  components: { SearchOptions, TreeSelect, IconSelect },
   mixins: [searchOptionsConfig()],
   data() {
     return {
@@ -249,7 +242,7 @@ export default {
         breadcrumb: '1',
         roles: '',
         sort: '1',
-        pid: '0'
+        pid: ''
       },
       rules: {
         sort: [{ required: true, validator: validSort, trigger: 'change' }],
@@ -453,7 +446,7 @@ export default {
       this.formData.breadcrumb = '1'
       this.formData.roles = ''
       this.formData.sort = '1'
-      this.formData.pid = '0'
+      this.formData.pid = ''
     },
     updateFormData(form) {
       this.formData.id = form.id
@@ -476,7 +469,7 @@ export default {
     cancelDialog() {
       this.dialogAction = ''
       this.dialogVisible = false
-      // this.rstFormData()
+      this.rstFormData()
     },
 
     handleSearch(search) {
@@ -489,8 +482,6 @@ export default {
     },
 
     buildMenu() {
-      console.log('Debug formData.pid: ')
-      console.log(this.formData.pid)
       // apiGet({ req: 'build_menu' })
       //   .then(function(data) {
       //     var menu = data.menu.slice(0)
