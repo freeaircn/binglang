@@ -1,76 +1,85 @@
 <?php
 /*
- * @Description: 
+ * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 22:46:59
+ * @LastEditTime : 2020-02-10 10:49:48
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
+use \App_Settings\App_Code as App_Code;
+use \App_Settings\App_Msg as App_Msg;
 
-class Role_menu extends RestController {
+class Role_menu extends RestController
+{
 
-	function __construct()
+    public function __construct()
     {
         // Construct the parent class
-		parent::__construct();
-		
-		$this->load->model('role_menu_model');
-		// $this->load->library('common_tools');
-	}
+        parent::__construct();
 
-	public function index_get()
-	{
-		$select_col = $this->get('select_col');
-		$method = $this->get('method');
-		$cond = $this->get('cond');
-		$cond_col = $this->get('cond_col');
+        $this->load->model('role_menu_model');
+        $this->load->library('common_tools');
+    }
 
-		$result = $this->role_menu_model->read($select_col, $method, $cond, $cond_col);
+    public function index_get()
+    {
+        $client = $this->get();
 
-		$this->response($result, 200);
-	}
+        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_role_menu', 'index_get');
+        // if ($valid !== true) {
+        //     $res['code'] = App_Code::PARAMS_INVALID;
+        //     $res['msg']  = $valid;
+        //     $this->response($res, 200);
+        // }
 
-	public function index_post()
-	{
-		$role_id = $this->post('role_id');
-		$menus = $this->post('menus');
+        if (isset($client['req']) && $client['req'] === 'menu' && isset($client['id'])) {
+            $data = $this->role_menu_model->select_menu_by_role($client['id']);
+            if ($data === false) {
+                $res['code'] = App_Code::GET_MENU_FAILED;
+                $res['msg']  = App_Msg::GET_MENU_FAILED;
+            } else {
+                $res['code'] = App_Code::SUCCESS;
+                $res['data'] = $data;
+            }
+            $this->response($res, 200);
+        }
 
-		do
-		{
-			$this->role_menu_model->delete_by_role($role_id);
-			$arr = $this->role_menu_model->read_by_role($role_id);
-		}
-		while (!empty($arr));
+        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
+        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
+        $this->response($res, 200);
+    }
 
-		$cnt = count($menus);
-		$i = 0;
-		foreach ($menus as $k=>$v)
-		{
-			$data = array(
-				'role_id' => $role_id,
-				'menu_id' => $v
-			);
+    public function index_post()
+    {
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
 
-			do
-			{
-				$res = $this->role_menu_model->create($data);
-			}
-			while (!$res);
-			$i++;
-		}
+        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_role_menu', 'index_post');
+        // if ($valid !== true) {
+        //     $res['code'] = App_Code::PARAMS_INVALID;
+        //     $res['msg']  = $valid;
+        //     $this->response($res, 200);
+        // }
 
-		$result = ($i == $cnt) ? TRUE:FALSE;
+        $role_id = $client['role_id'];
+        $menu    = $client['menu'];
 
-		if ($result === FALSE)
-		{
-			$this->response([], 500);
-		}
-		else
-		{
-			$this->response($result, 201);
-		}
-	}
+        $rtn = $this->role_menu_model->create_process($role_id, $menu);
+
+        if ($rtn === false) {
+            $res['code'] = App_Code::CREATE_MENU_FAILED;
+            $res['msg']  = App_Msg::CREATE_MENU_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+
+            $this->response($res, 200);
+        }
+
+        $res['code'] = App_Code::SUCCESS;
+        $res['msg']  = App_Msg::SUCCESS;
+
+        $this->response($res, 201);
+    }
 }

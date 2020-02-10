@@ -1,109 +1,111 @@
 <?php
 /*
- * @Description: 
+ * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-15 22:20:38
+ * @LastEditTime : 2020-02-10 10:50:08
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Role_menu_model extends CI_Model {
+class Role_menu_model extends CI_Model
+{
 
-	protected $db;
+    protected $db;
 
-	public $tables = [];
+    public $tables = [];
 
-	public function __construct()
+    public function __construct()
     {
         parent::__construct();
-		// Your own constructor code
-		$this->config->load('app_config', TRUE);
-		$db_name = $this->config->item('db_name', 'app_config');
-		$this->tables = $this->config->item('tables', 'app_config');
+        // Your own constructor code
+        $this->config->load('app_config', true);
+        $db_name      = $this->config->item('db_name', 'app_config');
+        $this->tables = $this->config->item('tables', 'app_config');
 
-		if (empty($db_name))
-		{
-			$CI =& get_instance();
-			$this->db = $CI->db;
-		}
-		else
-		{
-			$this->db = $this->load->database($db_name, TRUE, TRUE);
-		}
-	}
-	
-	public function db()
-	{
-		return $this->db;
-	}
+        // $this->load->library('common_tools');
 
-	public function read($select_col = NULL, $method = NULL, $cond = NULL, $cond_col = NULL)
+        if (empty($db_name)) {
+            $CI       = &get_instance();
+            $this->db = $CI->db;
+        } else {
+            $this->db = $this->load->database($db_name, true, true);
+        }
+    }
+
+    public function db()
     {
-		if (!empty($select_col))
-		{
-			$this->db->select($select_col);
-		}
+        return $this->db;
+    }
 
-		if (!empty($method))
-		{
-			if ($method === 'where' && (!empty($cond)))
-			{
-				$this->db->where($cond);
-			}
-			if ($method === 'like' && (!empty($cond)))
-			{
-				$this->db->like($cond);
-			}
-			if ($method === 'where_in' && (!empty($cond)) && (!empty($cond_col)))
-			{
-				$this->db->where_in($cond_col, $cond);
-			}
-
-		}
-
-		$query = $this->db->get($this->tables['roles_menus']);
-		$result = $query->result_array();
-
-        return $result;
-	}
-
-	public function create($data)
-    {
-		return $this->db->insert($this->tables['roles_menus'], $data);
-	}
-	
-	// public function update($id, $data)
-    // {
-	// 	$this->db->where('id', $id);
-	// 	$this->db->update($this->tables['roles_menus'], $data);
-
-	// 	$res = $this->db->affected_rows();
-	// 	return ($res > 0) ? TRUE : FALSE;
-	// }
-
-	/**
-     * 
-     * @param int  $id
-     * @return array
+    /**
+     * select_menu_by_role
+     *
+     * @author freeair
+     * @DateTime 2020-02-10
+     * @param int $id
+     * @return mixed bool | array
      */
-	public function read_by_role($role_id)
+    public function select_menu_by_role($id = null)
     {
-		$result = $this->db->where('role_id', $role_id)->get($this->tables['roles_menus'])->result_array();
-		
-		return $result;
-	}
-	
-	/**
-     * 
-     * @param int  $id
-     * @return 
+        if (empty($id)) {
+            return false;
+        }
+
+        $this->db->select('menu_id');
+        $this->db->where('role_id', $id);
+        $this->db->order_by('menu_id', 'ASC');
+        $query = $this->db->get($this->tables['roles_menus']);
+
+        if ($query === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        $res['menu'] = $query->result_array();
+
+        return $res;
+
+    }
+
+    /**
+     * create_process
+     *
+     * @author freeair
+     * @DateTime 2020-02-10
+     * @param int $role_id
+     * @param array $menu
+     * @return bool
      */
-	public function delete_by_role($role_id)
+    public function create_process($role_id, $menu)
     {
-		$result = $this->db->where('role_id', $role_id)->delete($this->tables['roles_menus']);
-		
-		return $result;
-	}
-	
+        if (empty($role_id) || empty($menu)) {
+            return true;
+        }
+
+        $this->db->trans_start();
+        // delete first
+        $this->db->where('role_id', $role_id)->delete($this->tables['roles_menus']);
+
+        // then insert
+        $cnt = count($menu);
+        $i   = 0;
+        foreach ($menu as $v) {
+            $data = [
+                'role_id' => $role_id,
+                'menu_id' => $v,
+            ];
+            $this->db->insert($this->tables['roles_menus'], $data);
+            $i++;
+        }
+
+        $this->db->trans_complete();
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+
+        return ($i == $cnt) ? true : false;
+    }
 }

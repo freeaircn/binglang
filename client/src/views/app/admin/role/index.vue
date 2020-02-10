@@ -49,7 +49,7 @@
     />
 
     <!--表单渲染-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px">
+    <el-dialog append-to-body :close-on-click-modal="false" :show-close="false" :visible.sync="dialogVisible" :title="dialogActionMap[dialogAction]" width="400px">
       <el-form ref="form" :model="formData" :rules="rules" size="small" label-width="80px">
         <el-form-item label="序号" prop="sort">
           <el-input-number v-model="formData.sort" />
@@ -79,12 +79,12 @@
     </el-dialog>
 
     <!--指派权限-->
-    <el-dialog append-to-body :close-on-click-modal="false" :visible.sync="dialogVisiblePermission" :title="titlePermissionTo" width="400px">
+    <el-dialog append-to-body :close-on-click-modal="false" :show-close="false" :visible.sync="dialogVisiblePermission" :title="titlePermissionTo" width="400px">
       <el-tree
-        ref="treeSelect"
+        ref="treeMultiCheck"
         :data="treeData"
         :default-checked-keys="checkedIds"
-        :props="{ children: 'children', label: 'label' }"
+        :props="{ children: 'children', label: 'title' }"
         check-strictly
         accordion
         show-checkbox
@@ -109,7 +109,7 @@ import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/util
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/role'
-import { apiGetRoleMenu, apiCreateRoleMenu } from '@/api/app/admin/role-menu'
+import { apiGet as apiGetRoleMenu, apiCreate as apiCreateRoleMenu } from '@/api/app/admin/role-menu'
 import { apiGet as apiGetMenu } from '@/api/app/admin/menu'
 
 export default {
@@ -128,7 +128,7 @@ export default {
       checkedIds: [],
       dialogVisiblePermission: false,
       titlePermissionTo: '',
-      tempRoleId: '',
+      tempRoleId: null,
 
       pageSize: 10,
       pageIdx: 1,
@@ -369,60 +369,55 @@ export default {
     // 获取roles_menus
     // 显示dialog
     preAssignPermission(role) {
-      var params1 = {
-        select_col: 'id, title, pid',
-        method: null,
-        cond: null,
-        cond_col: null
-      }
-      var params2 = {
-        select_col: 'menu_id',
-        method: 'where',
-        cond: { 'role_id': role.id },
-        cond_col: null
-      }
+      this.checkedIds = []
       this.tempRoleId = role.id
-      Promise.all([apiGetMenu(params1), apiGetRoleMenu(params2)])
+      Promise.all([apiGetMenu({ req: 'id_title_pid' }), apiGetRoleMenu({ req: 'menu', id: role.id })])
         .then(function(res) {
           this.treeData.splice(0)
-          this.treeData = res[0].slice(0)
+          this.treeData = res[0].menu_list.slice(0)
           //
-          this.checkedIds = []
-          res[1].forEach(element => {
+          res[1].menu.forEach(element => {
             this.checkedIds.push(element.menu_id)
           })
-          // this.checkedIds = res[1].slice(0)
           //
-          this.titlePermissionTo = '授权 - ' + role.label
-          this.dialogVisiblePermission = true
+          this.$nextTick(() => {
+            this.titlePermissionTo = '授权 - ' + role.label
+            this.dialogVisiblePermission = true
+          })
         }.bind(this))
         .catch(function(err) {
-          console.log(err)
-        })
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
     },
 
     doAssignPermission() {
       if (this.tempRoleId !== null) {
-        const roleMenus = { role_id: this.tempRoleId, menus: [] }
+        var role_id = this.tempRoleId
+        var menu = []
         // 得到半选的父节点数据
-        // this.$refs.treeSelect.getHalfCheckedKeys().forEach(function(data, index) {
+        // this.$refs.treeMultiCheck.getHalfCheckedKeys().forEach(function(data, index) {
         //   const menu = { id: data }
         //   role.menus.push(menu)
         // })
         // 得到已选中的 key 值
-        this.$refs.treeSelect.getCheckedKeys().forEach(function(data, index) {
-          const menu = data
-          roleMenus.menus.push(menu)
+        this.$refs['treeMultiCheck'].getCheckedKeys().forEach(function(data, index) {
+          menu.push(data)
         })
-        apiCreateRoleMenu(roleMenus)
+        apiCreateRoleMenu({ role_id: role_id, menu: menu })
           .then(function(data) {
             this.titlePermissionTo = ''
             this.tempRoleId = null
             this.dialogVisiblePermission = false
           }.bind(this))
           .catch(function(err) {
-            console.log(err)
-          })
+            this.$message({
+              message: err,
+              type: 'warning'
+            })
+          }.bind(this))
       }
     }
   }
