@@ -3,19 +3,19 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2019-12-29 11:26:47
+ * @LastEditTime : 2020-02-10 23:21:04
  */
 import router from './router'
-import store from './store'
-import { Message } from 'element-ui'
+// import store from './store'
+// import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+// import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/signup', '/admin', '/admin/dict', '/auth-redirect'] // no redirect whitelist
+// const whiteList = ['/login', '/admin', '/admin/dict', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -26,55 +26,56 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   // const hasToken = getToken()
-  const hasToken = true
+  // const hasToken = true
+  next()
+  // if (hasToken) {
+  //   if (to.path === '/login') {
+  //     // if is logged in, redirect to the home page
+  //     next()
+  //     // next({ path: '/' })
+  //     NProgress.done()
+  //   } else {
+  //     next()
+  //     // determine whether the user has obtained his permission roles through getInfo
+  //     // const hasRoles = store.getters.roles && store.getters.roles.length > 0
+  //     // if (hasRoles) {
+  //     //   next()
+  //     // } else {
+  //     //   try {
+  //     //     // get user info
+  //     //     // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+  //     //     const { roles } = await store.dispatch('user/getInfo')
 
-  if (hasToken) {
-    if (to.path === '/login') {
-      // if is logged in, redirect to the home page
-      next({ path: '/' })
-      NProgress.done()
-    } else {
-      next()
-      // determine whether the user has obtained his permission roles through getInfo
-      // const hasRoles = store.getters.roles && store.getters.roles.length > 0
-      // if (hasRoles) {
-      //   next()
-      // } else {
-      //   try {
-      //     // get user info
-      //     // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-      //     const { roles } = await store.dispatch('user/getInfo')
+  //     //     // generate accessible routes map based on roles
+  //     //     const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
 
-      //     // generate accessible routes map based on roles
-      //     const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+  //     //     // dynamically add accessible routes
+  //     //     router.addRoutes(accessRoutes)
 
-      //     // dynamically add accessible routes
-      //     router.addRoutes(accessRoutes)
+  //     //     // hack method to ensure that addRoutes is complete
+  //     //     // set the replace: true, so the navigation will not leave a history record
+  //     //     next({ ...to, replace: true })
+  //     //   } catch (error) {
+  //     //     // remove token and go to login page to re-login
+  //     //     await store.dispatch('user/resetToken')
+  //     //     Message.error(error || 'Has Error')
+  //     //     next(`/login?redirect=${to.path}`)
+  //     //     NProgress.done()
+  //     //   }
+  //     // }
+  //   }
+  // } else {
+  //   /* has no token*/
 
-      //     // hack method to ensure that addRoutes is complete
-      //     // set the replace: true, so the navigation will not leave a history record
-      //     next({ ...to, replace: true })
-      //   } catch (error) {
-      //     // remove token and go to login page to re-login
-      //     await store.dispatch('user/resetToken')
-      //     Message.error(error || 'Has Error')
-      //     next(`/login?redirect=${to.path}`)
-      //     NProgress.done()
-      //   }
-      // }
-    }
-  } else {
-    /* has no token*/
-
-    if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
-      next()
-    } else {
-      // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`)
-      NProgress.done()
-    }
-  }
+  //   if (whiteList.indexOf(to.path) !== -1) {
+  //     // in the free login whitelist, go directly
+  //     next()
+  //   } else {
+  //     // other pages that do not have permission to access are redirected to the login page.
+  //     next(`/login?redirect=${to.path}`)
+  //     NProgress.done()
+  //   }
+  // }
 })
 
 router.afterEach(() => {

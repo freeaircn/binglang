@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-21 22:11:15
+ * @LastEditTime : 2020-02-11 21:52:44
  */
 import Vue from 'vue'
 
@@ -19,7 +19,7 @@ import './styles/element-variables.scss'
 import '@/styles/index.scss' // global css
 
 import App from './App'
-import store from './store'
+import store from '@/store/app'
 import router from './router'
 
 import './icons' // icon
