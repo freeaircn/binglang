@@ -3,28 +3,32 @@
  * @Author: freeair
  * @Date: 2020-02-08 16:49:52
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-11 21:54:34
+ * @LastEditTime : 2020-02-12 20:49:34
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import app from './modules/app'
+import app from './modules/app'
+// import permission from './modules/permission'
 // import api from './modules/api'
 // import user from './modules/user'
 // import tagsView from './modules/tagsView'
-// import permission from './modules/permission'
-// import settings from './modules/settings'
+import permission from './modules/permission'
+import settings from './modules/settings'
 import getters from './getters'
+//
+import auth from './modules/auth'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
-    // app,
+    app,
     // api,
     // user,
     // tagsView,
-    // permission,
-    // settings
+    permission,
+    settings,
+    auth
   },
   getters
 })

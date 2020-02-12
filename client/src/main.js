@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-11 21:52:44
+ * @LastEditTime : 2020-02-12 21:02:43
  */
 import Vue from 'vue'
 
@@ -27,19 +27,6 @@ import './logos' // logo by freeair
 import './permission' // permission control
 
 import * as filters from './filters' // global filters
-
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online! ! !
- */
-// import { mockXHR } from '../mock'
-// if (process.env.NODE_ENV === 'production') {
-//   mockXHR()
-// }
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size

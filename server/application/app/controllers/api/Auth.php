@@ -4,14 +4,13 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-11 17:50:14
+ * @LastEditTime : 2020-02-12 09:50:39
  */
 defined('BASEPATH') or exit('No direct script access allowed');
-
+use chriskacerguis\RestServer\RestController;
 use \App_Settings\App_Code as App_Code;
-use \App_Settings\App_Msg as App_Msg;
 
-class Auth extends CI_Controller
+class Auth extends RestController
 {
 
     public function __construct()
@@ -23,7 +22,7 @@ class Auth extends CI_Controller
         // $this->load->library('common_tools');
     }
 
-    public function login()
+    public function login_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
@@ -47,10 +46,15 @@ class Auth extends CI_Controller
 
         //     $this->response($res, 200);
         // }
+        if ($data['password'] !== '111') {
+            $res['code'] = 300;
+            $res['msg']  = "账号或密码错误！";
+            $this->response($res, 200);
+        }
 
         $res['code'] = App_Code::SUCCESS;
-        $res['msg']  = App_Msg::SUCCESS;
+        $res['data'] = ['token' => 'token', 'user' => 'user', 'roles' => ['roles']];
 
-        $this->response($res, 201);
+        $this->response($res, 200);
     }
 }

@@ -126,7 +126,7 @@
         </el-tab-pane>
 
         <el-tab-pane name="tab_two" label="更多信息">
-          <el-form ref="form_tab_two" :model="formData" :rules="rules_tab_two" size="mini" label-width="80px">
+          <el-form ref="form_tab_two" :model="formData" size="mini" label-width="80px">
             <el-form-item label="身份证号" prop="identity_document_number">
               <el-input v-model="formData.identity_document_number" clearable />
             </el-form-item>

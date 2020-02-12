@@ -26,6 +26,10 @@
     [done]search组件传递表单验证rule。   
     [done]基于el元素创建tree select单选组件
 11. 用户认证，访问api权限认证  
+    [done]前端动态获取后端路由表   
+    首页logo，用户头像   
+    后端用户验证，权限验证  
+    
     
 . 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
 . 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
@@ -1110,8 +1114,59 @@
     1 后端管理员创建用户，暂不支持用户注册。
     2 前端登录页面url \login，api接口后端控制器auth，login方法
     
-  2 前端页面：
-    登录，忘记密码
+  2 前端：
+    1 登录，忘记密码
+    
+  3 后端login方法：
+    1 返回：
+      token, user, roles, menu
+      # token 存储在cookie
+      # user, roles 存储在store
+      # token, user, roles 在store中处理
+      # menu转换为routes对象，在store permission中处理
+      store 提供menu加载标志位
+      
+  4 场景：
+    1 刷新页面
+    2 地址栏直接输入url
+    3 关闭浏览器
+    4 记住用户
+    
+    1 刷新页面：store和menu清空，cookie不变？
+    2 地址栏直接输入url：store和menu清空，cookie不变？
+    3 关闭浏览器：store和menu清空，cookie清除
+    
+  5 修改框架文件：
+    1 layout:
+      sidebar: state => state.app.sidebar,
+      device: state => state.app.device,
+      showSettings: state => state.settings.showSettings,
+      needTagsView: false,
+      fixedHeader: state => state.settings.fixedHeader
+
+      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      
+    2 Navbar:
+    ...mapGetters([
+          'sidebar',
+          'device'
+        ])
+        
+      this.$store.dispatch('app/toggleSideBar')
+      await this.$store.dispatch('user/logout')
+          this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+          
+    3 AppMain
+      this.$store.state.tagsView.cachedViews
+      
+    4 ResizeHandler.js  Mixin
+      store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      store.dispatch('app/toggleDevice', 'mobile')
+
+    所需store：
+    app
+    settings
+    user
 
 ```
 

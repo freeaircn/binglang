@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-25 16:09:53
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-05 20:39:27
+ * @LastEditTime : 2020-02-12 19:11:29
  */
 /** When your routing table is too long, you can split it into small modules **/
 
@@ -12,7 +12,7 @@ import Layout from '@/layout'
 const adminRouter = {
   path: '/admin',
   component: Layout,
-  redirect: 'noRedirect',
+  // redirect: 'noRedirect',
   name: 'Admin',
   meta: {
     title: '系统管理',

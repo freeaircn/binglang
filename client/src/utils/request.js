@@ -3,12 +3,12 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-29 09:58:37
+ * @LastEditTime : 2020-02-12 16:13:19
  */
 import axios from 'axios'
 import qs from 'qs'
 import { Message } from 'element-ui'
-import store from '@/store'
+import store from '@/store/app'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance

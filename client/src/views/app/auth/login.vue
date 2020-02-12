@@ -9,7 +9,7 @@
           <el-input ref="phone" v-model="formData.phone" type="text" tabindex="1" prefix-icon="el-icon-mobile-phone" placeholder="请输入手机号" clearable />
         </el-form-item>
 
-        <el-form-item ref="password_item" prop="password">
+        <el-form-item prop="password">
           <el-input
             ref="password"
             v-model="formData.password"
@@ -69,28 +69,16 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('Login', this.formData)
-            .then((user_detailed_done) => {
+          this.$store.dispatch('auth/login', this.formData)
+            .then(() => {
               this.loading = false
-              if (user_detailed_done === '0') {
-                this.$message({
-                  type: 'warning',
-                  message: '继续使用前，请完善用户个人信息！',
-                  duration: 3 * 1000
-                })
-                // 路由切换，replace
-                this.$router.replace({ path: '/user_settings' })
-              } else {
-                this.$router.replace({ path: this.redirect || '/' })
-              }
+              this.$router.replace({ path: this.redirect || '/' })
             })
             .catch((error) => {
               this.loading = false
-              this.$refs.password_item.resetField()
               this.$message({
-                type: 'info',
-                message: error,
-                duration: 3 * 1000
+                type: 'warning',
+                message: error
               })
             })
         } else {

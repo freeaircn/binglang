@@ -1,30 +1,34 @@
-import Config from '@/config'
 import variables from '@/styles/element-variables.scss'
+import defaultSettings from '@/settings'
 
-const settings = {
-  state: {
-    showRightPanel: false,
-    tagsView: Config.tagsView,
-    fixedHeader: Config.fixedHeader,
-    sidebarLogo: Config.sidebarLogo,
-    theme: variables.theme,
-    settingBtn: Config.settingBtn,
-    uniqueOpened: Config.uniqueOpened,
-    showFooter: Config.showFooter,
-    footerTxt: Config.footerTxt,
-    caseNumber: Config.caseNumber
-  },
-  mutations: {
-    CHANGE_SETTING: (state, { key, value }) => {
-      if (state.hasOwnProperty(key)) {
-        state[key] = value
-      }
-    }
-  },
-  actions: {
-    changeSetting({ commit }, data) {
-      commit('CHANGE_SETTING', data)
+const { showSettings, tagsView, fixedHeader, sidebarLogo } = defaultSettings
+
+const state = {
+  theme: variables.theme,
+  showSettings: showSettings,
+  tagsView: tagsView,
+  fixedHeader: fixedHeader,
+  sidebarLogo: sidebarLogo
+}
+
+const mutations = {
+  CHANGE_SETTING: (state, { key, value }) => {
+    if (state.hasOwnProperty(key)) {
+      state[key] = value
     }
   }
 }
-export default settings
+
+const actions = {
+  changeSetting({ commit }, data) {
+    commit('CHANGE_SETTING', data)
+  }
+}
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions
+}
+

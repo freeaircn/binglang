@@ -1,5 +1,12 @@
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2020-01-31 09:11:33
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-02-12 16:12:23
+ */
 import Vue from 'vue'
-import store from '@/store'
+import store from '@/store/app'
 import { isString, isArray } from '@/utils/validate'
 import settings from '@/settings'
 
