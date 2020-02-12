@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-11 16:19:55
+ * @LastEditTime : 2020-02-07 21:51:24
  */
 import request from '@/utils/request'
 
-export function apiGetMenu(params) {
+export function apiGet(params) {
   return request({
     url: '/api/menu',
     method: 'get',
@@ -15,7 +15,7 @@ export function apiGetMenu(params) {
   })
 }
 
-export function apiCreateMenu(formData) {
+export function apiCreate(formData) {
   return request({
     url: '/api/menu',
     method: 'post',
@@ -23,7 +23,7 @@ export function apiCreateMenu(formData) {
   })
 }
 
-export function apiUpdateMenu(formData) {
+export function apiUpdate(formData) {
   return request({
     url: '/api/menu',
     method: 'put',
@@ -31,7 +31,7 @@ export function apiUpdateMenu(formData) {
   })
 }
 
-export function apiDelMenu(id) {
+export function apiDelete(id) {
   return request.delete('/api/menu', {
     data: {
       id

@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-30 18:31:36
  * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 20:47:22
+ * @LastEditTime : 2020-02-11 16:25:46
  -->
 <template>
   <div class="search-options">
@@ -59,7 +59,7 @@ export default {
       default: () => { return [] }
     },
     rules: {
-      type: Array,
+      type: Object,
       default: () => { return [] }
     }
     // buttons: {

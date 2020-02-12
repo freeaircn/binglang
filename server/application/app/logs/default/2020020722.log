@@ -1,0 +1,5 @@
+2020-02-07 22:46:03 | CRITICAL | 6608 | 5e3d782bdfcb6 | 1581086763.917 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-fiexx.php - line:184 - msg:Cannot redeclare Menu_model::create()
+2020-02-07 22:46:49 | CRITICAL | 324 | 5e3d78593f3fd | 1581086809.259 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-dtxek.php - line:207 - msg:Cannot redeclare Menu_model::update()
+2020-02-07 22:46:58 | CRITICAL | 7288 | 5e3d78623c54d | 1581086818.247 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-mcxrxnjh.php - line:207 - msg:Cannot redeclare Menu_model::update()
+2020-02-07 22:47:25 | CRITICAL | 5060 | 5e3d787d3c7e5 | 1581086845.248 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-lalmaqlvd.php - line:237 - msg:Cannot redeclare Menu_model::delete()
+2020-02-07 22:47:29 | CRITICAL | 11520 | 5e3d7881e49a3 | 1581086849.936 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-hkovwbpxu.php - line:237 - msg:Cannot redeclare Menu_model::delete()

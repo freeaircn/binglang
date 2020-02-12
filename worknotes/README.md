@@ -24,19 +24,19 @@
     [done]创建search组件
     [done]search 组件，watch输入框，输入字母时，触发多次change事件，导致发往后端多条无效请求。  
     [done]search组件传递表单验证rule。   
-    更新admin-dept, job, role, menu
+    [done]基于el元素创建tree select单选组件
+11. 用户认证，访问api权限认证  
+    [done]前端动态获取后端路由表   
+    首页logo，用户头像   
+    后端用户验证，权限验证  
+    
     
 . 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
 . 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
-. 参照用户管理页面，更新 app其他页面文件  
-. 编写动态路由，权限管理  
-  用户认证，访问api权限认证  
+. 动态路由，权限管理  
 . 埋点  
 . 后端，用户数据/文件的存放文件位置，和访问权限。  
   数据库权限，centos文件路径权限  
-
-create时，没有选择job_id，前端‘’，后端处理，当‘’时，insert语句不含job_id，而table定义时，job_id default null, 则读取时，后端返回前端 job_id null
-update时
 
 ---
 ### 置顶
@@ -1105,6 +1105,69 @@ update时
   4 search组件传递表单验证rule
     blur 触发验证
   
+```
+
+---
+### 11. 用户认证，访问api权限认证
+```
+  1 约定
+    1 后端管理员创建用户，暂不支持用户注册。
+    2 前端登录页面url \login，api接口后端控制器auth，login方法
+    
+  2 前端：
+    1 登录，忘记密码
+    
+  3 后端login方法：
+    1 返回：
+      token, user, roles, menu
+      # token 存储在cookie
+      # user, roles 存储在store
+      # token, user, roles 在store中处理
+      # menu转换为routes对象，在store permission中处理
+      store 提供menu加载标志位
+      
+  4 场景：
+    1 刷新页面
+    2 地址栏直接输入url
+    3 关闭浏览器
+    4 记住用户
+    
+    1 刷新页面：store和menu清空，cookie不变？
+    2 地址栏直接输入url：store和menu清空，cookie不变？
+    3 关闭浏览器：store和menu清空，cookie清除
+    
+  5 修改框架文件：
+    1 layout:
+      sidebar: state => state.app.sidebar,
+      device: state => state.app.device,
+      showSettings: state => state.settings.showSettings,
+      needTagsView: false,
+      fixedHeader: state => state.settings.fixedHeader
+
+      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      
+    2 Navbar:
+    ...mapGetters([
+          'sidebar',
+          'device'
+        ])
+        
+      this.$store.dispatch('app/toggleSideBar')
+      await this.$store.dispatch('user/logout')
+          this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+          
+    3 AppMain
+      this.$store.state.tagsView.cachedViews
+      
+    4 ResizeHandler.js  Mixin
+      store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      store.dispatch('app/toggleDevice', 'mobile')
+
+    所需store：
+    app
+    settings
+    user
+
 ```
 
 ---

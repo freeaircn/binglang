@@ -1,0 +1,2 @@
+2020-02-10 10:34:37 | CRITICAL | 12488 | 5e40c13da3c0e | 1581302077.671 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-usiaijiz.php - line:110 - msg:syntax error, unexpected '}', expecting ';'
+2020-02-10 10:34:38 | CRITICAL | 6120 | 5e40c13e2f680 | 1581302078.194 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-aeawyvis.php - line:110 - msg:syntax error, unexpected '}', expecting ';'

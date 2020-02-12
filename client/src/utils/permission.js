@@ -1,4 +1,11 @@
-import store from '@/store'
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2020-01-31 09:11:33
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-02-12 16:12:50
+ */
+import store from '@/store/app'
 
 /**
  * @param {Array} value

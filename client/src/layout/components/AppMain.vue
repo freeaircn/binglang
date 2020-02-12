@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 12:00:42
- * @LastEditors: freeair
- * @LastEditTime: 2020-01-07 17:14:34
+ * @LastEditors  : freeair
+ * @LastEditTime : 2020-02-12 20:43:59
  -->
 <template>
   <section class="app-main">
@@ -19,9 +19,9 @@
 export default {
   name: 'AppMain',
   computed: {
-    cachedViews() {
-      return this.$store.state.tagsView.cachedViews
-    },
+    // cachedViews() {
+    //   return this.$store.state.tagsView.cachedViews
+    // },
     key() {
       return this.$route.path
     }

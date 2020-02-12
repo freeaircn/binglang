@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:00:39
  * @LastEditors  : freeair
- * @LastEditTime : 2020-01-22 23:12:06
+ * @LastEditTime : 2020-02-12 09:51:12
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -59,7 +59,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $route['default_controller'] = 'home';
 $route['test']               = 'test';
 
-// api
+// restful api
 $route['api/menu']      = 'api/menu';
 $route['api/dept']      = 'api/dept';
 $route['api/job']       = 'api/job';
@@ -69,6 +69,8 @@ $route['api/role']      = 'api/role';
 $route['api/role-menu'] = 'api/role_menu';
 $route['api/user']      = 'api/user';
 $route['api/avatar']    = 'api/avatar';
+//
+$route['api/auth/(:any)'] = 'api/auth/$1';
 
 //
 $route['admin/(:any)'] = 'home';

@@ -99,7 +99,7 @@ class Dict_model extends CI_Model
     }
 
     /**
-     * read data in table
+     * select where id = $id
      *
      * @author freeair
      * @DateTime 2020-01-19
@@ -161,8 +161,8 @@ class Dict_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-     * @param [array] $data
-     * @return [mixed] bool | id
+     * @param array $data
+     * @return mixed bool | id
      */
     public function create($data)
     {
@@ -210,7 +210,7 @@ class Dict_model extends CI_Model
      *
      * @author freeair
      * @DateTime 2020-01-19
-     * @param [int] $id
+     * @param int $id
      * @return bool
      */
     public function delete($id)

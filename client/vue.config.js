@@ -10,7 +10,7 @@ const name = defaultSettings.title || 'BE Admin' // page title
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, Mac: sudo npm run
-const port = 9527 // dev port
+const port = 8080 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -21,33 +21,32 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  // by freeair
-  publicPath: '/resource/dist/',
-  outputDir: 'D:/www/binglang/server/resource/dist',
+
+  // app modify
+  publicPath: process.env.NODE_ENV === 'development' ? '/' : '/resource/dist/',
+  outputDir: process.env.NODE_ENV === 'development' ? 'dist' : 'D:/www/binglang/server/resource/dist',
   assetsDir: 'static',
-  indexPath: 'D:/www/binglang/server/application/app/views/home.html',
-  lintOnSave: true,
-  // process.env.NODE_ENV === 'development',
+  indexPath: process.env.NODE_ENV === 'development' ? 'index.html' : 'D:/www/binglang/server/application/app/views/home.html',
+  // lintOnSave: process.env.NODE_ENV === 'development',
+
   productionSourceMap: false,
   devServer: {
     port: port,
-    open: true,
+    open: false,
     overlay: {
       warnings: false,
       errors: true
     },
     proxy: {
-      // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://127.0.0.1:${port}/mock`,
+        target: `http://127.0.0.1:80`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
       }
-    },
-    after: require('./mock/mock-server.js')
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
