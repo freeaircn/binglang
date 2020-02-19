@@ -29,8 +29,14 @@ CREATE TABLE IF NOT EXISTS `app_dept` (
 
 INSERT INTO `app_dept` (`id`, `sort`, `label`, `pid`, `enabled`, `update_time`) VALUES
 (1, 1, 'FreeAir工作室', 0, b'1', '2020-01-01 09:14:05'),
-(2, 2, '开发组', 1, b'1', '2020-01-17 20:04:23'),
-(3, 3, '测试组', 1, b'1', '2020-01-17 20:04:29');
+(2, 1, '开发组', 1, b'1', '2020-02-06 22:17:00'),
+(3, 2, '测试组', 1, b'1', '2020-02-06 22:17:05'),
+(7, 1, '测试一组', 3, b'1', '2020-02-09 22:31:19'),
+(8, 2, '开发二组', 2, b'1', '2020-02-06 22:17:21'),
+(13, 3, '后勤组', 1, b'1', '2020-02-06 22:17:11'),
+(15, 1, '后勤一组', 13, b'1', '2020-02-06 22:05:56'),
+(17, 1, '开发一组', 2, b'1', '2020-02-06 22:17:16'),
+(18, 2, '后勤二组', 13, b'1', '2020-02-06 22:05:52');
 
 -- --------------------------------------------------------
 
@@ -119,7 +125,10 @@ CREATE TABLE IF NOT EXISTS `app_job` (
 
 INSERT INTO `app_job` (`id`, `sort`, `label`, `enabled`, `update_time`) VALUES
 (1, 1, '开发员', b'1', '2020-01-01 09:14:05'),
-(2, 2, '测试员', b'1', '2020-01-01 09:14:05');
+(2, 2, '测试员', b'1', '2020-01-01 09:14:05'),
+(5, 3, '保洁员', b'1', '2020-02-07 20:43:28'),
+(7, 5, '采购员', b'1', '2020-02-07 20:45:52'),
+(9, 4, '销售员', b'1', '2020-02-07 20:47:43');
 
 -- --------------------------------------------------------
 
@@ -155,9 +164,14 @@ CREATE TABLE IF NOT EXISTS `app_menu` (
 --
 
 INSERT INTO `app_menu` (`id`, `type`, `name`, `path`, `component`, `redirect`, `hidden`, `alwaysShow`, `title`, `icon`, `noCache`, `breadcrumb`, `roles`, `sort`, `pid`, `update_time`) VALUES
-(1, 1, 'Admin', 'admin', '', '', b'0', b'0', '系统管理', 'system', b'1', b'1', 'admin:list', 1, 0, '2020-01-15 21:01:54'),
-(2, 1, 'AdminMenu', 'menu', '', '', b'0', b'0', '菜单管理', 'menu', b'1', b'1', 'admin:menu:list', 1, 1, '2020-01-15 21:03:15'),
-(3, 1, 'AdminDept', 'dept', '', '', b'0', b'0', '部门管理', 'dept', b'1', b'1', 'admin:dept:list', 2, 1, '2020-01-15 21:04:02');
+(4, 1, 'Admin', 'admin', 'Layout', 'noRedirect', b'0', b'0', '系统管理', 'system', b'1', b'1', 'admin:list', 1, 0, '2020-02-08 16:56:48'),
+(5, 1, 'AdminDept', 'dept', 'admin/dept/index', '', b'0', b'0', '部门管理', 'dept', b'1', b'1', 'dept:list', 1, 4, '2020-02-08 16:06:07'),
+(6, 1, 'AdminJob', 'job', 'admin/job/index', '', b'0', b'0', '岗位管理', 'skill', b'1', b'1', 'job:list', 2, 4, '2020-02-08 16:10:10'),
+(7, 1, 'AdminUser', 'user', 'admin/user/index', '', b'0', b'0', '用户管理', 'peoples', b'1', b'1', 'user:list', 3, 4, '2020-02-08 16:11:26'),
+(8, 1, 'AdminRole', 'role', 'admin/role/index', '', b'0', b'0', '角色管理', 'permission', b'1', b'1', 'role:list', 4, 4, '2020-02-08 16:12:50'),
+(9, 1, 'AdminMenu', 'menu', 'admin/menu/index', '', b'0', b'0', '菜单管理', 'menu', b'1', b'1', 'menu:list', 5, 4, '2020-02-08 16:13:49'),
+(10, 1, 'AdminDict', 'dict', 'admin/dict/index', '', b'0', b'0', '词典管理', 'dictionary', b'1', b'1', 'dict:list', 6, 4, '2020-02-08 16:15:52'),
+(13, 1, 'AdminDictData', 'dict-data', 'admin/dict/dict-data', '', b'0', b'0', '词条管理', 'documentation', b'1', b'1', '', 7, 4, '2020-02-09 22:53:24');
 
 -- --------------------------------------------------------
 
@@ -182,8 +196,11 @@ CREATE TABLE IF NOT EXISTS `app_role` (
 --
 
 INSERT INTO `app_role` (`id`, `sort`, `label`, `name`, `enabled`, `remark`, `update_time`) VALUES
-(1, 1, '管理组', 'admin_group', b'1', '指派管理员权限', '2020-01-16 08:45:52'),
-(2, 2, '访客组', 'guest_group', b'1', '指派访客权限', '2020-01-17 20:05:23');
+(1, 1, '管理组', 'admin_group', b'1', '具有管理员权限', '2020-02-07 21:45:26'),
+(2, 2, '访客组', 'guest_group', b'1', '具有访客权限', '2020-02-07 21:45:19'),
+(3, 3, '开发组', 'develop_group', b'1', '具有开发员的权限', '2020-02-07 21:44:37'),
+(4, 4, '测试组', 'test_group', b'1', '具有测试员权限', '2020-02-07 21:46:06'),
+(6, 6, '保障组', 'guard_group', b'1', '', '2020-02-07 21:47:03');
 
 -- --------------------------------------------------------
 
@@ -205,9 +222,8 @@ CREATE TABLE IF NOT EXISTS `app_roles_menus` (
 --
 
 INSERT INTO `app_roles_menus` (`role_id`, `menu_id`) VALUES
-(1, 1),
-(1, 2),
-(1, 3);
+(6, 4),
+(6, 5);
 
 -- --------------------------------------------------------
 
@@ -256,7 +272,8 @@ INSERT INTO `app_user` (`id`, `sort`, `username`, `sex`, `identity_document_numb
 (60, 3, '小猪', b'0', '', '13812345673', '3@3.3', b'1', 3, 2, NULL, NULL, '2020-01-29 20:51:05', NULL, '$argon2i$v=19$m=16384,t=4,p=2$a0Ria01iSTRWdVVVR2hFcQ$Xq4jJASTCtPcaeUgA2nRUFK+FS719of2B6M0UjORCJM', NULL, NULL, NULL),
 (61, 4, '小红', b'1', '', '13812345674', '4@4.4', b'1', 2, 1, NULL, NULL, '2020-01-29 20:51:34', NULL, '$argon2i$v=19$m=16384,t=4,p=2$ZFg5R1dSR3FqVnV1aGs4Zw$RomehIgnPMeaesKDxK6V9RsvgeJNPmUoElnlzXvIeRw', NULL, NULL, NULL),
 (62, 5, '小强', b'0', '', '13812345675', '5@5.5', b'1', 1, 2, NULL, NULL, '2020-01-29 20:54:51', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YVByd2g3b0ovc1FYeFpoTA$acsQc4qh/Bvul6hw7NjNsBOf7rxCn9JVsuM+plRdkhg', NULL, NULL, NULL),
-(63, 6, '小丽', b'1', '', '13812345676', '6@6.6', b'1', 1, 1, NULL, NULL, '2020-01-29 20:54:42', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YmZiTzhxZDE0VDVqdnY2bA$aKhx2UHRqUoRaK0xNt2ir3Vp5xYRhXyJRORBMdvtJ6c', NULL, NULL, NULL);
+(63, 6, '小丽', b'1', '', '13812345676', '6@6.6', b'1', 1, 1, NULL, NULL, '2020-02-09 22:55:23', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YmZiTzhxZDE0VDVqdnY2bA$aKhx2UHRqUoRaK0xNt2ir3Vp5xYRhXyJRORBMdvtJ6c', NULL, NULL, NULL),
+(64, 7, '小小', b'0', '', '13812345677', '7@7.7', b'1', 17, 1, NULL, NULL, '2020-02-09 22:59:43', NULL, '$argon2i$v=19$m=16384,t=4,p=2$N3QvR2ZBN2I2c1lQVzYwWA$fUkLtzTDmHAfwMoQUwAtBXodaZzK0gRClyhAzTPeEWI', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 

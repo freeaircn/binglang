@@ -1,12 +1,21 @@
+<!--
+ * @Description:
+ * @Author: freeair
+ * @Date: 2020-01-31 09:11:33
+ * @LastEditors  : freeair
+ * @LastEditTime : 2020-02-13 23:39:22
+ -->
 <template>
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <svg-logo v-if="logo" logo-class="be_green" class="sidebar-logo" />
+        <!-- <img v-if="logo" :src="logo" class="sidebar-logo"> -->
         <h1 v-else class="sidebar-title">{{ title }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <svg-logo v-if="logo" logo-class="be_green" class="sidebar-logo" />
+        <!-- <img v-if="logo" :src="logo" class="sidebar-logo"> -->
         <h1 class="sidebar-title">{{ title }} </h1>
       </router-link>
     </transition>
@@ -24,7 +33,7 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Element Admin',
+      title: 'Binglang Energy',
       logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
     }
   }
@@ -55,8 +64,8 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
       vertical-align: middle;
       margin-right: 12px;
     }
