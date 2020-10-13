@@ -1,7 +1,0 @@
-2020-02-07 20:34:54 | CRITICAL | 4992 | 5e3d596eb26f1 | 1581078894.731 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-egkjnalr.php - line:183 - msg:Cannot redeclare Job_model::create()
-2020-02-07 20:35:04 | CRITICAL | 4644 | 5e3d5978dae24 | 1581078904.897 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-mmsfanndz.php - line:183 - msg:Cannot redeclare Job_model::create()
-2020-02-07 20:35:30 | CRITICAL | 1096 | 5e3d59921cc0a | 1581078930.118 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-xdwsiibpq.php - line:207 - msg:Cannot redeclare Job_model::update()
-2020-02-07 20:35:41 | CRITICAL | 8976 | 5e3d599d8bf5f | 1581078941.573 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-zpeautlld.php - line:207 - msg:Cannot redeclare Job_model::update()
-2020-02-07 20:36:16 | CRITICAL | 9792 | 5e3d59c096532 | 1581078976.616 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-rteaicd.php - line:207 - msg:Cannot redeclare Job_model::update()
-2020-02-07 20:36:54 | CRITICAL | 3812 | 5e3d59e6d03ea | 1581079014.853 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-jslsr.php - line:238 - msg:Cannot redeclare Job_model::delete()
-2020-02-07 20:37:14 | CRITICAL | 6840 | 5e3d59fa17e79 | 1581079034.98 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-weomqnek.php - line:238 - msg:Cannot redeclare Job_model::delete()

@@ -1,2 +1,0 @@
-2020-01-27 11:11:50 | CRITICAL | 14708 | 5e2e54f66122e | 1580094710.398 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-yigmtzpdl.php - line:119 - msg:syntax error, unexpected '$continue' (T_VARIABLE), expecting ';'
-2020-01-27 11:47:06 | CRITICAL | 13680 | 5e2e5d3a4b7f5 | 1580096826.310 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-eixmqnwku.php - line:281 - msg:syntax error, unexpected 'public' (T_PUBLIC)

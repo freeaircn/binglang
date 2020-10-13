@@ -1,2 +1,0 @@
-2020-01-28 20:14:53 | CRITICAL | 7884 | 5e3025bd130b0 | 1580213693.78 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-qkfonb.php - line:164 - msg:Cannot redeclare User::index_post()
-2020-01-28 20:15:52 | CRITICAL | 5600 | 5e3025f898a61 | 1580213752.625 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-aeifaztr.php - line:164 - msg:Cannot redeclare User::index_post()

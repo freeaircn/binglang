@@ -1,3 +1,0 @@
-2020-01-20 22:08:16 | CRITICAL | 788 | 5e25b450aadcc | 1579529296.700 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-zpcwgozpf.php - line:286 - msg:syntax error, unexpected ')'
-2020-01-20 22:08:26 | CRITICAL | 13308 | 5e25b45a3aae5 | 1579529306.241 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-zxjjtmko.php - line:286 - msg:syntax error, unexpected ')'
-2020-01-20 22:11:14 | CRITICAL | 12772 | 5e25b5023a15d | 1579529474.238 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-jbtqvyhi.php - line:245 - msg:syntax error, unexpected 'public' (T_PUBLIC), expecting ';' or '{'

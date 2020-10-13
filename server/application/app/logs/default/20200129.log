@@ -1,2 +1,0 @@
-2020-01-29 19:20:42 (1580296842.571) [ERROR] [User_model.php:226] [User_model::create_user] 8136 | 5e316a8a78eaa | /api/user | POST | DB_code: 0 -  
-2020-01-29 19:20:42 (1580296842.572) [ERROR] [User.php:130] [User::index_post] 8136 | 5e316a8a78eaa | /api/user | POST | APP_code: 200 - 数据表USER新加失败，请稍后重试！ 

@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-30 19:26:36
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-02 16:04:11
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-06-02 10:41:47
  */
 import { validChineseLetter, validEnglishChineseLetter, validSpecIndividual } from '@/utils/app/validator/search-com'
 
@@ -35,8 +35,8 @@ function searchOptionsConfig() {
           },
           {
             prop: 'politic',
-            placeholder: '字段：党派',
-            tooltip: '查询字段：党派',
+            placeholder: '字段：政治面貌',
+            tooltip: '查询字段：政治面貌',
             maxlength: 15,
             width: 150
           },

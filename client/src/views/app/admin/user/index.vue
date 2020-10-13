@@ -10,7 +10,7 @@
           <el-button type="success" size="mini" @click="xx">Console</el-button>
         </el-col>
         <el-col :span="4">
-          <TableOptions :table-columns="columns" />
+          <TableOptions :table-columns="columns" :enable-full-checked="true" />
         </el-col>
       </el-row>
     </div>
@@ -36,17 +36,10 @@
       <el-table-column v-if="columnOpt.visible('phone')" :show-overflow-tooltip="true" prop="phone" label="手机号" />
       <el-table-column v-if="columnOpt.visible('email')" :show-overflow-tooltip="true" prop="email" label="电子邮箱" />
       <el-table-column v-if="columnOpt.visible('identity_document_number')" column-key="pre-hide" :show-overflow-tooltip="true" prop="identity_document_number" label="身份证号" />
+      <el-table-column v-if="columnOpt.visible('politic_label')" :show-overflow-tooltip="true" prop="politic_label" label="政治面貌" />
       <el-table-column v-if="columnOpt.visible('dept_label')" :show-overflow-tooltip="true" prop="dept_label" label="部门" />
       <el-table-column v-if="columnOpt.visible('job_label')" :show-overflow-tooltip="true" prop="job_label" label="岗位" />
-
-      <el-table-column
-        v-for="item in dynamic_columns"
-        v-if="columnOpt.visible(item.name)"
-        :key="item.name"
-        :show-overflow-tooltip="true"
-        :prop="item.name"
-        :label="item.label"
-      />
+      <el-table-column v-if="columnOpt.visible('professional_title_label')" column-key="pre-hide" :show-overflow-tooltip="true" prop="professional_title_label" label="职称" />
 
       <el-table-column v-if="columnOpt.visible('enabled')" column-key="pre-hide" prop="enabled" label="是否启用" align="center">
         <template slot-scope="scope">
@@ -130,15 +123,28 @@
             <el-form-item label="身份证号" prop="identity_document_number">
               <el-input v-model="formData.identity_document_number" clearable />
             </el-form-item>
-            <el-form-item label="部门" prop="dept_id">
+
+            <el-form-item label="政治面貌" prop="attr_03_id">
+              <el-select v-model="formData.attr_03_id" placeholder="请选择" clearable>
+                <el-option
+                  v-for="item in politic_list"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="部门" prop="attr_01_id">
               <TreeSelect
-                :value.sync="formData.dept_id"
+                :value.sync="formData.attr_01_id"
                 :options="dept_list"
-                :placeholder="'选择部门'"
+                :placeholder="'请选择'"
               />
             </el-form-item>
-            <el-form-item label="岗位" prop="job_id">
-              <el-select v-model="formData.job_id" placeholder="选择岗位" clearable>
+
+            <el-form-item label="岗位" prop="attr_02_id">
+              <el-select v-model="formData.attr_02_id" placeholder="请选择" clearable>
                 <el-option
                   v-for="item in job_list"
                   :key="item.id"
@@ -148,15 +154,10 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item
-              v-for="(category, index) in user_attribute_dynamic_list"
-              :key="index"
-              :label="category.label"
-              :prop="category.label"
-            >
-              <el-select v-model="formData.user_attribute[index]" placeholder="请选择" clearable>
+            <el-form-item label="职称" prop="attr_04_id">
+              <el-select v-model="formData.attr_04_id" placeholder="请选择" clearable>
                 <el-option
-                  v-for="item in category.sub_list"
+                  v-for="item in professional_title_list"
                   :key="item.id"
                   :label="item.label"
                   :value="item.id"
@@ -203,7 +204,6 @@ export default {
       tableData: [],
       tableTotalRows: 0,
 
-      dynamic_columns: [],
       initTableDone: false,
 
       pageSize: 10,
@@ -217,6 +217,7 @@ export default {
       },
       tabIndex: 'tab_one',
 
+      // form 提交数据
       formData: {
         id: '',
         username: '',
@@ -228,16 +229,19 @@ export default {
         roles: [],
         identity_document_number: '',
         sort: '',
-        dept_id: '',
-        job_id: '',
+        attr_01_id: '',
+        attr_02_id: '',
+        attr_03_id: '',
+        attr_04_id: '',
         user_attribute: []
       },
 
-      // form内下拉列表
+      // form 下拉列表元素
       role_list: [],
-      user_attribute_dynamic_list: [],
       dept_list: [],
       job_list: [],
+      politic_list: [],
+      professional_title_list: [],
 
       rules_tab_one: {
         sort: [{ required: true, validator: validSort, trigger: 'change' }],
@@ -272,7 +276,6 @@ export default {
           this.tableTotalRows = data.total_rows
           this.tableData.splice(0)
           this.tableData = data.users.slice(0)
-          this.dynamic_columns = data.dynamic_columns.slice(0)
 
           this.$nextTick(() => {
             if (!this.initTableDone) {
@@ -299,21 +302,12 @@ export default {
      * @return:
      */
     preCreate() {
-      this.rstFormData()
-      this.role_list.splice(0)
-      this.dept_list.splice(0)
-      this.job_list.splice(0)
-      this.user_attribute_dynamic_list.splice(0)
+      this.rstFormArea()
 
       this.tabIndex = 'tab_one'
-      apiGet({ form: 'user_create' })
+      apiGet({ form: 'create_user' })
         .then(function(data) {
-          this.role_list = data.role_list.slice(0)
-          this.dept_list = data.dept_list.slice(0)
-          this.job_list = data.job_list.slice(0)
-          this.user_attribute_dynamic_list = data.user_attribute_dynamic_list.slice(0)
-          const tempLength = this.user_attribute_dynamic_list.length
-          this.formData.user_attribute = new Array(tempLength).fill('')
+          this.copyFormList(data)
           //
           this.dialogAction = 'create'
           this.dialogVisible = true
@@ -369,7 +363,7 @@ export default {
               this.tableTotalRows = this.tableTotalRows + 1
 
               this.$nextTick(() => {
-                this.rstFormData()
+                this.rstFormArea()
                 this.refreshTblDisplay(this.query)
               })
             }.bind(this))
@@ -389,21 +383,14 @@ export default {
      * @return:
      */
     preUpdate(id) {
-      this.rstFormData()
-      this.role_list.splice(0)
-      this.dept_list.splice(0)
-      this.job_list.splice(0)
-      this.user_attribute_dynamic_list.splice(0)
+      this.rstFormArea()
 
       this.tabIndex = 'tab_one'
-      apiGet({ form: 'user_edit', uid: id })
+      apiGet({ form: 'edit_user', uid: id })
         .then(function(data) {
-          this.role_list = data.role_list.slice(0)
-          this.dept_list = data.dept_list.slice(0)
-          this.job_list = data.job_list.slice(0)
-          this.user_attribute_dynamic_list = data.user_attribute_dynamic_list.slice(0)
-          //
+          this.copyFormList(data.form_lists)
           this.updateFormData(data.form)
+          //
           this.dialogAction = 'update'
           this.dialogVisible = true
           this.$nextTick(() => {
@@ -434,7 +421,7 @@ export default {
               this.dialogVisible = false
 
               this.$nextTick(() => {
-                this.rstFormData()
+                this.rstFormArea()
                 this.refreshTblDisplay(this.query)
               })
             }.bind(this))
@@ -482,7 +469,7 @@ export default {
     },
 
     // 其他
-    rstFormData() {
+    rstFormArea() {
       this.formData.id = ''
       this.formData.sort = ''
       this.formData.username = ''
@@ -491,12 +478,29 @@ export default {
       this.formData.phone = ''
       this.formData.email = ''
       this.formData.enabled = '1'
-      this.formData.dept_id = ''
-      this.formData.job_id = ''
+      this.formData.attr_01_id = ''
+      this.formData.attr_02_id = ''
+      this.formData.attr_03_id = ''
+      this.formData.attr_04_id = ''
       this.formData.password = ''
       this.formData.roles.splice(0)
       this.formData.user_attribute.splice(0)
+      //
+      this.role_list.splice(0)
+      this.dept_list.splice(0)
+      this.job_list.splice(0)
+      this.politic_list.splice(0)
+      this.professional_title_list.splice(0)
     },
+
+    copyFormList(data) {
+      this.role_list = data.role_list.slice(0)
+      this.dept_list = data.dept_list.slice(0)
+      this.job_list = data.job_list.slice(0)
+      this.politic_list = data.politic_list.slice(0)
+      this.professional_title_list = data.professional_title_list.slice(0)
+    },
+
     updateFormData(form) {
       // this.formData = JSON.parse(JSON.stringify(data))
       this.formData.id = form.id
@@ -507,11 +511,12 @@ export default {
       this.formData.phone = form.phone
       this.formData.email = form.email
       this.formData.enabled = form.enabled
-      this.formData.dept_id = form.dept_id
-      this.formData.job_id = form.job_id
+      this.formData.attr_01_id = form.attr_01_id
+      this.formData.attr_02_id = form.attr_02_id
+      this.formData.attr_03_id = form.attr_03_id
+      this.formData.attr_04_id = form.attr_04_id
       this.formData.password = ''
       this.formData.roles = form.roles.slice(0)
-      this.formData.user_attribute = form.user_attribute.slice(0)
     },
 
     cancelDialog() {
@@ -520,7 +525,7 @@ export default {
     },
 
     closedDialog() {
-      this.rstFormData()
+      this.rstFormArea()
     },
 
     pageSizeChange(val) {
@@ -546,8 +551,9 @@ export default {
     },
 
     xx() {
-      console.log('# debug ')
+      console.log('# debug start')
       console.log('page id: ' + this.pageIdx)
+      console.log('# debug end')
     }
   }
 }

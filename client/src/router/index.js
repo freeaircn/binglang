@@ -2,11 +2,24 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 21:15:07
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-16 19:25:52
  */
+
 import Vue from 'vue'
 import Router from 'vue-router'
+
+// const originalPush = Router.prototype.push
+// Router.prototype.push = function push(location, onResolve, onReject) {
+//   if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+//   return originalPush.call(this, location).catch(err => { console.log('err: ' + err) })
+// }
+
+// const originalReplace = Router.prototype.replace
+// Router.prototype.replace = function replace(location, onResolve, onReject) {
+//   if (onResolve || onReject) return originalReplace.call(this, location, onResolve, onReject)
+//   return originalReplace.call(this, location).catch(err => { console.log('err: ' + err) })
+// }
 
 Vue.use(Router)
 
@@ -47,6 +60,12 @@ export const constantRoutes = [
     component: () => import('@/views/app/auth/login'),
     hidden: true,
     meta: { title: '登录' }
+  },
+  {
+    path: '/find_password',
+    component: () => import('@/views/app/auth/find_password'),
+    hidden: true,
+    meta: { title: '找回密码' }
   },
   {
     path: '/404',

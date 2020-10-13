@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-21 20:49:14
- * @LastEditors  : freeair
- * @LastEditTime : 2020-01-22 21:14:57
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-06-02 11:38:04
  */
 import Vue from 'vue'
 import LogLine from 'logline'
@@ -22,16 +22,16 @@ Vue.config.errorHandler = function(err) {
   } = err
   const url = window.location.href
   const ua = navigator.userAgent
-  appLogger.error('catch_vue', { url: url, message: message, name: name, stack: stack, ua: ua })
 
   console.error(err)
+  appLogger.error('catch_vue', { url: url, message: message, name: name, stack: stack, ua: ua })
 }
 
 window.onerror = function(message, url, line, column, error) {
   const ua = navigator.userAgent
-  appLogger.error('catch_window', { url: url, message: message, line: line, column: column, stack: error.stack, ua: ua })
 
   console.error(message, url, line, column, error)
+  appLogger.error('catch_window', { url: url, message: message, line: line, column: column, stack: error.stack, ua: ua })
 }
 
 // window.addEventListener('error', (message, url, line, column, error) => {

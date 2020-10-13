@@ -1,3 +1,0 @@
-2020-01-31 21:19:26 (1580476766.567) [ERROR] [Dict_model.php:86] [Dict_model::read] 9412 | 5e34295e7ee96 | /api/dict?label=%E5%85%9A%E6D:/www/binglang/server/application/app/logs4D:/www/binglang/server/application/app/logsE&name=&limit=5_0 | GET | DB_code: 1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ')
-ORDER BY `sort` ASC, `id` ASC
- LIMIT 5' at line 3 

@@ -18,10 +18,12 @@
             placeholder="请输入密码"
             show-password
             clearable
+            @keyup.enter.native="handleLogin"
           />
         </el-form-item>
 
-        <div style="display:inline-block; margin: 0px 0px 15px 0px; color: #409EFF; float:right;"><router-link to="/forgot-password">忘记密码？</router-link></div>
+        <div style="margin: 0px 0px 15px 0px; color: #409EFF; "><router-link to="/find_password">忘记密码？</router-link></div>
+        <!-- <div style="display:inline-block; margin: 0px 0px 15px 0px; color: #409EFF; float:right;"><router-link to="/find_password">忘记密码？</router-link></div> -->
         <el-form-item>
           <el-button :loading="loading" type="primary" style="width:100%;" @click="handleLogin">登 录</el-button>
         </el-form-item>
@@ -39,7 +41,8 @@ export default {
     return {
       formData: {
         phone: '',
-        password: ''
+        password: '',
+        remember: false
       },
       loading: false,
       redirect: undefined,
@@ -73,6 +76,12 @@ export default {
             .then(() => {
               this.loading = false
               this.$router.replace({ path: this.redirect || '/' })
+                .catch((err) => {
+                  if (typeof err !== 'undefined') {
+                    console.log('Navigate err: ')
+                    console.log(err)
+                  }
+                })
             })
             .catch((error) => {
               this.loading = false

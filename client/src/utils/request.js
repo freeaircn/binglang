@@ -2,19 +2,19 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 16:13:19
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-18 22:07:00
  */
 import axios from 'axios'
 import qs from 'qs'
 import { Message } from 'element-ui'
-import store from '@/store/app'
-import { getToken } from '@/utils/auth'
+// import store from '@/store/app'
+// import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  withCredentials: true, // send cookies when cross-domain requests
+  // withCredentials: true, // send cookies when cross-domain requests
   headers: { 'Content-Type': 'application/json' },
   timeout: 5000 // request timeout
 })
@@ -30,24 +30,24 @@ service.defaults.paramsSerializer = function(params) {
 }
 
 // request interceptor
-service.interceptors.request.use(
-  config => {
-    // do something before request is sent
+// service.interceptors.request.use(
+//   config => {
+//     // do something before request is sent
 
-    if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
-    }
-    return config
-  },
-  error => {
-    // do something with request error
-    console.log(error) // for debug
-    return Promise.reject(error)
-  }
-)
+//     if (store.getters.token) {
+//       // let each request carry token
+//       // ['X-Token'] is a custom headers key
+//       // please modify it according to the actual situation
+//       config.headers['X-Token'] = getToken()
+//     }
+//     return config
+//   },
+//   error => {
+//     // do something with request error
+//     console.log(error) // for debug
+//     return Promise.reject(error)
+//   }
+// )
 
 // response interceptor
 service.interceptors.response.use(
@@ -55,8 +55,7 @@ service.interceptors.response.use(
   response => {
     console.log(response.data)
     const res = response.data
-    // eslint-disable-next-line eqeqeq
-    if (res.code == 0) {
+    if (res.code === 0) {
       if (typeof res.msg !== 'undefined') {
         Message({
           message: res.msg,
@@ -69,7 +68,7 @@ service.interceptors.response.use(
         return Promise.resolve()
       }
     } else {
-      const msg = res.msg + ' (' + res.code.toString() + ')'
+      const msg = res.msg
       return Promise.reject(msg)
     }
   },

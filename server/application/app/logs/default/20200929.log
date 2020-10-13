@@ -1,0 +1,7 @@
+2020-09-29 21:47:27 [NOTICE] [Auth.php:106] [Auth::login_post] 13276 | 5f733aef0bad4 | /api/auth/login | POST | [sp1ifsal] user - 138****5678 login successfully! 
+2020-09-29 21:54:14 [WARNING] [Auth.php:286] [Auth::req_reset_password_post] 13276 | 5f733c862f62c | /api/auth/req_reset_password | POST | [s2p2p9pl] user - 138****5678 reset password successfully. 
+2020-09-29 21:56:58 [NOTICE] [Auth.php:106] 13188 | 5f733d2a798c5 | [s2p2p9pl] user - 138****5678 login successfully. 
+2020-09-29 21:59:48 [NOTICE] [Auth.php:106] 13188 | 5f733dd45233d | [can0t1n2] user - 138****5678 login successfully. 
+2020-09-29 21:59:51 [NOTICE] [Auth.php:159] 13188 | 5f733dd7ead7c | [can0t1n2] user - 138****5678 reset password successfully. 
+2020-09-29 22:00:44 [NOTICE] [Auth.php:106] 13188 | 5f733e0c128ba | [em6h61gf] user - 138****5678 login successfully. 
+2020-09-29 22:00:46 [NOTICE] [Auth.php:159] 13188 | 5f733e0e40e81 | [em6h61gf] user - 138****5678 logout. 

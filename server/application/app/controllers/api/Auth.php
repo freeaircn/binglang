@@ -3,12 +3,14 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 09:50:39
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-29 22:00:35
  */
 defined('BASEPATH') or exit('No direct script access allowed');
+
 use chriskacerguis\RestServer\RestController;
 use \App_Settings\App_Code as App_Code;
+use \App_Settings\App_Msg as App_Msg;
 
 class Auth extends RestController
 {
@@ -18,8 +20,9 @@ class Auth extends RestController
         // Construct the parent class
         parent::__construct();
 
-        $this->load->model('user_model');
-        // $this->load->library('common_tools');
+        $this->config->load('config', true);
+        $this->load->model('auth_model');
+        $this->load->library(['email', 'common_tools']);
     }
 
     public function login_post()
@@ -34,27 +37,275 @@ class Auth extends RestController
         //     $this->response($res, 200);
         // }
 
-        $data['phone']    = $client['phone'];
-        $data['password'] = $client['password'];
+        $phone    = $client['phone'];
+        $password = $client['password'];
+        // $remember = $client['remember'];
 
-        // insert user table
-        // $uid = $this->user_model->create_user($data, $client['roles'], $client['user_attribute']);
-        // if ($uid === false) {
-        //     $res['code'] = App_Code::CREATE_USER_FAILED;
-        //     $res['msg']  = App_Msg::CREATE_USER_FAILED;
-        //     SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+        $ip_address = $this->input->ip_address();
 
-        //     $this->response($res, 200);
-        // }
-        if ($data['password'] !== '111') {
-            $res['code'] = 300;
-            $res['msg']  = "账号或密码错误！";
+        // 1 检查尝试登陆次数
+        if ($this->auth_model->is_max_login_attempts_exceeded($phone, $ip_address)) {
+            $res['code'] = App_Code::MAX_LOGIN_ATTEMPT_EXCEEDED;
+            $res['msg']  = App_Msg::MAX_LOGIN_ATTEMPT_EXCEEDED;
             $this->response($res, 200);
         }
 
-        $res['code'] = App_Code::SUCCESS;
-        $res['data'] = ['token' => 'token', 'user' => 'user', 'roles' => ['roles']];
+        // 2 查询用户是否存在
+        $user = $this->auth_model->get_user_by_phone($phone);
+        if ($user === false) {
+            $this->auth_model->increase_login_attempts($phone, $ip_address);
 
+            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $this->response($res, 200);
+        }
+
+        // 3 验证用户登陆密码
+        if (($this->auth_model->verify_password($password, $user->password)) === false) {
+            $this->auth_model->increase_login_attempts($phone, $ip_address);
+
+            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG . '！！';
+            $this->response($res, 200);
+        }
+
+        // 4 检查用户enabled
+        if ($user->enabled == 0) {
+            $res['code'] = App_Code::USER_NOT_ENABLED;
+            $res['msg']  = App_Msg::USER_NOT_ENABLED;
+            $this->response($res, 200);
+        }
+
+        // 5 清除用户尝试失败记录
+        $this->auth_model->clear_login_attempts($phone, $ip_address);
+
+        // 6 更新用户登陆成功时间
+        $this->auth_model->update_last_login($user->id);
+
+        //  7 查询用户拥有的访问权限
+        $user_acl = $this->auth_model->get_user_acl_by_uid($user->id);
+
+        // 8 记录session
+        $other_data = [
+            'acl' => $user_acl,
+        ];
+        $this->auth_model->set_session($user, $other_data);
+        // $this->session->sess_regenerate(true);
+
+        // // 9 remember用户，处理
+        // if ($remember) {
+        //     $this->remember_user($phone);
+        // } else {
+        //     $this->clear_remember_code($phone);
+        // }
+
+        // 10 如果密码算法参数变化，重新hash password，并写入数据库
+        $this->auth_model->rehash_password_if_needed($user->password, $user->phone, $password);
+
+        // 11 记录log
+        SeasLog::notice('[{session}] user - {phone} login successfully.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($phone)]);
+
+        // 12 组织response数据
+        $str         = session_id();
+        $expire_code = $str[17] . $str[12] . $str[8] . $str[5] . $str[3];
+        $expire_time = time() + $this->config->item('sess_expiration', 'config');
+        $user_data   = ['sort' => $user->sort, 'username' => $user->username, 'sex' => $user->sex, 'phone' => $user->phone, 'email' => $user->email, 'identity_document_number' => $user->identity_document_number];
+
+        $res['data'] = ['expire_time' => $expire_time, 'expire_code' => $expire_code, 'user' => $user_data];
+        $res['code'] = App_Code::SUCCESS;
+        $this->response($res, 200);
+    }
+
+    public function check_user_get()
+    {
+        $user = $this->session->userdata();
+
+        if (empty($user['phone'])) {
+            $res['code'] = App_Code::USER_NOT_LOGIN;
+            $res['msg']  = App_Msg::USER_NOT_LOGIN;
+            $this->response($res, 200);
+        } else {
+            $user_data = [
+                'sort'                     => $user['sort'],
+                'username'                 => $user['username'],
+                'sex'                      => $user['sex'],
+                'phone'                    => $user['phone'],
+                'email'                    => $user['email'],
+                'identity_document_number' => $user['identity_document_number'],
+            ];
+            $res['data'] = ['user' => $user_data];
+            $res['code'] = App_Code::SUCCESS;
+            $this->response($res, 200);
+        }
+    }
+
+    public function logout_post()
+    {
+        // $array_items = ['username', 'email'];
+
+        // $this->session->unset_userdata($array_items);
+
+        // $this->session->unset_userdata([$identity, 'id', 'user_id']);
+
+        // // delete the remember me cookies if they exist
+        // delete_cookie($this->config->item('remember_cookie_name', 'ion_auth'));
+
+        // // Clear all codes
+        // $this->ion_auth_model->clear_forgotten_password_code($identity);
+        // $this->ion_auth_model->clear_remember_code($identity);
+
+        // 1 log
+        $user = $this->session->userdata();
+        SeasLog::notice('[{session}] user - {phone} logout.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($user['phone'])]);
+
+        // 2 销毁session
+        $this->session->sess_destroy();
+
+        $res['code'] = App_Code::SUCCESS;
+        $this->response($res, 200);
+    }
+
+    public function req_verification_code_get()
+    {
+        // $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        // $client       = json_decode($stream_clean, true);
+        $client = $this->get();
+
+        $phone = $client['phone'];
+        if (empty($phone)) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+            $this->response($res, 200);
+        }
+
+        // 1 查询用户是否存在
+        $user = $this->auth_model->get_user_by_phone($phone);
+        if ($user === false) {
+            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $this->response($res, 200);
+        }
+
+        // 2 查询用户的email是否存在
+        $email = $user->email;
+        if (empty($email)) {
+            $res['code'] = App_Code::USER_EMAIL_NOT_EXISTING;
+            $res['msg']  = App_Msg::USER_EMAIL_NOT_EXISTING;
+            $this->response($res, 200);
+        }
+
+        // 3 生成验证码
+        $code = $this->auth_model->create_verification_code($phone);
+        if ($code === false) {
+            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $this->response($res, 200);
+        }
+
+        // 4 发送邮件
+        $data = [
+            'phone'             => $phone,
+            'verification_code' => $code,
+            'dt'                => date("Y-m-d H:i:s"),
+        ];
+        $message = $this->load->view($this->config->item('email_templates', 'app_config') . $this->config->item('email_verification_code', 'app_config'), $data, true);
+
+        $email_config = $this->config->item('email_config', 'app_config');
+        $this->email->clear();
+        $this->email->initialize($email_config);
+
+        $this->email->from($this->config->item('sys_mail', 'app_config'), $this->config->item('mail_title', 'app_config'));
+        $this->email->to($email);
+        $this->email->subject($this->config->item('mail_title', 'app_config') . ' - ' . '验证码 ' . $code);
+        $this->email->message($message);
+
+        if ($this->email->send() === true) {
+            $res['data'] = ['email' => $email];
+            $res['code'] = App_Code::SUCCESS;
+        } else {
+            $res['code'] = App_Code::SYS_SEND_MAIL_FAILED;
+            $res['msg']  = App_Msg::SYS_SEND_MAIL_FAILED;
+        }
+        // $this->email->print_debugger();
+        $this->response($res, 200);
+    }
+
+    public function valid_verification_code_post()
+    {
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $phone             = $client['phone'];
+        $verification_code = $client['verification_code'];
+
+        $is_valid = $this->auth_model->check_verification_code($phone, $verification_code, false);
+
+        if ($is_valid) {
+            $res['code'] = App_Code::SUCCESS;
+            $res['msg']  = '请设置新的密码！';
+        } else {
+            $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
+            $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
+        }
+
+        $this->response($res, 200);
+    }
+
+    public function req_reset_password_post()
+    {
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $phone             = $client['phone'];
+        $verification_code = $client['verificationCode'];
+        $new_password      = $client['newPassword'];
+
+        // 1 验证用户请求
+        $is_valid = $this->auth_model->check_verification_code($phone, $verification_code, true);
+        if (!$is_valid) {
+            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            $this->response($res, 200);
+        }
+
+        // 2 hash密码
+        $hash_pwd = $this->common_tools->hash_password($new_password);
+        if ($hash_pwd === false) {
+            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+
+            $this->response($res, 200);
+        }
+
+        // 3 重置密码
+        $result = $this->auth_model->update_password_by_phone($phone, $hash_pwd);
+        if (!$result) {
+            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+        }
+
+        // 4 log
+        SeasLog::warning('[{session}] user - {phone} reset password successfully.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($phone)]);
+
+        $res['code'] = App_Code::SUCCESS;
+        $res['msg']  = '请使用新密码登录!';
+        $this->response($res, 200);
+    }
+
+    public function test_post()
+    {
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $meter_time = $client['metertime'];
+        // mktime(hour,minute,second,month,day,year)
+        $d = mktime($meter_time[1], $meter_time[0], 0, $meter_time[3], $meter_time[2], $meter_time[4]);
+
+        $res['data']      = $client['metervalue'];
+        $res['date_time'] = date("Y-m-d H:i:s", $d);
+        $res['code']      = App_Code::SUCCESS;
         $this->response($res, 200);
     }
 }

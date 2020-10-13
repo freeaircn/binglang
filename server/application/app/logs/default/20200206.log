@@ -1,4 +1,0 @@
-2020-02-06 22:12:19 (1580998339.631) [ERROR] [Dept_model.php:193] [Dept_model::delete] 8228 | 5e3c1ec3928a9 | /api/dept | DELETE | DB_code: 0 -  
-2020-02-06 22:12:19 (1580998339.632) [ERROR] [Dept.php:178] [Dept::index_delete] 8228 | 5e3c1ec3928a9 | /api/dept | DELETE | APP_code: 244 - 删除部门，操作失败，请稍后重试！ 
-2020-02-06 22:13:01 (1580998381.943) [ERROR] [Dept_model.php:193] [Dept_model::delete] 8228 | 5e3c1eeddeb80 | /api/dept | DELETE | DB_code: 0 -  
-2020-02-06 22:13:01 (1580998381.943) [ERROR] [Dept.php:178] [Dept::index_delete] 8228 | 5e3c1eeddeb80 | /api/dept | DELETE | APP_code: 244 - 删除部门，操作失败，请稍后重试！ 

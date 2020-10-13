@@ -1,1 +1,0 @@
-2020-01-22 13:26:12 (1579699572.690) [ERROR] [User.php:35] [User::index_get] 4588 | 5e284d74a4656 | /api/user?wanted=all | GET | test: uuid - 5e284d74a4656 

@@ -3,16 +3,16 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-09 22:59:22
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-06-05 17:32:38
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use chriskacerguis\RestServer\RestController;
 use \App_Settings\App_Code as App_Code;
 use \App_Settings\App_Msg as App_Msg;
+use \App_Settings\APP_Rest_API as APP_Rest_API;
 
-class User extends RestController
+class User extends APP_Rest_API
 {
 
     public function __construct()
@@ -47,11 +47,11 @@ class User extends RestController
             $this->response($res, 200);
         }
 
-        if (isset($client['form']) && $client['form'] === 'user_create') {
-            $data = $this->user_model->get_form_by_user_create();
+        if (isset($client['form']) && $client['form'] === 'create_user') {
+            $data = $this->user_model->get_form_by_create_user();
             if ($data === false) {
-                $res['code'] = App_Code::GET_FORM_BY_USER_CREATE_FAILED;
-                $res['msg']  = App_Msg::GET_FORM_BY_USER_CREATE_FAILED;
+                $res['code'] = App_Code::GET_FORM_BY_CREATE_USER_FAILED;
+                $res['msg']  = App_Msg::GET_FORM_BY_CREATE_USER_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -59,11 +59,11 @@ class User extends RestController
             $this->response($res, 200);
         }
 
-        if (isset($client['form']) && isset($client['uid']) && $client['form'] === 'user_edit') {
-            $data = $this->user_model->get_form_by_user_edit($client['uid']);
+        if (isset($client['form']) && isset($client['uid']) && $client['form'] === 'edit_user') {
+            $data = $this->user_model->get_form_by_edit_user($client['uid']);
             if ($data === false) {
-                $res['code'] = App_Code::GET_FORM_BY_USER_EDIT_FAILED;
-                $res['msg']  = App_Msg::GET_FORM_BY_USER_EDIT_FAILED;
+                $res['code'] = App_Code::GET_FORM_BY_EDIT_USER_FAILED;
+                $res['msg']  = App_Msg::GET_FORM_BY_EDIT_USER_FAILED;
             } else {
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
@@ -82,7 +82,6 @@ class User extends RestController
         $client       = json_decode($stream_clean, true);
 
         $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_user', 'index_post');
-        // $valid = $this->common_tools->valid_client_data($client, 'user_index_post');
         if ($valid !== true) {
             $res['code'] = App_Code::PARAMS_INVALID;
             $res['msg']  = $valid;
@@ -111,20 +110,19 @@ class User extends RestController
         $data['email']    = $client['email'];
         $data['password'] = $hash_pwd;
         $data['enabled']  = (int) $client['enabled'];
-        $data['dept_id']  = $client['dept_id'];
 
         $data['identity_document_number'] = $client['identity_document_number'];
 
         // job field - optional, because job_id is db fk, when insert, fk could not be ''
-        if ($client['job_id'] === '') {
-            $data['job_id'] = null;
-        } else {
-            $data['job_id'] = $client['job_id'];
-        }
+        $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
+        $data['attr_02_id'] = $client['attr_02_id'] === '' ? null : $client['attr_02_id'];
+        $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
+        $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
+
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
         // insert user table
-        $uid = $this->user_model->create_user($data, $client['roles'], $client['user_attribute']);
+        $uid = $this->user_model->create_user($data, $client['roles']);
         if ($uid === false) {
             $res['code'] = App_Code::CREATE_USER_FAILED;
             $res['msg']  = App_Msg::CREATE_USER_FAILED;
@@ -145,7 +143,6 @@ class User extends RestController
         $client       = json_decode($stream_clean, true);
 
         $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_user', 'index_post');
-        // $valid = $this->common_tools->valid_client_data($client, 'user_index_post');
         if ($valid !== true) {
             $res['code'] = App_Code::PARAMS_INVALID;
             $res['msg']  = $valid;
@@ -172,16 +169,15 @@ class User extends RestController
         $data['phone']    = $client['phone'];
         $data['email']    = $client['email'];
         $data['enabled']  = (int) $client['enabled'];
-        $data['dept_id']  = $client['dept_id'];
 
         $data['identity_document_number'] = $client['identity_document_number'];
 
         // job field - optional, because job_id is db fk, when update, fk could not be ''
-        if ($client['job_id'] === '') {
-            $data['job_id'] = null;
-        } else {
-            $data['job_id'] = $client['job_id'];
-        }
+        $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
+        $data['attr_02_id'] = $client['attr_02_id'] === '' ? null : $client['attr_02_id'];
+        $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
+        $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
+
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
         // update user table
@@ -191,7 +187,7 @@ class User extends RestController
 
             $this->response($res, 200);
         }
-        $rtn = $this->user_model->update_user($uid, $data, $client['roles'], $client['user_attribute']);
+        $rtn = $this->user_model->update_user($uid, $data, $client['roles']);
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_USER_FAILED;
             $res['msg']  = App_Msg::UPDATE_USER_FAILED;
@@ -212,7 +208,6 @@ class User extends RestController
         $client       = json_decode($stream_clean, true);
 
         $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_user', 'index_delete');
-        // $valid = $this->common_tools->valid_client_data($client, 'index_delete');
         if ($valid !== true) {
             $res['code'] = App_Code::PARAMS_INVALID;
             $res['msg']  = $valid;

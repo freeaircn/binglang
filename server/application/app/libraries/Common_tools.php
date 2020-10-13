@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-01 22:29:35
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-29 21:46:22
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -97,8 +97,8 @@ class Common_tools extends CI_Model
             return false;
         }
 
-        $algo   = $this->_get_hash_algo();
-        $params = $this->_get_hash_parameters();
+        $algo   = $this->get_hash_algo();
+        $params = $this->get_hash_parameters();
 
         if ($algo !== false && $params !== false) {
             return password_hash($password, $algo, $params);
@@ -111,7 +111,7 @@ class Common_tools extends CI_Model
      *
      * @return string|bool
      */
-    protected function _get_hash_algo()
+    public function get_hash_algo()
     {
         $algo        = false;
         $hash_method = $this->config->item('hash_method', 'app_config');
@@ -134,7 +134,7 @@ class Common_tools extends CI_Model
     /** Retrieve hash parameter according to options
      * @return array|bool
      */
-    protected function _get_hash_parameters()
+    public function get_hash_parameters()
     {
         $params      = false;
         $hash_method = $this->config->item('hash_method', 'app_config');
@@ -193,7 +193,7 @@ class Common_tools extends CI_Model
      * @param string $key
      * @return array
      */
-    public function get_sql_ci_where_in_by_ci_result($array = [], $key = '')
+    public function get_one_item_from_ci_result_array($array = [], $key = '')
     {
         if (empty($array) || $key === '') {
             return [];
@@ -202,9 +202,36 @@ class Common_tools extends CI_Model
         $res = [];
         foreach ($array as $item) {
             if (isset($item[$key])) {
-                $res[] = (string) $item[$key];
+                $res[] = $item[$key];
             }
         }
         return $res;
+    }
+
+    /**
+     * 获取session id，用于log跟踪会话
+     *
+     * @author freeair
+     * @DateTime 2020-01-27
+     * @return str
+     */
+    public function log_session_id()
+    {
+        return substr(session_id(), 0, 8);
+    }
+
+    /**
+     * 隐藏 phone，用于log跟踪会话
+     *
+     * @author freeair
+     * @DateTime 2020-01-27
+     * @return str
+     */
+    public function log_phone($phone)
+    {
+        if (empty($phone)) {
+            return "";
+        }
+        return substr($phone, 0, 3) . "****" . substr($phone, 7, 4);
     }
 }

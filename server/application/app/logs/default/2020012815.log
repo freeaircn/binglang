@@ -1,8 +1,0 @@
-2020-01-28 15:29:27 | CRITICAL | 5752 | 5e2fe2d71b3d2 | 1580196567.112 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-fewiyud.php - line:129 - msg:syntax error, unexpected '：' (T_STRING)
-2020-01-28 15:29:34 | CRITICAL | 10760 | 5e2fe2de8a5d4 | 1580196574.567 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-mryzxtu.php - line:129 - msg:syntax error, unexpected '：' (T_STRING)
-2020-01-28 15:30:00 | CRITICAL | 3172 | 5e2fe2f8dbf40 | 1580196600.901 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-jzrcljjp.php - line:129 - msg:syntax error, unexpected '：' (T_STRING)
-2020-01-28 15:30:03 | CRITICAL | 5348 | 5e2fe2fb00514 | 1580196603.1 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-xjewrffo.php - line:129 - msg:syntax error, unexpected '：' (T_STRING)
-2020-01-28 15:30:31 | CRITICAL | 10512 | 5e2fe3177020c | 1580196631.459 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-ujnwyjgmmk.php - line:129 - msg:syntax error, unexpected '：' (T_STRING)
-2020-01-28 15:30:33 | CRITICAL | 7524 | 5e2fe319e2614 | 1580196633.927 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-lbdthl.php - line:129 - msg:syntax error, unexpected '(bool)' (bool) (T_BOOL_CAST)
-2020-01-28 15:30:42 | CRITICAL | 3288 | 5e2fe3221d0a1 | 1580196642.119 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-chnxvukou.php - line:129 - msg:syntax error, unexpected '(bool)' (bool) (T_BOOL_CAST)
-2020-01-28 15:57:06 | CRITICAL | 4904 | 5e2fe952ec4c4 | 1580198226.968 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-pzjbhcplte.php - line:99 - msg:syntax error, unexpected '=', expecting variable (T_VARIABLE) or '{' or '$'

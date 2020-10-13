@@ -1,2 +1,0 @@
-2020-02-05 20:15:46 (1580904946.397) [ERROR] [Dept_model.php:191] [Dept_model::delete] 11980 | 5e3ab1f259be4 | /api/dept | DELETE | DB_code: 0 -  
-2020-02-05 20:15:46 (1580904946.398) [ERROR] [Dept.php:180] [Dept::index_delete] 11980 | 5e3ab1f259be4 | /api/dept | DELETE | APP_code: 224 - 删除词典，操作失败，请稍后重试！ 

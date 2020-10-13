@@ -1,6 +1,0 @@
-2020-01-27 17:44:17 (1580118257.45) [ERROR] [User_model.php:772] [User_model::_get_query_params_where_str] 2988 | 5e2eb0f10504c | /api/user?limit=5_0&individual=&sex=&dept=&job=&politic=&professional_title=%E5D:/www/binglang/server/application/app/logsC%80%E5%8F%91 | GET | DB_code: 1054 - Unknown column 'username' in 'field list' 
-2020-01-27 18:31:06 (1580121066.99) [ERROR] [User_model.php:84] [User_model::read] 2988 | 5e2ebbea13c7b | /api/user?limit=5_0 | GET | DB_code: 1054 - Unknown column 'Array' in 'where clause' 
-2020-01-27 18:31:53 (1580121113.778) [ERROR] [User_model.php:83] [User_model::read] 2988 | 5e2ebc19b92c0 | /api/user?limit=5_0 | GET | DB_code: 1054 - Unknown column 'Array' in 'where clause' 
-2020-01-27 20:37:06 (1580128626.164) [ERROR] [User_model.php:98] [User_model::read] 2988 | 5e2ed97221645 | /api/user?limit=5_0&individual=&sex=1&dept=&job=&politic=&professional_title= | GET | DB_code: 1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ')
-ORDER BY `sort` ASC
- LIMIT 5' at line 3 

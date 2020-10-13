@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-02-12 09:11:11
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 21:09:03
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-07 15:50:11
  */
 import { constantRoutes } from '@/router'
 import Layout from '@/layout/index'
@@ -23,7 +23,7 @@ const mutations = {
 
 const actions = {
   refreshRoutes({ commit }, asyncRouter) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       commit('SET_ROUTES', asyncRouter)
       resolve()
     })
@@ -48,11 +48,12 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
     if (router.alwaysShow) {
       router.alwaysShow = router.alwaysShow === '1'
     }
-    if (router.noCache) {
-      router.noCache = router.noCache === '1'
+    // meta - title, icon, noCache, breadcrumb
+    if (router.meta.noCache) {
+      router.meta.noCache = router.meta.noCache === '1'
     }
-    if (router.breadcrumb) {
-      router.breadcrumb = router.breadcrumb === '1'
+    if (router.meta.breadcrumb) {
+      router.meta.breadcrumb = router.meta.breadcrumb === '1'
     }
     //
     if (router.component) {

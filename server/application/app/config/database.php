@@ -97,9 +97,9 @@ $db['default'] = [
 
 $db['binglang'] = [
     'dsn'          => '',
-    'hostname'     => 'localhost:3307',
-    'username'     => 'root',
-    'password'     => 'B@123456',
+    'hostname'     => 'localhost',
+    'username'     => 'app',
+    'password'     => 'Sql@1234',
     'database'     => 'binglang',
     'dbdriver'     => 'mysqli',
     'dbprefix'     => '',

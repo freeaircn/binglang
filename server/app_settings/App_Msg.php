@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-07 22:40:01
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-18 20:36:02
  */
 namespace App_Settings;
 
@@ -14,14 +14,20 @@ class App_Msg
 
     const SUCCESS = '操作成功！';
 
-    const PARAMS_INVALID       = '请求参数非法！';
-    const GET_SOURCE_NOT_EXIST = '请求的资源不存在！';
-    const PASSWORD_IS_EMPTY    = '密码不能为空！';
-    const HASH_PASSWORD_FAILED = '密码hash失败，请稍后重试！';
+    const PARAMS_INVALID                = '请求参数非法！';
+    const GET_SOURCE_NOT_EXIST          = '请求的资源不存在！';
+    const PASSWORD_IS_EMPTY             = '密码不能为空！';
+    const HASH_PASSWORD_FAILED          = '密码处理错误，请稍后重试！';
+    const SYS_SEND_MAIL_FAILED          = '系统发送邮件失败，请稍后重试！';
+    const SYS_VERIFICATION_CODE_INVALID = '验证错误！';
+    const SYS_RESET_PASSWORD_FAILED     = '重置密码失败，请重试！';
+
+    const USER_NOT_LOGIN    = '用户未登陆，或登录已失效！';
+    const USER_NOT_APPROVED = '用户没有权限！';
 
     const GET_USER_FAILED                = '用户信息，查询失败，请稍后重试！';
-    const GET_FORM_BY_USER_CREATE_FAILED = '用户信息的空表单，获取失败，请稍后重试！';
-    const GET_FORM_BY_USER_EDIT_FAILED   = '用户信息表单，获取失败，请稍后重试！';
+    const GET_FORM_BY_CREATE_USER_FAILED = '用户信息的空表单，获取失败，请稍后重试！';
+    const GET_FORM_BY_EDIT_USER_FAILED   = '用户信息表单，获取失败，请稍后重试！';
     const CREATE_USER_FAILED             = '新建用户，操作失败，请稍后重试！';
     const UPDATE_USER_FAILED             = '编辑用户，操作失败，请稍后重试！';
     const DELETE_USER_FAILED             = '删除用户，操作失败，请稍后重试！';
@@ -61,6 +67,11 @@ class App_Msg
     const CREATE_ROLE_FAILED       = '新建角色，操作失败，请稍后重试！';
     const UPDATE_ROLE_FAILED       = '编辑角色，操作失败，请稍后重试！';
     const DELETE_ROLE_FAILED       = '删除角色，操作失败，请稍后重试！';
+
+    const MAX_LOGIN_ATTEMPT_EXCEEDED = '连续多次登陆尝试失败，请5分钟后再登陆！';
+    const USERNAME_OR_PASSWORD_WRONG = '账号或密码输入错误！';
+    const USER_NOT_ENABLED           = '用户未激活，请联系管理员！';
+    const USER_EMAIL_NOT_EXISTING    = '用户未绑定电子邮箱!';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';

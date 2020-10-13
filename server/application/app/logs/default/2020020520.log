@@ -1,7 +1,0 @@
-2020-02-05 20:11:20 | CRITICAL | 11076 | 5e3ab0e8d19ec | 1580904680.859 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-ypuxkigna.php - line:202 - msg:Cannot redeclare Dept_model::delete()
-2020-02-05 20:11:32 | CRITICAL | 6888 | 5e3ab0f43b561 | 1580904692.243 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-qigjgxnq.php - line:202 - msg:Cannot redeclare Dept_model::delete()
-2020-02-05 20:11:42 | CRITICAL | 11116 | 5e3ab0feb2c79 | 1580904702.733 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-eplammhy.php - line:202 - msg:Cannot redeclare Dept_model::delete()
-2020-02-05 20:11:48 | CRITICAL | 12476 | 5e3ab1042bfde | 1580904708.181 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-skenzafq.php - line:202 - msg:Cannot redeclare Dept_model::delete()
-2020-02-05 20:11:55 | CRITICAL | 4748 | 5e3ab10b14e68 | 1580904715.86 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-khaeeugum.php - line:202 - msg:Cannot redeclare Dept_model::delete()
-2020-02-05 20:12:18 | CRITICAL | 2888 | 5e3ab12218640 | 1580904738.100 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-mrvruvnb.php - line:202 - msg:Cannot redeclare Dept_model::delete()
-2020-02-05 20:12:32 | CRITICAL | 12860 | 5e3ab1304f9a9 | 1580904752.326 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-hpaqjy.php - line:202 - msg:Cannot redeclare Dept_model::delete()

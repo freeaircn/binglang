@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-07 21:34:54
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-06-06 19:23:32
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -73,7 +73,7 @@ class Role_model extends CI_Model
         $this->db->select('*');
         if ($where_str !== '') {
             $temp_id = $query->result_array();
-            $this->db->where_in('id', $this->common_tools->get_sql_ci_where_in_by_ci_result($temp_id, 'id'));
+            $this->db->where_in('id', $this->common_tools->get_one_item_from_ci_result_array($temp_id, 'id'));
         }
         $this->db->order_by('sort', 'ASC');
         $this->db->order_by('id', 'ASC');

@@ -1,1 +1,0 @@
-2020-02-01 22:32:38 (1580567558.29) [ERROR] [Dict_data_model.php:92] [Dict_data_model::read] 8016 | 5e358c06036d3 | /api/dict-data?label=%E6%97%A0%E5%85%9A&name=&limit=10_0 | GET | DB_code: 1052 - Column 'id' in where clause is ambiguous 

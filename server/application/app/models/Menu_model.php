@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-08 21:30:23
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-06 21:29:51
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -140,7 +140,14 @@ class Menu_model extends CI_Model
      */
     public function build_menu()
     {
-        $this->db->select('id, pid, path, component, name, hidden, alwaysShow, redirect');
+        $acl = $this->session->userdata('acl');
+        if (empty($acl)) {
+            return [];
+        }
+
+        $this->db->select('id, pid, path, component, name, hidden, alwaysShow, redirect, title, icon, noCache, breadcrumb');
+        $this->db->where('type', '1');
+        $this->db->where_in('roles', $acl);
         $this->db->order_by('sort', 'ASC');
         $this->db->order_by('id', 'ASC');
         $query = $this->db->get($this->tables['menu']);
@@ -151,22 +158,53 @@ class Menu_model extends CI_Model
         }
         $part_1 = $query->result_array();
 
-        $this->db->select('title, icon, noCache, breadcrumb');
-        $this->db->order_by('sort', 'ASC');
-        $this->db->order_by('id', 'ASC');
-        $query = $this->db->get($this->tables['menu']);
-        if ($query === false) {
-            $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
-        }
-        $part_2 = $query->result_array();
-
-        $k = 0;
         foreach ($part_1 as &$item) {
-            $item['meta'] = $part_2[$k];
-            $k++;
+            $item['meta'] = array_slice($item, 8, 4);
         }
+
+        // +++++++++++++++
+        // $this->db->select('id');
+        // $this->db->where('type', '1');
+        // $this->db->where_in('roles', $acl);
+        // // $this->db->order_by('sort', 'ASC');
+        // $this->db->order_by('id', 'ASC');
+        // $query = $this->db->get($this->tables['menu']);
+        // if ($query === false) {
+        //     $error = $this->db->error();
+        //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+        //     return false;
+        // }
+        // $ids = $this->common_tools->get_one_item_from_ci_result_array($query->result_array(), 'id');
+
+        // $this->db->select('id, pid, path, component, name, hidden, alwaysShow, redirect');
+        // $this->db->where_in('id', $ids);
+        // // $this->db->order_by('sort', 'ASC');
+        // // $this->db->order_by('id', 'ASC');
+        // $query = $this->db->get($this->tables['menu']);
+        // if ($query === false) {
+        //     $error = $this->db->error();
+        //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+        //     return false;
+        // }
+        // $part_1 = $query->result_array();
+
+        // $this->db->select('title, icon, noCache, breadcrumb');
+        // $this->db->where_in('id', $ids);
+        // // $this->db->order_by('sort', 'ASC');
+        // // $this->db->order_by('id', 'ASC');
+        // $query = $this->db->get($this->tables['menu']);
+        // if ($query === false) {
+        //     $error = $this->db->error();
+        //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+        //     return false;
+        // }
+        // $part_2 = $query->result_array();
+
+        // $k = 0;
+        // foreach ($part_1 as &$item) {
+        //     $item['meta'] = $part_2[$k];
+        //     $k++;
+        // }
 
         $res['menu'] = $this->common_tools->arr2tree($part_1);
         return $res;

@@ -1,2 +1,0 @@
-2020-01-28 11:20:30 | CRITICAL | 7840 | 5e2fa87e7fbaf | 1580181630.523 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-qjpuygiepg.php - line:63 - msg:syntax error, unexpected 'pubilic' (T_STRING), expecting function (T_FUNCTION) or const (T_CONST)
-2020-01-28 11:26:24 | CRITICAL | 6136 | 5e2fa9e07eee2 | 1580181984.520 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-yfrw.php - line:87 - msg:syntax error, unexpected '$this' (T_VARIABLE)

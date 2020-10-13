@@ -64,9 +64,7 @@ CREATE TABLE IF NOT EXISTS `app_dict` (
 
 INSERT INTO `app_dict` (`id`, `sort`, `label`, `name`, `enabled`, `update_time`) VALUES
 (1, 1, '性别', 'sys_sex', b'1', '2020-01-16 14:54:53'),
-(2, 2, '操作类型', 'sys_op_type', b'1', '2020-01-15 09:51:00'),
-(3, 3, '党派', 'user_attr_politic', b'1', '2020-01-17 21:11:32'),
-(4, 4, '职称', 'user_attr_professional_title', b'1', '2020-01-17 20:51:16');
+(2, 2, '操作类型', 'sys_op_type', b'1', '2020-01-15 09:51:00');
 
 -- --------------------------------------------------------
 
@@ -97,11 +95,7 @@ CREATE TABLE IF NOT EXISTS `app_dict_data` (
 
 INSERT INTO `app_dict_data` (`id`, `sort`, `label`, `name`, `code`, `enabled`, `dict_id`, `update_time`) VALUES
 (1, 1, '男', 'male', 1, b'1', 1, '2020-01-01 09:14:05'),
-(2, 2, '女', 'female', 2, b'1', 1, '2020-01-15 13:26:26'),
-(3, 3, '无党派', 'user_attr_politic_non_politic', 1, b'1', 3, '2020-01-16 15:22:49'),
-(4, 4, '共产党员', 'user_attr_politic_communist_party', 2, b'1', 3, '2020-01-16 15:24:14'),
-(5, 5, '工程师', 'user_attr_professional_title_engineer', 1, b'1', 4, '2020-01-17 20:52:00'),
-(6, 6, '助理工程师', 'user_attr_professional_title_assistant_engineer', 2, b'1', 4, '2020-01-17 20:52:43');
+(2, 2, '女', 'female', 2, b'1', 1, '2020-01-15 13:26:26');
 
 -- --------------------------------------------------------
 
@@ -126,9 +120,57 @@ CREATE TABLE IF NOT EXISTS `app_job` (
 INSERT INTO `app_job` (`id`, `sort`, `label`, `enabled`, `update_time`) VALUES
 (1, 1, '开发员', b'1', '2020-01-01 09:14:05'),
 (2, 2, '测试员', b'1', '2020-01-01 09:14:05'),
-(5, 3, '保洁员', b'1', '2020-02-07 20:43:28'),
-(7, 5, '采购员', b'1', '2020-02-07 20:45:52'),
-(9, 4, '销售员', b'1', '2020-02-07 20:47:43');
+(3, 3, '保洁员', b'1', '2020-02-07 20:43:28'),
+(4, 5, '采购员', b'1', '2020-02-07 20:45:52'),
+(5, 4, '销售员', b'1', '2020-02-07 20:47:43');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `app_politic`
+--
+
+DROP TABLE IF EXISTS `app_politic`;
+CREATE TABLE IF NOT EXISTS `app_politic` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
+  `label` varchar(31) NOT NULL COMMENT '中文名称',
+  `enabled` bit(1) NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='政治面貌' ROW_FORMAT=COMPACT;
+
+--
+-- 转存表中的数据 `app_politic`
+--
+
+INSERT INTO `app_politic` (`id`, `sort`, `label`, `enabled`, `update_time`) VALUES
+(1, 1, '群众', b'1', '2020-01-01 09:14:05'),
+(2, 2, '中共党员', b'1', '2020-01-01 09:14:05');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `app_professional_title`
+--
+
+DROP TABLE IF EXISTS `app_professional_title`;
+CREATE TABLE IF NOT EXISTS `app_professional_title` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sort` int(11) UNSIGNED DEFAULT NULL COMMENT '排序',
+  `label` varchar(31) NOT NULL COMMENT '中文名称',
+  `enabled` bit(1) NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='职称' ROW_FORMAT=COMPACT;
+
+--
+-- 转存表中的数据 `app_professional_title`
+--
+
+INSERT INTO `app_professional_title` (`id`, `sort`, `label`, `enabled`, `update_time`) VALUES
+(1, 1, '工程师', b'1', '2020-01-01 09:14:05'),
+(2, 2, '助理工程师', b'1', '2020-01-01 09:14:05');
 
 -- --------------------------------------------------------
 
@@ -164,14 +206,14 @@ CREATE TABLE IF NOT EXISTS `app_menu` (
 --
 
 INSERT INTO `app_menu` (`id`, `type`, `name`, `path`, `component`, `redirect`, `hidden`, `alwaysShow`, `title`, `icon`, `noCache`, `breadcrumb`, `roles`, `sort`, `pid`, `update_time`) VALUES
-(4, 1, 'Admin', 'admin', 'Layout', 'noRedirect', b'0', b'0', '系统管理', 'system', b'1', b'1', 'admin:list', 1, 0, '2020-02-08 16:56:48'),
-(5, 1, 'AdminDept', 'dept', 'admin/dept/index', '', b'0', b'0', '部门管理', 'dept', b'1', b'1', 'dept:list', 1, 4, '2020-02-08 16:06:07'),
-(6, 1, 'AdminJob', 'job', 'admin/job/index', '', b'0', b'0', '岗位管理', 'skill', b'1', b'1', 'job:list', 2, 4, '2020-02-08 16:10:10'),
-(7, 1, 'AdminUser', 'user', 'admin/user/index', '', b'0', b'0', '用户管理', 'peoples', b'1', b'1', 'user:list', 3, 4, '2020-02-08 16:11:26'),
-(8, 1, 'AdminRole', 'role', 'admin/role/index', '', b'0', b'0', '角色管理', 'permission', b'1', b'1', 'role:list', 4, 4, '2020-02-08 16:12:50'),
-(9, 1, 'AdminMenu', 'menu', 'admin/menu/index', '', b'0', b'0', '菜单管理', 'menu', b'1', b'1', 'menu:list', 5, 4, '2020-02-08 16:13:49'),
-(10, 1, 'AdminDict', 'dict', 'admin/dict/index', '', b'0', b'0', '词典管理', 'dictionary', b'1', b'1', 'dict:list', 6, 4, '2020-02-08 16:15:52'),
-(13, 1, 'AdminDictData', 'dict-data', 'admin/dict/dict-data', '', b'0', b'0', '词条管理', 'documentation', b'1', b'1', '', 7, 4, '2020-02-09 22:53:24');
+(1, 1, 'Admin', 'admin', 'Layout', 'noRedirect', b'0', b'0', '系统管理', 'system', b'1', b'1', 'admin:get', 1, 0, '2020-02-08 16:56:48'),
+(2, 1, 'AdminDept', 'dept', 'admin/dept/index', '', b'0', b'0', '部门管理', 'dept', b'1', b'1', 'dept:get', 1, 1, '2020-02-08 16:06:07'),
+(3, 1, 'AdminJob', 'job', 'admin/job/index', '', b'0', b'0', '岗位管理', 'skill', b'1', b'1', 'job:get', 2, 1, '2020-02-08 16:10:10'),
+(4, 1, 'AdminUser', 'user', 'admin/user/index', '', b'0', b'0', '用户管理', 'peoples', b'1', b'1', 'user:get', 3, 1, '2020-02-08 16:11:26'),
+(5, 1, 'AdminRole', 'role', 'admin/role/index', '', b'0', b'0', '角色管理', 'permission', b'1', b'1', 'role:get', 4, 1, '2020-02-08 16:12:50'),
+(6, 1, 'AdminMenu', 'menu', 'admin/menu/index', '', b'0', b'0', '菜单管理', 'menu', b'1', b'1', 'menu:get', 5, 1, '2020-02-08 16:13:49'),
+(7, 1, 'AdminDict', 'dict', 'admin/dict/index', '', b'0', b'0', '词典管理', 'dictionary', b'1', b'1', 'dict:get', 6, 1, '2020-02-08 16:15:52'),
+(8, 1, 'AdminDictData', 'dict-data', 'admin/dict/dict-data', '', b'0', b'0', '词条管理', 'documentation', b'1', b'1', 'dict-data:get', 7, 1, '2020-02-09 22:53:24');
 
 -- --------------------------------------------------------
 
@@ -217,13 +259,6 @@ CREATE TABLE IF NOT EXISTS `app_roles_menus` (
   KEY `fk_roles_menus_ref_menu_id` (`menu_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色菜单关联' ROW_FORMAT=COMPACT;
 
---
--- 转存表中的数据 `app_roles_menus`
---
-
-INSERT INTO `app_roles_menus` (`role_id`, `menu_id`) VALUES
-(6, 4),
-(6, 5);
 
 -- --------------------------------------------------------
 
@@ -241,9 +276,31 @@ CREATE TABLE IF NOT EXISTS `app_user` (
   `phone` varchar(15) NOT NULL,
   `email` varchar(63) NOT NULL,
   `enabled` bit(1) NOT NULL,
-  `dept_id` int(11) UNSIGNED NOT NULL COMMENT '部门',
-  `job_id` int(11) UNSIGNED DEFAULT NULL COMMENT '岗位',
-  `last_login` datetime DEFAULT NULL COMMENT '登录日期',
+  `attr_01_id` int(11) UNSIGNED DEFAULT NULL COMMENT '部门',
+  `attr_02_id` int(11) UNSIGNED DEFAULT NULL COMMENT '岗位',
+  `attr_03_id` int(11) UNSIGNED DEFAULT NULL COMMENT '政治面貌',
+  `attr_04_id` int(11) UNSIGNED DEFAULT NULL COMMENT '职称',
+  `attr_05_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_06_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_07_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_08_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_09_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_10_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_11_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_12_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_13_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_14_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_15_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_16_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+  `attr_text_01` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_02` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_03` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_04` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_05` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_06` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_07` varchar(63) DEFAULT NULL COMMENT '预留',
+  `attr_text_08` varchar(63) DEFAULT NULL COMMENT '预留',  
+  `last_login` int(11) unsigned DEFAULT NULL,
   `ip_address` varchar(63) DEFAULT NULL,
   `update_time` datetime DEFAULT NULL COMMENT '更新日期',
   `avatar_id` int(11) UNSIGNED DEFAULT NULL COMMENT '头像',
@@ -257,8 +314,18 @@ CREATE TABLE IF NOT EXISTS `app_user` (
   UNIQUE KEY `uc_email` (`email`) USING BTREE,
   UNIQUE KEY `uc_forgotten_password_selector` (`forgotten_password_selector`) USING BTREE,
   KEY `key_username` (`username`) USING BTREE,
-  KEY `fk_user_ref_dept_id` (`dept_id`) USING BTREE,
-  KEY `fk_user_ref_job_id` (`job_id`) USING BTREE,
+  KEY `fk_user_ref_attr_01_id` (`attr_01_id`) USING BTREE,
+  KEY `fk_user_ref_attr_02_id` (`attr_02_id`) USING BTREE,
+  KEY `fk_user_ref_attr_03_id` (`attr_03_id`) USING BTREE,
+  KEY `fk_user_ref_attr_04_id` (`attr_04_id`) USING BTREE,
+  KEY `fk_user_ref_attr_05_id` (`attr_05_id`) USING BTREE,
+  KEY `fk_user_ref_attr_06_id` (`attr_06_id`) USING BTREE,
+  KEY `fk_user_ref_attr_07_id` (`attr_07_id`) USING BTREE,
+  KEY `fk_user_ref_attr_08_id` (`attr_08_id`) USING BTREE,
+  KEY `fk_user_ref_attr_09_id` (`attr_09_id`) USING BTREE,
+  KEY `fk_user_ref_attr_10_id` (`attr_10_id`) USING BTREE,
+  KEY `fk_user_ref_attr_11_id` (`attr_11_id`) USING BTREE,
+  KEY `fk_user_ref_attr_12_id` (`attr_12_id`) USING BTREE,
   KEY `fk_user_ref_avatar_id` (`avatar_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='用户' ROW_FORMAT=COMPACT;
 
@@ -266,14 +333,8 @@ CREATE TABLE IF NOT EXISTS `app_user` (
 -- 转存表中的数据 `app_user`
 --
 
-INSERT INTO `app_user` (`id`, `sort`, `username`, `sex`, `identity_document_number`, `phone`, `email`, `enabled`, `dept_id`, `job_id`, `last_login`, `ip_address`, `update_time`, `avatar_id`, `password`, `forgotten_password_selector`, `forgotten_password_code`, `forgotten_password_time`) VALUES
-(57, 1, '小明', b'0', '', '13812345671', '1@1.1', b'1', 2, 1, NULL, NULL, '2020-01-29 20:49:47', NULL, '$argon2i$v=19$m=16384,t=4,p=2$NEU1Y2FpQ3R5eFlLZ3pEcA$IcHkdPwa8MpT+3VwPt4ogW6G4OYkTTjmVLms/+mxeLQ', NULL, NULL, NULL),
-(59, 2, '小芳', b'1', '', '13812345672', '2@2.2', b'1', 3, 2, NULL, NULL, '2020-01-29 20:50:32', NULL, '$argon2i$v=19$m=16384,t=4,p=2$aGN4SlM5SlhNb0g3MmgzUA$C8GtSDFtRUyKuAnVJV2n60wzct6XmJuA4ADF7yBzkvA', NULL, NULL, NULL),
-(60, 3, '小猪', b'0', '', '13812345673', '3@3.3', b'1', 3, 2, NULL, NULL, '2020-01-29 20:51:05', NULL, '$argon2i$v=19$m=16384,t=4,p=2$a0Ria01iSTRWdVVVR2hFcQ$Xq4jJASTCtPcaeUgA2nRUFK+FS719of2B6M0UjORCJM', NULL, NULL, NULL),
-(61, 4, '小红', b'1', '', '13812345674', '4@4.4', b'1', 2, 1, NULL, NULL, '2020-01-29 20:51:34', NULL, '$argon2i$v=19$m=16384,t=4,p=2$ZFg5R1dSR3FqVnV1aGs4Zw$RomehIgnPMeaesKDxK6V9RsvgeJNPmUoElnlzXvIeRw', NULL, NULL, NULL),
-(62, 5, '小强', b'0', '', '13812345675', '5@5.5', b'1', 1, 2, NULL, NULL, '2020-01-29 20:54:51', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YVByd2g3b0ovc1FYeFpoTA$acsQc4qh/Bvul6hw7NjNsBOf7rxCn9JVsuM+plRdkhg', NULL, NULL, NULL),
-(63, 6, '小丽', b'1', '', '13812345676', '6@6.6', b'1', 1, 1, NULL, NULL, '2020-02-09 22:55:23', NULL, '$argon2i$v=19$m=16384,t=4,p=2$YmZiTzhxZDE0VDVqdnY2bA$aKhx2UHRqUoRaK0xNt2ir3Vp5xYRhXyJRORBMdvtJ6c', NULL, NULL, NULL),
-(64, 7, '小小', b'0', '', '13812345677', '7@7.7', b'1', 17, 1, NULL, NULL, '2020-02-09 22:59:43', NULL, '$argon2i$v=19$m=16384,t=4,p=2$N3QvR2ZBN2I2c1lQVzYwWA$fUkLtzTDmHAfwMoQUwAtBXodaZzK0gRClyhAzTPeEWI', NULL, NULL, NULL);
+INSERT INTO `app_user` (`id`, `sort`, `username`, `sex`, `identity_document_number`, `phone`, `email`, `enabled`, `attr_01_id`, `attr_02_id`, `attr_03_id`, `attr_04_id`, `last_login`, `ip_address`, `update_time`, `avatar_id`, `password`, `forgotten_password_selector`, `forgotten_password_code`, `forgotten_password_time`) VALUES
+(1, 1, '小明', b'0', '', '13812345678', '1@1.1', b'1', 2, 1, 1, 1, NULL, NULL, '2020-01-29 20:49:47', NULL, '$argon2i$v=19$m=16384,t=4,p=2$dHZ3VWhZTjlYQkhzaFMyTQ$WAYgS/nXzAKyG3NSESSfaKIgM9ofhIQXddnpT0PscXo', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -290,22 +351,6 @@ CREATE TABLE IF NOT EXISTS `app_users_roles` (
   KEY `fk_users_roles_ref_role_id` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色关联' ROW_FORMAT=COMPACT;
 
-
--- --------------------------------------------------------
-
---
--- 表的结构 `app_user_attribute`
---
-
-DROP TABLE IF EXISTS `app_user_attribute`;
-CREATE TABLE IF NOT EXISTS `app_user_attribute` (
-  `user_id` int(11) UNSIGNED NOT NULL COMMENT '用户ID',
-  `dict_data_id` int(11) UNSIGNED NOT NULL COMMENT '字典数据ID',
-  PRIMARY KEY (`user_id`,`dict_data_id`) USING BTREE,
-  KEY `fk_user_attribute_ref_user_id` (`user_id`) USING BTREE,
-  KEY `fk_user_attribute_ref_dict_data_id` (`dict_data_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户字典关联' ROW_FORMAT=COMPACT;
-
 -- --------------------------------------------------------
 
 --
@@ -321,6 +366,30 @@ CREATE TABLE IF NOT EXISTS `app_user_avatar` (
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户头像' ROW_FORMAT=COMPACT;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `app_users_roles`
+--
+
+DROP TABLE IF EXISTS `app_login_attempts`;
+CREATE TABLE `app_login_attempts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(45) NOT NULL,
+  `identity` varchar(100) NOT NULL,
+  `time` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `app_verification_code` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `phone` varchar(15) NOT NULL,
+  `code` varchar(5) NULL,
+  `created_on` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uc_verification_code_phone` (`phone`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 限制导出的表
@@ -344,8 +413,10 @@ ALTER TABLE `app_roles_menus`
 --
 ALTER TABLE `app_user`
   ADD CONSTRAINT `fk_user_ref_avatar_id` FOREIGN KEY (`avatar_id`) REFERENCES `app_user_avatar` (`id`),
-  ADD CONSTRAINT `fk_user_ref_dept_id` FOREIGN KEY (`dept_id`) REFERENCES `app_dept` (`id`),
-  ADD CONSTRAINT `fk_user_ref_job_id` FOREIGN KEY (`job_id`) REFERENCES `app_job` (`id`);
+  ADD CONSTRAINT `fk_user_ref_attr_01_id` FOREIGN KEY (`attr_01_id`) REFERENCES `app_dept` (`id`),
+  ADD CONSTRAINT `fk_user_ref_attr_02_id` FOREIGN KEY (`attr_02_id`) REFERENCES `app_job` (`id`),
+  ADD CONSTRAINT `fk_user_ref_attr_03_id` FOREIGN KEY (`attr_03_id`) REFERENCES `app_politic` (`id`),
+  ADD CONSTRAINT `fk_user_ref_attr_04_id` FOREIGN KEY (`attr_04_id`) REFERENCES `app_professional_title` (`id`);
 
 --
 -- 限制表 `app_users_roles`
@@ -353,13 +424,6 @@ ALTER TABLE `app_user`
 ALTER TABLE `app_users_roles`
   ADD CONSTRAINT `fk_users_roles_ref_role_id` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`),
   ADD CONSTRAINT `fk_users_roles_ref_user_id` FOREIGN KEY (`role_id`) REFERENCES `app_role` (`id`);
-
---
--- 限制表 `app_user_attribute`
---
-ALTER TABLE `app_user_attribute`
-  ADD CONSTRAINT `fk_user_attribute_ref_dict_data_id` FOREIGN KEY (`dict_data_id`) REFERENCES `app_dict_data` (`id`),
-  ADD CONSTRAINT `fk_user_attribute_ref_user_id` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`id`);
 
 COMMIT;
 

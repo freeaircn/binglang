@@ -1,2 +1,0 @@
-2020-01-24 14:49:22 (1579848562.337) [ERROR] [User_model.php:170] [User_model::create_user] 11968 | 5e2a937244689 | /api/user | POST | DB_code: 1062 - Duplicate entry '13812345674' for key 'uc_phone' 
-2020-01-24 14:49:22 (1579848562.337) [ERROR] [User.php:111] [User::index_post] 11968 | 5e2a937244689 | /api/user | POST | APP_code: 200 - 数据表USER新加失败，请稍后重试！ 

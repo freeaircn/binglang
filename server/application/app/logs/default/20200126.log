@@ -1,2 +1,0 @@
-2020-01-26 14:38:12 (1580049492.233) [ERROR] [User_model.php:81] [User_model::read] 9500 | 5e2da4542e5cb | /api/user?limit=5_0&individual=1&sex=&dept=&job=&politic=&professional_title= | GET | DB_code: 0 -  
-2020-01-26 14:41:16 (1580049676.876) [ERROR] [User_model.php:81] [User_model::read] 9500 | 5e2da50ccb39d | /api/user?limit=5_0&individual=1&sex=&dept=&job=&politic=&professional_title= | GET | DB_code: 0 -  

@@ -3,15 +3,15 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
- * @LastEditors  : freeair
- * @LastEditTime : 2020-01-23 17:28:05
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-06-05 17:33:38
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use chriskacerguis\RestServer\RestController;
 use \App_Settings\App_Code as App_Code;
+use \App_Settings\APP_Rest_API as APP_Rest_API;
 
-class Avatar extends RestController
+class Avatar extends APP_Rest_API
 {
 
     public function __construct()

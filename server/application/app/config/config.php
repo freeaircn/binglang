@@ -23,7 +23,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
  */
-$config['base_url'] = 'http://182.247.101.235';
+// $config['base_url'] = 'http://127.0.0.1';
+$config['base_url'] = 'http://192.168.3.6';
 
 /*
 |--------------------------------------------------------------------------
@@ -378,8 +379,8 @@ $config['encryption_key'] = '';
 |
  */
 $config['sess_driver']             = 'files';
-$config['sess_cookie_name']        = 'ci_session';
-$config['sess_expiration']         = 7200;
+$config['sess_cookie_name']        = 'tid';
+$config['sess_expiration']         = 0;
 $config['sess_save_path']          = null;
 $config['sess_match_ip']           = false;
 $config['sess_time_to_update']     = 300;

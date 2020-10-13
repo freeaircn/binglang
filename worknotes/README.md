@@ -27,8 +27,9 @@
     [done]基于el元素创建tree select单选组件
 11. 用户认证，访问api权限认证  
     [done]前端动态获取后端路由表   
+    [done]后端用户验证，权限验证    
     用户头像   
-    后端用户验证，权限验证  
+    
     
     
 . 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
@@ -59,6 +60,24 @@
   
   4 qs 序列化
     undefined或空数组，axios post 提交时，qs不填入http body。
+    
+  5 php，js，Python时间戳的比较
+    1 单位问题：php中取时间戳时，大多通过time()方法来获得，它获取到数值是以秒作为单位的，而javascript中
+      从Date对象的getTime()方法中获得的数值是以毫秒为单位 ，所以，要比较它们获得的时间是否是同一天，必须
+      要注意把它们的单位转换成一样，1秒=1000毫秒
+    2 时区问题：第一点中说过，php中用time()方法来获得时间戳，为了显示的方便，我们在php代码中会设置好
+      当前服务器所在的时区，如中国大陆的服务器通常会设置成东八区，这样一样，time()方法获得的方法就不再是从
+      1970年1月1日0时0分0秒起，而是从1970年1月1日8时0分0秒起的了，而js中通常没有作时区相关的设置，所以是
+      以1970年1月1日0时0分0秒为计算的起点的，所以容易在这个地方造成不一致。
+       php.ini 文件
+      [Date]
+      ; Defines the default timezone used by the date functions
+      ; http://php.net/date.timezone
+      date.timezone = "Asia/Shangha"
+      
+    3 Python time time() 返回当前时间的时间戳（1970纪元后经过的浮点秒数）
+
+time() = Math.round(new Date().getTime()/1000-28800)
 
 # PHP
   1 检查多维数组入参。比如；a = [[], []], empty(a) false
@@ -81,11 +100,12 @@
     3 client数据中，包含不规定的字段，只取valide 通过的规定字段。
   
 # CI  
-  1 ci 查询数据表结果->result_array()，为数组结构。
-    示例1 table：id - 1, 查询结果：array(1) [{id:1}] 
-    示例2 table：id - 1, id - 2，查询结果：array(2) [{id:1}, {id:2}]
+  1 数据库某字段数据类型为INT，CI查询数据库的结果中，select 字段的值都为字符串类型。
+  2 ci 查询数据表结果->result_array()，为数组结构。
+    示例1 table：id - 1, 查询结果：[{id:1}]。  [{"role_id":"1"},{"role_id":"3"}]
+    示例2 table：id - 1, id - 2，查询结果： [{id:1}, {id:2}]二维数组，res[0]或res[1] 为数组，并且是关联数组。
 
-  2 RestController
+  3 RestController
       # 场景一：
         $this->get('a');  
         当client没有参数a时，返回NULL
@@ -862,9 +882,20 @@
 ### 6 后端log
 ```
   6.1 后端
+      2.2.1linux下安装
+      $ wget https://github.com/Neeke/SeasLog/archive/master.zip
+      $ unzip master.zip
+      $ cd /path/to/SeasLog
+      $ phpize
+      $ ./configure --with-php-config=/path/to/php-config
+      $ make -j2 
+      $ sudo make install
+      2.2.2window下安装
+      将下载的配置包解压，拷贝php_seaslog.dll到对应版本php的ext文件下。
+  
       PHP引入Seaslog
-      # php.ini文件
-        extension=seaslog
+      # php.ini文件[windows]
+        extension=php_seaslog.dll
         seaslog.default_basepath="D:/www/binglang/server/application/app/logs"
         seaslog.default_logger=default
         seaslog.default_datetime_format = "Y-m-d H:i:s"
@@ -881,6 +912,22 @@
         2020-01-20 19:45:28 (1579520728.125) [WARNING] [User.php:32] [User::index_get] 9096 | 5e2592d80fc9e | /api/user?wanted=all | GET | hello log! 
         # 格式
           seaslog.default_template = "%T (%t) [%L] [%F] [%C] %P | %Q | %R | %m | %M "
+          SeasLog提供了下列预设变量，可以直接使用在日志模板中，将在日志最终生成时替换成对应值。
+          %L - Level 日志级别。
+          %M - Message 日志信息。
+          %T - DateTime 如2017-08-16 19:15:02，受seaslog.default_datetime_format影响。
+          %t - Timestamp 如1502882102.862，精确到毫秒数。
+          %Q - RequestId 区分单次请求，如没有调用SeasLog::setRequestId($string)方法，则在初始化请求时，采用内置的static char *get_uniqid()方法生成的惟一值。
+          %H - HostName 主机名。
+          %P - ProcessId 进程ID。
+          %D - Domain:Port 域名:口号，如www.cloudwise.com:8080; Cli模式下为cli。
+          %R - Request URI 请求URI，如/app/user/signin; Cli模式下为入口文件，如CliIndex.php。
+          %m - Request Method 请求类型，如GET; Cli模式下为执行命令，如/bin/bash。
+          %I - Client IP 来源客户端IP; Cli模式下为local。取值优先级为：HTTP_X_REAL_IP > HTTP_X_FORWARDED_FOR > REMOTE_ADDR
+          %F - FileName:LineNo 文件名:行号，如UserService.php:118。
+          %U - MemoryUsage 当前内容使用量，单位byte。调用zend_memory_usage。
+          %u - PeakMemoryUsage 当前内容使用峰值量，单位byte。调用zend_memory_peak_usage。
+          %C - Class::Action 类名::方法名，如UserService::getUserInfo。不在类中使用时，记录函数名
       
       # level
         seaslog.level = 8 记录的日志级别.默认为8,即所有日志均记录。
@@ -892,6 +939,19 @@
         seaslog.level = 5 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING、NOTICE。
         seaslog.level = 6 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING、NOTICE、INFO。
         seaslog.level = 7 记录EMERGENCY、ALERT、CRITICAL、ERROR、WARNING、NOTICE、INFO、DEBUG。
+        
+      # 
+        \SeasLog::debug($message, $context, $module)
+        \SeasLog::info($message, $context, $module)
+        \SeasLog::notice($message, $context, $module)
+        \SeasLog::warning($message, $context, $module)
+        \SeasLog::error($message, $context, $module)
+        \SeasLog::critical($message, $context, $module)
+        \SeasLog::alert($message, $context, $module)
+        \SeasLog::emergency($message, $context, $module)
+        使用演示如下：
+
+        SeasLog::debug('this is a {userName} debug',array('{userName}' => 'neeke'));
       
       CI DB调试error显示控制
         application/app/config/database.php文件
@@ -1108,35 +1168,138 @@
 ```
 
 ---
-### 11. 用户认证，访问api权限认证
+### 11、修改数据库用户信息表
 ```
-  1 约定
-    1 后端管理员创建用户，暂不支持用户注册。
-    2 前端登录页面url \login，api接口后端控制器auth，login方法
+2020-06-01
+  1 初始方案里，用户信息的某个属性取自数据库数据字典。
+    优点：增加/取消某个属性，用户信息user表不会变化。
+    缺点：CURD操作时，操作数据字典复杂，后端验证输入复杂。相关的数据表有4个：user, user_attribute, dict, dict_data
     
-  2 前端：
-    1 登录，忘记密码
-    
-  3 后端login方法：
-    1 返回：
-      token, user, roles, menu
-      # token 存储在cookie
-      # user, roles 存储在store
-      # token, user, roles 在store中处理
-      # menu转换为routes对象，在store permission中处理
-      store 提供menu加载标志位
+  2 修改方案：用户信息user表预留空白属性字段。
+    1 数据表中预留属性的 数据类型包含 INT 和 VCHAR
+    2 INT数据类型的属性，适用于有共同备选项的，比如：籍贯属性，可能是“保山”，或“腾冲”
+    3 VCHAR数据类型的属性，适用于独有的属性值，没有备选项，比如：姓名
+    4 启用一个INT数据类型属性，需新建对应的一个属性备选项的数据表。比如：用户信息增加“政治面貌”。
+    5 预留INT类型 - 12个，VCHAR类型 - 8个
+      `attr_01_id` int(11) UNSIGNED DEFAULT NULL COMMENT '部门',
+      `attr_02_id` int(11) UNSIGNED DEFAULT NULL COMMENT '岗位',
+      `attr_03_id` int(11) UNSIGNED DEFAULT NULL COMMENT '政治面貌',
+      `attr_04_id` int(11) UNSIGNED DEFAULT NULL COMMENT '职称',
+      `attr_05_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_06_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_07_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_08_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_09_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_10_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_11_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_12_id` int(11) UNSIGNED DEFAULT NULL COMMENT '预留',
+      `attr_text_01` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_02` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_03` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_04` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_05` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_06` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_07` varchar(63) DEFAULT NULL COMMENT '预留',
+      `attr_text_08` varchar(63) DEFAULT NULL COMMENT '预留',  
       
-  4 场景：
+    6 前端页面显示：列表区域显示 label，表单区域下拉列表要关联 id，则，例如后端查询数据库后，组装res {dept_label, attr_01_id }
+      
+```
+
+---
+### 12. 用户登录功能，api权限验证，授权页面访问控制
+```
+2020-09-03
+  1 方案
+    1 后端管理员创建用户，暂不支持用户注册。
+    2 登录：link - www.xxx.yy\login，api接口 - 后端控制器auth，控制器方法login_post
+    3 后端验证用户访问权限，采用CI的session库保存用户登陆会话。
+      1 当使用CI的session库，CI强制cookie httponly，前端js无法读取cookie。
+      2 用户从前端请求登陆，后端验证用户合法后，返回CI的session cookie失效时间，前端用该失效时间创建cookie。这样，前端，后端创建的cookie的生命周期一致。
+        1 选择 关闭浏览器，用户登录信息失效，即session cookie，有效期至浏览器关闭。
+        2 后端CI session config，设置sess_expiration = 0
+        3 前端，js-cookie创建cookie时，不填expire参数。
+      3 前端的路由切换控制模块，查找前端创建的cookie是否存在，以控制路由页面切换。
+      4 当检测到用户登陆失效后，清理之前登陆保存的数据，如 router表，store
+      
+    4 PHP版本>7，密码hash使用argon2
+    5 访问控制
+      1 获取用户拥有的权限，用户登录验证通过后，由user_id查询user_role表 - role_id，查询role_menu表 - menu_id，查询menu表 - roles，得到用户拥有的api请求列表，例如dept:get，写入CI的session data。
+      
+      2 api请求控制
+        1 api请求采用restful样式，url样式，例如 www.xxx.yy\api\dept，请求方法：get，post，put，delete
+          1 app_menu数据表的“roles”字段，写入字符串约定：
+            xx:get
+            xx:post
+            xx:get
+            xx:delete
+            其中：
+            xx 即CI API控制器的名称，即http request url字段
+            get,post.. 对应CI控制器方法中的CRUD操作，也是http request方法
+            
+        2 自定义类App_Rest_API，继承restserver类，在构造函数中，验证api请求的权限。调试时添加超级用户，超级用户拥有所有api请求权限。
+          1 查询session data，检查用户登录状态。
+          2 从http请求的url和method，提取请求信息，例如dept:get。再比对session data保存的acl列表。
+          3 不是所有API都需要鉴权，比如login，register所有用户都可以访问。
+      
+      3 页面请求控制
+        1 例如，用户有dept:get权限，该用户就可以查看dept的数据，即需要对用户显示该页面。
+        2 从menu表中读取type = 1，且包含acl的页面路由，生成前端的路由表结构发给前端。
+        3 前端收到路由表，动态添加。
+        4 store.auth中定义请求页面路由标志位 - state.reqMenu
+          1 初始reqMenu = false
+          2 login方法验证用户登录请求通过后，置reqMenu = true
+          3 前端路由控制permission.js中，路由before处理中检查reqMenu == true，则向后端请求页面路由表，并置reqMenu = false。
+
+          
+    6 【取消】用户X天免登陆 （2020-09-08）
+      1 login页面供用户选择“X天免登陆”选项，若用户勾选了“五天免登陆”，则前端，后端设置cookie相同的有效期，否则，前台不设置cookie有效时间。js-cookie不设置失效时间，则成为session-cookie，浏览器关闭销毁。
+    
+    7 忘记密码功能
+      1 发送验证码至账号绑定的邮箱，验证码验证通过，则允许设置新密码。
+      2 若用户未绑定邮箱，则无法验证。
+      3 流程：
+        1 输入手机号
+        2 检查手机号和邮箱地址
+        3 生成验证码，发送邮件
+        4 输入验证码，提交后端验证
+        5 验证正确，前端页面显示重置密码
+    
+    8 访客
+      1 不增设“访客”账号，前端初始定义 访客可以访问的页面。
+      
+  2 场景：
     1 刷新页面
-    2 地址栏直接输入url
+      1 前端js生成的cookie不消失，但有失效时间限制。
+      2 vue store中存储的数据消失，包含：用户信息 user，用户可访问的页面路由表 - routes， 请求页面路由标志位 - reqMenu
+        1 前端路由控制permission.js中，检查store.user.phone === 'undefined'，说明vue store已被清空，向后端请求check_user，请求build_menu。
+        
+    2 新窗口输入网址链接
+      同1
+      
     3 关闭浏览器
-    4 记住用户
+      同1
+      1 选择 关闭浏览器，用户登录信息失效，即session cookie，有效期至浏览器关闭。
+      2 在layout/AppMain.vue中，监听浏览器关闭事件，调用store\auth\logout清除前台，后台存储的用户登录信息。
+      3 异常场景：
+        1 浏览器非正常关闭
+        2 后端未收到logout请求
+      
+    4 请求失败或返回异常处理
+      1 auth/login请求，弹窗提示信息，页面停留在login页面
+      2 auth/check_user请求，弹窗提示信息，调用auth/logout（方法中rest routes表，另一种方法：强制刷新页面location.reload()），页面切换到login页面
+      3 menu/build_menu请求，弹窗提示信息，调用auth/logout，页面切换到login页面
     
-    1 刷新页面：store和menu清空，cookie不变？
-    2 地址栏直接输入url：store和menu清空，cookie不变？
-    3 关闭浏览器：store和menu清空，cookie清除
+  3 session简介
+    1 session一般来说要配合cookie使用，如果用户浏览器禁用了cookie，那么只能使用URL重写来实现session的存储功能
+    2 过程
+      1 用户第一次请求服务器时，服务器端会生成一个sessionid
+      2 服务器端将生成的sessionid返回给客户端，通过set-cookie
+      3 客户端收到sessionid会将它保存在cookie中，当客户端再次访问服务端时会带上这个sessionid
+      4 当服务端再次接收到来自客户端的请求时，会先去检查是否存在sessionid，不存在就新建一个sessionid重复1,2的流程，如果存在就去遍历服务端的session文件，找到与这个sessionid相对应的文件，文件中的键值便是sessionid，值为当前用户的一些信息
+      5 此后的请求都会交换这个 Session ID，进行有状态的会话。
     
-  5 修改框架文件：
+  4 修改框架文件：
     1 layout:
       sidebar: state => state.app.sidebar,
       device: state => state.app.device,

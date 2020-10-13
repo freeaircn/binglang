@@ -1,45 +1,46 @@
-import { apiLogin, apiLogout } from '@/api/app/auth'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-// import router, { resetRouter } from '@/router'
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2020-02-17 22:35:46
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-08 22:19:09
+ */
+import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
+import { setToken, removeToken } from '@/utils/auth'
+import { resetRouter } from '@/router'
 
 const state = {
-  token: getToken(),
   user: {},
-  roles: [],
-  menuRdy: false
+  reqMenu: false
 }
 
 const mutations = {
-  SET_TOKEN: (state, token) => {
-    state.token = token
-  },
   SET_USER: (state, user) => {
     state.user = user
   },
-  SET_ROLES: (state, roles) => {
-    state.roles = roles
-  },
-  SET_MENU_RDY: (state, menuRdy) => {
-    state.menuRdy = menuRdy
+  SET_REQ_MENU: (state, value) => {
+    state.reqMenu = value
   }
 }
 
 const actions = {
-  // user login
   login({ commit }, user) {
     const { phone, password } = user
     return new Promise((resolve, reject) => {
       apiLogin({ phone, password }).then(data => {
-        // 记住？
-        setToken(data.token)
-        commit('SET_TOKEN', data.token)
-        commit('SET_USER', data.user)
-        if (data.roles.length === 0) {
-          commit('SET_ROLES', ['ROLE_SYSTEM_DEFAULT'])
-        } else {
-          commit('SET_ROLES', data.roles)
+        // if (data.expireTime) {
+        //   var expireTime = new Date(data.expire_time * 1000)
+        //   setToken(data.expire_code, expireTime)
+        // } else {
+        //   setToken(data.expire_code)
+        // }
+
+        if (data.expire_code) {
+          setToken(data.expire_code)
         }
-        commit('SET_MENU_RDY', false)
+
+        commit('SET_USER', data.user)
+        commit('SET_REQ_MENU', true)
         resolve()
       }).catch(error => {
         reject(error)
@@ -47,90 +48,45 @@ const actions = {
     })
   },
 
-  setMenuRdy({ commit }) {
-    commit('SET_MENU_RDY', true)
-    // return new Promise((resolve, reject) => {
+  clearReqMenu({ commit }) {
+    return new Promise((resolve) => {
+      commit('SET_REQ_MENU', false)
+      resolve()
+    })
+  },
 
-    // })
+  // get user info
+  getUser({ commit }) {
+    return new Promise((resolve, reject) => {
+      apiGetUser('').then(response => {
+        var user = response.user
+        commit('SET_USER', user)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // user logout
+  logout({ commit }) {
+    return new Promise((resolve, reject) => {
+      apiLogout().then(() => {
+        logoutProcess(commit)
+        resolve()
+      }).catch(error => {
+        logoutProcess(commit)
+        reject(error)
+      })
+    })
   }
+}
 
-  // // get user info
-  // getInfo({ commit, state }) {
-  //   return new Promise((resolve, reject) => {
-  //     getInfo(state.token).then(response => {
-  //       const { data } = response
-
-  //       if (!data) {
-  //         reject('Verification failed, please Login again.')
-  //       }
-
-  //       const { roles, name, avatar, introduction } = data
-
-  //       // roles must be a non-empty array
-  //       if (!roles || roles.length <= 0) {
-  //         reject('getInfo: roles must be a non-null array!')
-  //       }
-
-  //       commit('SET_ROLES', roles)
-  //       commit('SET_NAME', name)
-  //       commit('SET_AVATAR', avatar)
-  //       commit('SET_INTRODUCTION', introduction)
-  //       resolve(data)
-  //     }).catch(error => {
-  //       reject(error)
-  //     })
-  //   })
-  // },
-
-  // // user logout
-  // logout({ commit, state }) {
-  //   return new Promise((resolve, reject) => {
-  //     apiLogout(state.token).then(() => {
-  //       commit('SET_TOKEN', '')
-  //       commit('SET_ROLES', [])
-  //       removeToken()
-  //       resetRouter()
-  //       resolve()
-  //     }).catch(error => {
-  //       reject(error)
-  //     })
-  //   })
-  // },
-
-  // // remove token
-  // resetToken({ commit }) {
-  //   return new Promise(resolve => {
-  //     commit('SET_TOKEN', '')
-  //     commit('SET_ROLES', [])
-  //     removeToken()
-  //     resolve()
-  //   })
-  // },
-
-  // // dynamically modify permissions
-  // changeRoles({ commit, dispatch }, role) {
-  //   return new Promise(async resolve => {
-  //     const token = role + '-token'
-
-  //     commit('SET_TOKEN', token)
-  //     setToken(token)
-
-  //     const { roles } = await dispatch('getInfo')
-
-  //     resetRouter()
-
-  //     // generate accessible routes map based on roles
-  //     const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
-
-  //     // dynamically add accessible routes
-  //     router.addRoutes(accessRoutes)
-
-  //     // reset visited views and cached views
-  //     dispatch('tagsView/delAllViews', null, { root: true })
-
-  //     resolve()
-  //   })
-  // }
+export const logoutProcess = (commit) => {
+  commit('SET_USER', {})
+  commit('SET_REQ_MENU', false)
+  removeToken()
+  resetRouter()
 }
 
 export default {

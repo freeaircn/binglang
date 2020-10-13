@@ -4,21 +4,19 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
+      <el-dropdown @command="handleDropdownCommand">
+        <span>
+          <el-avatar class="avatar-container" size="medium" :src="avatar+'?imageView2/1/w/80/h/80'" />
+          <el-link class="avatar-text" :underline="false">{{ user.phone }}</el-link>
+        </span>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
-            <el-dropdown-item>用户</el-dropdown-item>
+          <router-link to="#">
+            <el-dropdown-item icon="el-icon-user">个人中心</el-dropdown-item>
           </router-link>
-          <router-link to="/">
-            <el-dropdown-item>首页</el-dropdown-item>
+          <router-link to="#">
+            <el-dropdown-item icon="el-icon-setting">个人设置</el-dropdown-item>
           </router-link>
-          <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">退出</span>
-          </el-dropdown-item>
+          <el-dropdown-item command="LOGOUT" divided icon="el-icon-d-arrow-right">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -40,6 +38,7 @@ export default {
       return ''
     },
     ...mapGetters([
+      'user',
       'sidebar',
       'device'
     ])
@@ -48,9 +47,14 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
+    handleDropdownCommand(command) {
+      if (command === 'LOGOUT') {
+        this.logout()
+      }
+    },
     async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      await this.$store.dispatch('auth/logout')
+      this.$router.push(`/login`)
     }
   }
 }
@@ -59,6 +63,7 @@ export default {
 <style lang="scss" scoped>
 .navbar {
   height: 50px;
+  padding: 0 16px;
   overflow: hidden;
   position: relative;
   background: #fff;
@@ -81,60 +86,14 @@ export default {
     float: left;
   }
 
-  .errLog-container {
-    display: inline-block;
-    vertical-align: top;
-  }
-
   .right-menu {
     float: right;
-    height: 100%;
-    line-height: 50px;
-
-    &:focus {
-      outline: none;
-    }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
-    }
+    // height: 100%;
+    margin: 7px 8px 7px 0;
 
     .avatar-container {
-      margin-right: 30px;
-
-      .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-      }
+      display: inline-block;
+      vertical-align: middle;
     }
   }
 }

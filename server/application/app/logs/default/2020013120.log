@@ -1,3 +1,0 @@
-2020-01-31 20:56:02 | CRITICAL | 11836 | 5e3423e2169ea | 1580475362.93 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-qrvhmbde.php - line:54 - msg:Cannot redeclare Dict_model::read()
-2020-01-31 20:59:22 | CRITICAL | 3904 | 5e3424aa4af02 | 1580475562.307 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-qeijp.php - line:176 - msg:Cannot redeclare Dict_model::read()
-2020-01-31 20:59:55 | CRITICAL | 11832 | 5e3424cb832e6 | 1580475595.538 | Error - type:64 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-urkr.php - line:176 - msg:Cannot redeclare Dict_model::read()

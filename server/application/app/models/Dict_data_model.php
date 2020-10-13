@@ -75,7 +75,7 @@ class Dict_data_model extends CI_Model
 
         if ($where_str !== '') {
             $temp_id = $query->result_array();
-            $this->db->where_in('a.id', $this->common_tools->get_sql_ci_where_in_by_ci_result($temp_id, 'id'));
+            $this->db->where_in('a.id', $this->common_tools->get_one_item_from_ci_result_array($temp_id, 'id'));
         }
         $this->db->order_by('a.sort', 'ASC');
         $this->db->order_by('a.id', 'ASC');

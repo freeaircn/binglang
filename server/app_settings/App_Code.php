@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-07 22:39:33
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-18 20:08:23
  */
 namespace App_Settings;
 
@@ -12,15 +12,22 @@ class App_Code
 {
     const SUCCESS = 0;
 
-    const PARAMS_INVALID       = 100;
-    const GET_SOURCE_NOT_EXIST = 110;
-    const PASSWORD_IS_EMPTY    = 120;
-    const HASH_PASSWORD_FAILED = 121;
+    const PARAMS_INVALID                = 100;
+    const GET_SOURCE_NOT_EXIST          = 110;
+    const PASSWORD_IS_EMPTY             = 120;
+    const HASH_PASSWORD_FAILED          = 121;
+    const SYS_SEND_MAIL_FAILED          = 130;
+    const SYS_VERIFICATION_CODE_INVALID = 131;
+    const SYS_RESET_PASSWORD_FAILED     = 132;
+
+    // hook - access control
+    const USER_NOT_LOGIN    = 150;
+    const USER_NOT_APPROVED = 151;
 
     // api user
     const GET_USER_FAILED                = 200;
-    const GET_FORM_BY_USER_CREATE_FAILED = 201;
-    const GET_FORM_BY_USER_EDIT_FAILED   = 202;
+    const GET_FORM_BY_CREATE_USER_FAILED = 201;
+    const GET_FORM_BY_EDIT_USER_FAILED   = 202;
     const CREATE_USER_FAILED             = 203;
     const UPDATE_USER_FAILED             = 204;
     const DELETE_USER_FAILED             = 205;
@@ -60,6 +67,11 @@ class App_Code
     const CREATE_ROLE_FAILED       = 272;
     const UPDATE_ROLE_FAILED       = 273;
     const DELETE_ROLE_FAILED       = 274;
+    // api auth
+    const MAX_LOGIN_ATTEMPT_EXCEEDED = 280;
+    const USERNAME_OR_PASSWORD_WRONG = 281;
+    const USER_NOT_ENABLED           = 282;
+    const USER_EMAIL_NOT_EXISTING    = 290;
 
     // old
     const USERS_TOKEN_INVALID = 110;

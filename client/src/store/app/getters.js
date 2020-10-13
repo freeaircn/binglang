@@ -2,14 +2,12 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-02-08 16:49:52
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 20:58:41
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-07 12:03:35
  */
 const getters = {
-  token: state => state.auth.token,
   user: state => state.auth.user,
-  roles: state => state.auth.roles,
-  menuRdy: state => state.auth.menuRdy,
+  reqMenu: state => state.auth.reqMenu,
   permission_routes: state => state.permission.routes,
   //
   sidebar: state => state.app.sidebar,

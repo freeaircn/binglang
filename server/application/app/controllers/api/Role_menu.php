@@ -3,16 +3,16 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-10 10:49:48
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-06-05 17:35:11
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use chriskacerguis\RestServer\RestController;
 use \App_Settings\App_Code as App_Code;
 use \App_Settings\App_Msg as App_Msg;
+use \App_Settings\APP_Rest_API as APP_Rest_API;
 
-class Role_menu extends RestController
+class Role_menu extends APP_Rest_API
 {
 
     public function __construct()

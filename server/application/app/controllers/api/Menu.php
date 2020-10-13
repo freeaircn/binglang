@@ -3,16 +3,16 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-10 10:47:27
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-08 10:22:20
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use chriskacerguis\RestServer\RestController;
 use \App_Settings\App_Code as App_Code;
 use \App_Settings\App_Msg as App_Msg;
+use \App_Settings\APP_Rest_API as APP_Rest_API;
 
-class Menu extends RestController
+class Menu extends APP_Rest_API
 {
 
     public function __construct()
@@ -80,6 +80,7 @@ class Menu extends RestController
                 $res['code'] = App_Code::SUCCESS;
                 $res['data'] = $data;
             }
+
             $this->response($res, 200);
         }
 

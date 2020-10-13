@@ -2,10 +2,18 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 09:19:00
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-09-18 22:06:11
  */
 import request from '@/utils/request'
+
+export function apiCheckLogin(params) {
+  return request({
+    url: '/api/auth/check_login',
+    method: 'get',
+    params: params
+  })
+}
 
 export function apiLogin(data) {
   return request({
@@ -15,50 +23,41 @@ export function apiLogin(data) {
   })
 }
 
-export function getInfo(token) {
+export function apiGetUser(params) {
   return request({
-    url: '/api/auth/info',
-    method: 'post',
-    data: { token }
+    url: '/api/auth/check_user',
+    method: 'get',
+    params: params
   })
 }
 
-export function logout() {
+export function apiLogout() {
   return request({
     url: '/api/auth/logout',
     method: 'post'
   })
 }
 
-export function requestActiveMail(userphone, email) {
+export function apiReqVerificationCode(params) {
   return request({
-    url: '/api/auth/request_active_mail',
-    method: 'post',
-    data: {
-      userphone,
-      email
-    }
+    url: '/api/auth/req_verification_code',
+    method: 'get',
+    params: params
   })
 }
 
-export function forgotPassword(userphone, email) {
+export function apiValidVerificationCode(data) {
   return request({
-    url: '/api/auth/forgot_password',
+    url: '/api/auth/valid_verification_code',
     method: 'post',
-    data: {
-      userphone,
-      email
-    }
+    data
   })
 }
 
-export function resetPassword(hash_code, password) {
+export function apiReqResetPassword(data) {
   return request({
-    url: '/api/auth/reset_password',
+    url: '/api/auth/req_reset_password',
     method: 'post',
-    data: {
-      hash_code,
-      password
-    }
+    data
   })
 }

@@ -1,2 +1,0 @@
-2020-01-28 19:01:12 | CRITICAL | 12284 | 5e30147832e6c | 1580209272.209 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-jjngmwloye.php - line:191 - msg:syntax error, unexpected '$client' (T_VARIABLE)
-2020-01-28 19:08:12 | CRITICAL | 6512 | 5e30161c7b3e9 | 1580209692.505 | Error - type:4 - file:C:\Users\ssh-sd\AppData\Local\Temp\temp-wurnvqr.php - line:231 - msg:syntax error, unexpected ')'
