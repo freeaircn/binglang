@@ -1,0 +1,14 @@
+2020-10-16 16:40:50 [NOTICE] [Auth.php:106] 6040 | 5f895c91ba984 | [92uoj2ad] user - 138****5678 login successfully. 
+2020-10-16 19:11:26 [NOTICE] [Auth.php:106] 3140 | 5f897fde05388 | [jo4fu338] user - 138****5678 login successfully. 
+2020-10-16 19:17:09 [ERROR] [Menu_model.php:230] 3140 | 5f898135e1883 | DB_code: 1062 - Duplicate entry 'profile' for key 'uc_name' 
+2020-10-16 19:17:09 [ERROR] [Menu.php:126] 3140 | 5f898135e1883 | APP_code: 262 - 新建菜单，操作失败，请稍后重试！ 
+2020-10-16 19:21:06 [NOTICE] [Auth.php:159] 3140 | 5f898222245cc | [5965070u] user - 138****5678 logout. 
+2020-10-16 19:21:28 [NOTICE] [Auth.php:106] 3140 | 5f898238073db | [s31c9nr8] user - 138****5678 login successfully. 
+2020-10-16 19:22:07 [NOTICE] [Auth.php:159] 3140 | 5f89825f93c46 | [s31c9nr8] user - 138****5678 logout. 
+2020-10-16 19:22:14 [NOTICE] [Auth.php:106] 3140 | 5f898266232c2 | [d3pc0jo3] user - 138****5678 login successfully. 
+2020-10-16 19:51:22 [NOTICE] [Auth.php:159] 3140 | 5f89893a33c27 | [tbgp7q8v] user - 138****5678 logout. 
+2020-10-16 19:51:28 [NOTICE] [Auth.php:106] 3140 | 5f898940b3f3c | [t6b4cgrp] user - 138****5678 login successfully. 
+2020-10-16 19:54:58 [NOTICE] [Auth.php:159] 3140 | 5f898a123cc73 | [t6b4cgrp] user - 138****5678 logout. 
+2020-10-16 19:57:16 [NOTICE] [Auth.php:106] 3140 | 5f898a9cc0aec | [g8ndcknd] user - 138****5678 login successfully. 
+2020-10-16 20:14:21 [NOTICE] [Auth.php:159] 3140 | 5f898e9d888f6 | [tcr0f9sj] user - 138****5678 logout. 
+2020-10-16 20:14:40 [NOTICE] [Auth.php:106] 3140 | 5f898eb094133 | [7bgcm5v1] user - 138****5678 login successfully. 
