@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-06 19:24:06
+ * @LastEditTime: 2020-10-17 21:27:47
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -339,7 +339,7 @@ class User_model extends CI_Model
 
         $this->db->trans_start();
 
-        $this->db->where('user_id', $id)->delete($this->tables['user_attribute']);
+        // $this->db->where('user_id', $id)->delete($this->tables['user_attribute']);
         $this->db->where('user_id', $id)->delete($this->tables['users_roles']);
         $this->db->where('id', $id)->delete($this->tables['user']);
 

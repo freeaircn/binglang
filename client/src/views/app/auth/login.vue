@@ -28,6 +28,7 @@
           <el-button :loading="loading" type="primary" style="width:100%;" @click="handleLogin">登 录</el-button>
         </el-form-item>
       </el-form>
+
     </div>
   </div>
 </template>
@@ -49,7 +50,9 @@ export default {
       rules: {
         phone: [{ required: true, validator: validPhone, trigger: 'change' }],
         password: [{ required: true, message: '请输入密码', trigger: 'change' }]
-      }
+      },
+      treeExpandedKeys: [],
+      value: undefined
     }
   },
   watch: {

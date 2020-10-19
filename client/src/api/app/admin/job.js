@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-07 20:02:03
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-10-17 21:22:41
  */
 import request from '@/utils/request'
 
@@ -32,9 +32,9 @@ export function apiUpdate(formData) {
 }
 
 export function apiDelete(id) {
-  return request.delete('/api/job', {
-    data: {
-      id
-    }
+  return request({
+    url: '/api/job',
+    method: 'delete',
+    data: { id }
   })
 }

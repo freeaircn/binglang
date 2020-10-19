@@ -2,11 +2,12 @@
  * @Description: tree-select component based element-ui
  * @Author: freeair
  * @Date: 2020-02-08 20:15:36
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-09 23:00:32
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-10-17 22:24:18
  -->
 <template>
-  <el-select ref="select" :value="valueId" :placeholder="placeholder" @visible-change="handleVisible">
+  <!-- <el-select ref="select" :value="valueId" :placeholder="placeholder" @visible-change="handleVisible"> -->
+  <el-select ref="select" :value="valueId" :placeholder="placeholder">
     <el-option :value="valueId" :label="valueLabel">
       <el-tree
         ref="selectTree"

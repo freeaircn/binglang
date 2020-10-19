@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-24 10:00:39
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 09:51:12
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-10-19 23:03:55
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -73,7 +73,8 @@ $route['api/avatar']    = 'api/avatar';
 $route['api/auth/(:any)'] = 'api/auth/$1';
 
 //
-$route['admin/(:any)'] = 'home';
+$route['admin/(:any)']   = 'home';
+$route['account/(:any)'] = 'home';
 // $route['(:any)/(:any)/(:any)'] = 'home';
 /*
  * 前端单页面，路由 history模式

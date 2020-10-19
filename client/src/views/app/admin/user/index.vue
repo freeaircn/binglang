@@ -232,8 +232,7 @@ export default {
         attr_01_id: '',
         attr_02_id: '',
         attr_03_id: '',
-        attr_04_id: '',
-        user_attribute: []
+        attr_04_id: ''
       },
 
       // form 下拉列表元素
@@ -484,7 +483,6 @@ export default {
       this.formData.attr_04_id = ''
       this.formData.password = ''
       this.formData.roles.splice(0)
-      this.formData.user_attribute.splice(0)
       //
       this.role_list.splice(0)
       this.dept_list.splice(0)

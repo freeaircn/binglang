@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-18 20:35:31
+ * @LastEditTime: 2020-10-17 21:27:36
  */
 
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -29,8 +29,8 @@ $config['tables']['job']                = 'app_job';
 $config['tables']['politic']            = 'app_politic';
 $config['tables']['professional_title'] = 'app_professional_title';
 
-$config['tables']['users_roles']    = 'app_users_roles';
-$config['tables']['user_attribute'] = 'app_user_attribute';
+$config['tables']['users_roles'] = 'app_users_roles';
+// $config['tables']['user_attribute'] = 'app_user_attribute';
 
 $config['tables']['login_attempts']    = 'app_login_attempts';
 $config['tables']['verification_code'] = 'app_verification_code';
