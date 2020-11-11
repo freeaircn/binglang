@@ -1,12 +1,12 @@
 <template>
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
+    <bread-crumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
       <el-dropdown @command="handleDropdownCommand">
         <span>
-          <el-avatar class="avatar-container" size="medium" :src="avatar+'?imageView2/1/w/80/h/80'" />
+          <el-avatar class="avatar-container" size="medium" :src="avatarUrl" />
           <el-link class="avatar-text" :underline="false">{{ user.phone }}</el-link>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -30,18 +30,19 @@ import Hamburger from '@/components/Hamburger'
 
 export default {
   components: {
-    Breadcrumb,
-    Hamburger
+    'bread-crumb': Breadcrumb,
+    'hamburger': Hamburger
   },
   computed: {
-    avatar: function() {
-      return ''
-    },
     ...mapGetters([
       'user',
       'sidebar',
       'device'
-    ])
+    ]),
+    avatarUrl: function() {
+      // avatarUrl: process.env.VUE_APP_BASE_API + '/path/avatar.jpg'
+      return process.env.VUE_APP_BASE_API + this.user.avatar_file_path + this.user.avatar_file_name
+    }
   },
   methods: {
     toggleSideBar() {

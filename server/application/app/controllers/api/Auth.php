@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-29 22:00:35
+ * @LastEditTime: 2020-11-07 10:54:21
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -61,7 +61,7 @@ class Auth extends RestController
         }
 
         // 3 验证用户登陆密码
-        if (($this->auth_model->verify_password($password, $user->password)) === false) {
+        if (($this->auth_model->verify_password($password, $user['password'])) === false) {
             $this->auth_model->increase_login_attempts($phone, $ip_address);
 
             $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
@@ -70,7 +70,7 @@ class Auth extends RestController
         }
 
         // 4 检查用户enabled
-        if ($user->enabled == 0) {
+        if ($user['enabled'] == 0) {
             $res['code'] = App_Code::USER_NOT_ENABLED;
             $res['msg']  = App_Msg::USER_NOT_ENABLED;
             $this->response($res, 200);
@@ -80,16 +80,17 @@ class Auth extends RestController
         $this->auth_model->clear_login_attempts($phone, $ip_address);
 
         // 6 更新用户登陆成功时间
-        $this->auth_model->update_last_login($user->id);
+        $this->auth_model->update_last_login($user['id']);
 
-        //  7 查询用户拥有的访问权限
-        $user_acl = $this->auth_model->get_user_acl_by_uid($user->id);
+        // 7 查询用户拥有的访问权限
+        $user_acl = $this->auth_model->get_user_acl_by_uid($user['id']);
 
-        // 8 记录session
+        // 8 提取用户信息，记录session
+        $user_info  = $this->auth_model->build_user_info($user);
         $other_data = [
             'acl' => $user_acl,
         ];
-        $this->auth_model->set_session($user, $other_data);
+        $this->auth_model->set_session($user_info, $other_data);
         // $this->session->sess_regenerate(true);
 
         // // 9 remember用户，处理
@@ -100,7 +101,7 @@ class Auth extends RestController
         // }
 
         // 10 如果密码算法参数变化，重新hash password，并写入数据库
-        $this->auth_model->rehash_password_if_needed($user->password, $user->phone, $password);
+        $this->auth_model->rehash_password_if_needed($user['password'], $user['phone'], $password);
 
         // 11 记录log
         SeasLog::notice('[{session}] user - {phone} login successfully.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($phone)]);
@@ -109,9 +110,8 @@ class Auth extends RestController
         $str         = session_id();
         $expire_code = $str[17] . $str[12] . $str[8] . $str[5] . $str[3];
         $expire_time = time() + $this->config->item('sess_expiration', 'config');
-        $user_data   = ['sort' => $user->sort, 'username' => $user->username, 'sex' => $user->sex, 'phone' => $user->phone, 'email' => $user->email, 'identity_document_number' => $user->identity_document_number];
 
-        $res['data'] = ['expire_time' => $expire_time, 'expire_code' => $expire_code, 'user' => $user_data];
+        $res['data'] = ['expire_time' => $expire_time, 'expire_code' => $expire_code, 'user' => $user_info];
         $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);
     }
@@ -125,15 +125,23 @@ class Auth extends RestController
             $res['msg']  = App_Msg::USER_NOT_LOGIN;
             $this->response($res, 200);
         } else {
-            $user_data = [
-                'sort'                     => $user['sort'],
-                'username'                 => $user['username'],
-                'sex'                      => $user['sex'],
-                'phone'                    => $user['phone'],
-                'email'                    => $user['email'],
-                'identity_document_number' => $user['identity_document_number'],
-            ];
-            $res['data'] = ['user' => $user_data];
+            // $user_data = [
+            //     'sort'                     => $user['sort'],
+            //     'username'                 => $user['username'],
+            //     'sex'                      => $user['sex'],
+            //     'phone'                    => $user['phone'],
+            //     'email'                    => $user['email'],
+            //     'identity_document_number' => $user['identity_document_number'],
+            //     'attr_03_id'               => $user['attr_03_id'],
+            //     'attr_01_id'               => $user['attr_01_id'],
+            //     'attr_02_id'               => $user['attr_02_id'],
+            //     'attr_04_id'               => $user['attr_04_id'],
+            // ];
+            // $res['data'] = ['user' => $user_data];
+
+            $user_info   = $this->auth_model->build_user_info($user);
+            $res['data'] = ['user' => $user_info];
+
             $res['code'] = App_Code::SUCCESS;
             $this->response($res, 200);
         }
@@ -187,7 +195,7 @@ class Auth extends RestController
         }
 
         // 2 查询用户的email是否存在
-        $email = $user->email;
+        $email = $user['email'];
         if (empty($email)) {
             $res['code'] = App_Code::USER_EMAIL_NOT_EXISTING;
             $res['msg']  = App_Msg::USER_EMAIL_NOT_EXISTING;

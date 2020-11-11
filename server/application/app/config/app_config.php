@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-10-17 21:27:36
+ * @LastEditTime: 2020-11-06 10:04:04
  */
 
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -30,6 +30,7 @@ $config['tables']['politic']            = 'app_politic';
 $config['tables']['professional_title'] = 'app_professional_title';
 
 $config['tables']['users_roles'] = 'app_users_roles';
+$config['tables']['user_avatar'] = 'app_user_avatar';
 // $config['tables']['user_attribute'] = 'app_user_attribute';
 
 $config['tables']['login_attempts']    = 'app_login_attempts';
@@ -57,6 +58,8 @@ $config['argon2_default_params']   = [
 $config['maximum_login_attempts'] = 5; // The maximum number of failed login attempts.
 $config['lockout_time']           = 600; // The number of seconds to lockout an account due to exceeded attempts
 $config['session_hash']           = '6583d6c4f205998ecacc9f51b68a2a2e44ea0006';
+$config['avatar_default_file']    = 'avatar_default_male.jpg';
+$config['avatar_default_path']    = '/resource/avatar/px200/';
 
 /*
 | -------------------------------------------------------------------------

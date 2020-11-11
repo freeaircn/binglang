@@ -1,0 +1,6 @@
+2020-11-03 15:26:28 [NOTICE] [Auth.php:106] 15984 | 5fa10623d5058 | [qopc6lr1] user - 138****5678 login successfully. 
+2020-11-03 16:11:10 [NOTICE] [Auth.php:174] 15984 | 5fa1109e18581 | [272tcrs6] user - 138****5678 logout. 
+2020-11-03 16:11:27 [NOTICE] [Auth.php:106] 15984 | 5fa110af8834e | [93llf129] user - 138****5678 login successfully. 
+2020-11-03 16:15:37 [NOTICE] [Auth.php:174] 15984 | 5fa111a981a78 | [93llf129] user - 138****5678 logout. 
+2020-11-03 16:15:51 [NOTICE] [Auth.php:106] 15984 | 5fa111b6ec674 | [eh7bq2a2] user - 138****5678 login successfully. 
+2020-11-03 16:15:54 [NOTICE] [Auth.php:174] 15984 | 5fa111ba4d538 | [eh7bq2a2] user - 138****5678 logout. 

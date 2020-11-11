@@ -2,38 +2,38 @@
   <div class="app-container">
     <!-- <el-tabs v-model="tabIndex" tab-position="left" :before-leave="leaveTab"> -->
     <el-tabs v-model="tabIndex" tab-position="left">
-      <el-tab-pane name="tab_one" label="基本信息">
+      <el-tab-pane name="account_basic_info_tab" label="基本信息">
         <div class="pages-account-settings-title">基本信息</div>
 
         <el-row :gutter="8">
           <el-col :xs="24" :sm="24" :md="4" :lg="4" :xl="4">
-            <AppAvatar />
+            <app-avatar :avatar-url="avatarUrl" :upload-api="avatarUploadApi" />
 
             <div class="pages-account-settings-text">
-              <p>工号: 1</p>
+              <p>工号: {{ user.sort }}</p>
               <p>手机: {{ user.phone }}</p>
               <p>邮箱: {{ user.email }}</p>
             </div>
 
           </el-col>
           <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-            <el-form ref="form_tab_one" :model="formData" :rules="rules_tab_one" size="mini" label-position="top" label-width="auto">
+            <el-form ref="account_basic_info_form" :model="formData" :rules="account_basic_info_form_rules" size="mini" label-position="top" label-width="auto">
 
               <el-form-item label="中文名" prop="username">
-                <el-input v-model="formData.username" clearable />
+                <el-input v-model="formData.username" class="w-30" clearable />
               </el-form-item>
               <el-form-item label="性别" prop="sex">
-                <el-radio-group v-model="formData.sex">
+                <el-radio-group v-model="formData.sex" class="w-30">
                   <el-radio label="0">男</el-radio>
                   <el-radio label="1">女</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="身份证号" prop="identity_document_number">
-                <el-input v-model="formData.identity_document_number" clearable />
+                <el-input v-model="formData.identity_document_number" class="w-30" clearable />
               </el-form-item>
 
               <el-form-item label="政治面貌" prop="attr_03_id">
-                <el-select v-model="formData.attr_03_id" placeholder="请选择" clearable>
+                <el-select v-model="formData.attr_03_id" class="w-30" placeholder="请选择">
                   <el-option
                     v-for="item in politic_list"
                     :key="item.id"
@@ -44,15 +44,16 @@
               </el-form-item>
 
               <el-form-item label="部门" prop="attr_01_id">
-                <TreeSelect
+                <tree-select
                   :value.sync="formData.attr_01_id"
                   :options="dept_list"
+                  class="w-30"
                   :placeholder="'请选择'"
                 />
               </el-form-item>
 
               <el-form-item label="岗位" prop="attr_02_id">
-                <el-select v-model="formData.attr_02_id" placeholder="请选择" clearable>
+                <el-select v-model="formData.attr_02_id" class="w-30" placeholder="请选择">
                   <el-option
                     v-for="item in job_list"
                     :key="item.id"
@@ -63,7 +64,7 @@
               </el-form-item>
 
               <el-form-item label="职称" prop="attr_04_id">
-                <el-select v-model="formData.attr_04_id" placeholder="请选择" clearable>
+                <el-select v-model="formData.attr_04_id" class="w-30" placeholder="请选择">
                   <el-option
                     v-for="item in professional_title_list"
                     :key="item.id"
@@ -74,7 +75,7 @@
               </el-form-item>
             </el-form>
 
-            <el-button type="primary" size="mini" @click="doUpdate()">更新基本信息</el-button>
+            <el-button type="primary" size="mini" :disabled="isUpdateBtnDisable" @click="doUpdateAccountBasicInfo()">更新基本信息</el-button>
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -85,6 +86,7 @@
 </template>
 
 <script>
+import { appConfig } from '@/app_settings'
 import { mapGetters } from 'vuex'
 import TreeSelect from '@/components/app/TreeSelect/index'
 import AppAvatar from './avatar/index'
@@ -92,27 +94,28 @@ import AppAvatar from './avatar/index'
 // import Activity from './components/Activity'
 // import Timeline from './components/Timeline'
 // import Account from './components/Account'
+import { apiGet, apiUpdate } from '@/api/app/account/index'
 
 export default {
   name: 'AccountSettings',
   // components: { UserCard, Activity, Timeline, Account },
-  components: { TreeSelect, AppAvatar },
+  components: {
+    'tree-select': TreeSelect,
+    'app-avatar': AppAvatar
+  },
   data() {
     return {
-      tabIndex: 'tab_one',
+      avatarUploadApi: process.env.VUE_APP_BASE_API + appConfig.AVATAR_UPLOAD_API,
 
-      // form 提交数据
+      tabIndex: 'account_basic_info_tab',
+      isUpdateBtnDisable: true,
+
+      // 表单数据
       formData: {
-        id: '',
         username: '',
         sex: '0',
         phone: '',
-        email: '',
-        password: '',
-        enabled: '1',
-        roles: [],
         identity_document_number: '',
-        sort: '1',
         attr_01_id: '',
         attr_02_id: '',
         attr_03_id: '',
@@ -120,13 +123,12 @@ export default {
       },
 
       // form 下拉列表元素
-      role_list: [],
       dept_list: [],
       job_list: [],
       politic_list: [],
       professional_title_list: [],
 
-      rules_tab_one: {
+      account_basic_info_form_rules: {
         // sort: [{ required: true, validator: validSort, trigger: 'change' }],
         // username: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
         // phone: [{ required: true, validator: validPhone, trigger: 'change' }],
@@ -137,19 +139,80 @@ export default {
   computed: {
     ...mapGetters([
       'user'
-    ])
+    ]),
+    avatarUrl: function() {
+      // avatarUrl: process.env.VUE_APP_BASE_API + '/path/avatar.jpg'
+      return process.env.VUE_APP_BASE_API + this.user.avatar_file_path + this.user.avatar_file_name
+    }
   },
-  created() {
-    this.getUser()
+  mounted() {
+    this.getListContent()
   },
   methods: {
-    getUser() {
-      // this.user = {
-      //   // name: this.name,
-      //   // role: this.roles.join(' | '),
-      //   // email: 'admin@test.com',
-      //   // avatar: this.avatar
-      // }
+    /**
+     * @description: 页面加载时，请求form表单隔个list的选项集合。请求数据成功，取消更新按钮的禁用状态，各个表单项赋值。
+     */
+    getListContent() {
+      apiGet({ form: 'list' })
+        .then(function(data) {
+          this.copyListContent(data)
+          this.updateFormData()
+          //
+          this.isUpdateBtnDisable = false
+          this.$nextTick(() => {
+            this.$refs['account_basic_info_form'].clearValidate()
+          })
+        }.bind(this))
+        .catch(function(err) {
+          this.$message({
+            message: err,
+            type: 'warning'
+          })
+        }.bind(this))
+    },
+
+    //
+    copyListContent(data) {
+      this.dept_list = data.dept_list.slice(0)
+      this.job_list = data.job_list.slice(0)
+      this.politic_list = data.politic_list.slice(0)
+      this.professional_title_list = data.professional_title_list.slice(0)
+    },
+
+    updateFormData() {
+      // this.formData = JSON.parse(JSON.stringify(data))
+      this.formData.username = this.user.username
+      this.formData.sex = this.user.sex
+      this.formData.identity_document_number = this.user.identity_document_number
+      this.formData.phone = this.user.phone
+      this.formData.attr_01_id = this.user.attr_01_id
+      this.formData.attr_02_id = this.user.attr_02_id
+      this.formData.attr_03_id = this.user.attr_03_id
+      this.formData.attr_04_id = this.user.attr_04_id
+    },
+
+    /**
+     * @description: 提交用户基本信息更新请求
+     */
+    doUpdateAccountBasicInfo() {
+      this.$refs['account_basic_info_form'].validate((valid) => {
+        if (valid) {
+          this.formData.phone = this.user.phone
+          // API update
+          apiUpdate(this.formData)
+            .then(function(data) {
+              this.$nextTick(() => {
+                this.$refs['account_basic_info_form'].clearValidate()
+              })
+            }.bind(this))
+            .catch(function(err) {
+              this.$message({
+                message: err,
+                type: 'warning'
+              })
+            }.bind(this))
+        }
+      })
     }
   }
 }

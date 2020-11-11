@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-05 17:33:38
+ * @LastEditTime: 2020-11-02 19:03:42
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -26,7 +26,7 @@ class Avatar extends APP_Rest_API
     public function update_post()
     {
         $config['upload_path']   = FCPATH . '/resource/avatar/';
-        $config['allowed_types'] = 'gif|jpg|png';
+        $config['allowed_types'] = 'jpg|png';
         $config['max_size']      = 100;
         $config['max_width']     = 1024;
         $config['max_height']    = 768;

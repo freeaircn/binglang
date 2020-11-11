@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-05 17:32:38
+ * @LastEditTime: 2020-11-06 09:34:39
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -118,6 +118,11 @@ class User extends APP_Rest_API
         $data['attr_02_id'] = $client['attr_02_id'] === '' ? null : $client['attr_02_id'];
         $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
         $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
+
+        $data['avatar_id'] = 2;
+        if ($data['sex'] === 1) {
+            $data['avatar_id'] = 1;
+        }
 
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
