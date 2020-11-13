@@ -75,7 +75,7 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('auth/login', this.formData)
+          this.$store.dispatch('account/login', this.formData)
             .then(() => {
               this.loading = false
               this.$router.replace({ path: this.redirect || '/' })

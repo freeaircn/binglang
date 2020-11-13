@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-02-08 16:49:52
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-12 20:49:34
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-11-13 19:53:55
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -16,7 +16,7 @@ import permission from './modules/permission'
 import settings from './modules/settings'
 import getters from './getters'
 //
-import auth from './modules/auth'
+import account from './modules/account'
 
 Vue.use(Vuex)
 
@@ -28,7 +28,7 @@ const store = new Vuex.Store({
     // tagsView,
     permission,
     settings,
-    auth
+    account
   },
   getters
 })

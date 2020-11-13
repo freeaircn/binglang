@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-11 22:17:05
+ * @LastEditTime: 2020-11-13 16:25:00
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -21,6 +21,7 @@ class Account extends APP_Rest_API
         parent::__construct();
 
         $this->load->model('account_model');
+        $this->load->model('common_model');
         $this->load->library('common_tools');
     }
 
@@ -64,19 +65,16 @@ class Account extends APP_Rest_API
         //     $this->response($res, 200);
         // }
 
-        // // 1 hash password, skip hash_pwd when password is empty
-        // if ($client['password'] !== '') {
-        //     $hash_pwd = $this->common_tools->hash_password($client['password']);
-        //     if ($hash_pwd === false) {
-        //         $res['code'] = App_Code::HASH_PASSWORD_FAILED;
-        //         $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
-        //         SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+        // 1 根据手机号匹配数据表用户记录，必须核对用户手机号，防止用户A修改了用户B
+        $user  = $this->session->userdata();
+        $phone = $user['phone'];
+        if (empty($phone)) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
 
-        //         $this->response($res, 200);
-        //     }
-        //     $data['password'] = $hash_pwd;
-        // }
-        $phone            = $client['phone'];
+            $this->response($res, 200);
+        }
+
         $data['username'] = $client['username'];
         $data['sex']      = (int) $client['sex'];
 
@@ -91,12 +89,6 @@ class Account extends APP_Rest_API
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
         // 3 更新用户基本信息
-        if ($phone === '') {
-            $res['code'] = App_Code::PARAMS_INVALID;
-            $res['msg']  = App_Msg::PARAMS_INVALID;
-
-            $this->response($res, 200);
-        }
         $rtn = $this->account_model->update_user_basic_info($phone, $data);
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_USER_FAILED;
@@ -106,8 +98,22 @@ class Account extends APP_Rest_API
             $this->response($res, 200);
         }
 
+        // 4 重新查询用户信息，更新session数据
+        $current_user = $this->common_model->get_user_by_phone($phone);
+        $user_info    = $this->common_model->build_user_info($current_user);
+        $rtn          = $this->common_model->update_session($user_info);
+        if ($rtn === false) {
+            $res['code'] = App_Code::UPDATE_USER_FAILED;
+            $res['msg']  = App_Msg::UPDATE_USER_FAILED;
+            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+
+            $this->response($res, 200);
+        }
+
+        // 5 更新后的用户信息返回前端，更新前端vuex
         $res['code'] = App_Code::SUCCESS;
         $res['msg']  = App_Msg::SUCCESS;
+        $res['data'] = ['user' => $user_info];
 
         $this->response($res, 200);
     }

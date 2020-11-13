@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-07 10:54:21
+ * @LastEditTime: 2020-11-13 17:40:29
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -22,9 +22,17 @@ class Auth extends RestController
 
         $this->config->load('config', true);
         $this->load->model('auth_model');
+        $this->load->model('common_model');
         $this->load->library(['email', 'common_tools']);
     }
 
+    /** 1
+     * @Description: 登录请求
+     * @Author: freeair
+     * @Date: 2020-11-13 16:42:39
+     * @param {*}
+     * @return {*}
+     */
     public function login_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
@@ -51,7 +59,7 @@ class Auth extends RestController
         }
 
         // 2 查询用户是否存在
-        $user = $this->auth_model->get_user_by_phone($phone);
+        $user = $this->common_model->get_user_by_phone($phone);
         if ($user === false) {
             $this->auth_model->increase_login_attempts($phone, $ip_address);
 
@@ -86,11 +94,11 @@ class Auth extends RestController
         $user_acl = $this->auth_model->get_user_acl_by_uid($user['id']);
 
         // 8 提取用户信息，记录session
-        $user_info  = $this->auth_model->build_user_info($user);
+        $user_info  = $this->common_model->build_user_info($user);
         $other_data = [
             'acl' => $user_acl,
         ];
-        $this->auth_model->set_session($user_info, $other_data);
+        $this->common_model->set_session($user_info, $other_data);
         // $this->session->sess_regenerate(true);
 
         // // 9 remember用户，处理
@@ -116,6 +124,13 @@ class Auth extends RestController
         $this->response($res, 200);
     }
 
+    /** 2
+     * @Description: 前端刷新页面操作，检查用户登录状态
+     * @Author: freeair
+     * @Date: 2020-11-13 16:43:00
+     * @param {*}
+     * @return {*}
+     */
     public function check_user_get()
     {
         $user = $this->session->userdata();
@@ -139,7 +154,7 @@ class Auth extends RestController
             // ];
             // $res['data'] = ['user' => $user_data];
 
-            $user_info   = $this->auth_model->build_user_info($user);
+            $user_info   = $this->common_model->build_user_info($user);
             $res['data'] = ['user' => $user_info];
 
             $res['code'] = App_Code::SUCCESS;
@@ -147,6 +162,13 @@ class Auth extends RestController
         }
     }
 
+    /** 3
+     * @Description: 登出请求
+     * @Author: freeair
+     * @Date: 2020-11-13 16:44:04
+     * @param {*}
+     * @return {*}
+     */
     public function logout_post()
     {
         // $array_items = ['username', 'email'];
@@ -173,6 +195,13 @@ class Auth extends RestController
         $this->response($res, 200);
     }
 
+    /** 4
+     * @Description: 忘记密码处理，前端请求验证码，发送邮件
+     * @Author: freeair
+     * @Date: 2020-11-13 16:41:24
+     * @param {*}
+     * @return {*}
+     */
     public function req_verification_code_get()
     {
         // $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
@@ -187,7 +216,7 @@ class Auth extends RestController
         }
 
         // 1 查询用户是否存在
-        $user = $this->auth_model->get_user_by_phone($phone);
+        $user = $this->common_model->get_user_by_phone($phone);
         if ($user === false) {
             $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
             $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
@@ -238,6 +267,13 @@ class Auth extends RestController
         $this->response($res, 200);
     }
 
+    /** 5
+     * @Description: 忘记密码处理，核对前端验证码
+     * @Author: freeair
+     * @Date: 2020-11-13 16:44:31
+     * @param {*}
+     * @return {*}
+     */
     public function valid_verification_code_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
@@ -259,6 +295,13 @@ class Auth extends RestController
         $this->response($res, 200);
     }
 
+    /** 6
+     * @Description: 重置密码请求
+     * @Author: freeair
+     * @Date: 2020-11-13 16:45:04
+     * @param {*}
+     * @return {*}
+     */
     public function req_reset_password_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
@@ -302,6 +345,13 @@ class Auth extends RestController
         $this->response($res, 200);
     }
 
+    /**
+     * @Description: 临时测试
+     * @Author: freeair
+     * @Date: 2020-11-13 16:45:35
+     * @param {*}
+     * @return {*}
+     */
     public function test_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);

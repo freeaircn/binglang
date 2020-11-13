@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-16 19:25:42
+ * @LastEditTime: 2020-11-13 19:58:28
  */
 import router from './router'
 import store from './store/app'
@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
       // next() // 调试
       if (typeof store.getters.user.phone === 'undefined') {
         // 请求用户信息，比如刷新页面，打开新窗口
-        store.dispatch('auth/getUser').then(() => {
+        store.dispatch('account/getUser').then(() => {
           // 请求用户已授权的页面
           // loadMenus(next, to)
           loadMenus()
@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
                 message: err,
                 type: 'error'
               })
-              store.dispatch('auth/logout')
+              store.dispatch('account/logout')
                 .then(() => {
                   next(`/login?redirect=${to.path}`)
                 }).catch(() => {
@@ -62,7 +62,7 @@ router.beforeEach((to, from, next) => {
           // store.dispatch('auth/logout').then(() => {
           //   location.reload()
           // })
-          store.dispatch('auth/logout')
+          store.dispatch('account/logout')
             .then(() => {
               next(`/login?redirect=${to.path}`)
             }).catch(() => {
@@ -72,7 +72,7 @@ router.beforeEach((to, from, next) => {
       // 登录时未拉取 菜单，在此处拉取
       } else if (store.getters.reqMenu) {
         // 修改成false，防止死循环
-        store.dispatch('auth/clearReqMenu')
+        store.dispatch('account/clearReqMenu')
           .then(() => {
             // loadMenus(next, to)
             loadMenus()
@@ -83,7 +83,7 @@ router.beforeEach((to, from, next) => {
                   message: err,
                   type: 'error'
                 })
-                store.dispatch('auth/logout')
+                store.dispatch('account/logout')
                   .then(() => {
                     next(`/login?redirect=${to.path}`)
                   }).catch(() => {

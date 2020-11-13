@@ -75,7 +75,7 @@
               </el-form-item>
             </el-form>
 
-            <el-button type="primary" size="mini" :disabled="isUpdateBtnDisable" @click="doUpdateAccountBasicInfo()">更新基本信息</el-button>
+            <el-button type="primary" size="mini" :disabled="isUpdateBtnDisable" @click="handleUpdateUserBasicInfo()">更新基本信息</el-button>
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -94,7 +94,7 @@ import AppAvatar from './avatar/index'
 // import Activity from './components/Activity'
 // import Timeline from './components/Timeline'
 // import Account from './components/Account'
-import { apiGet, apiUpdate } from '@/api/app/account/index'
+import { apiGet } from '@/api/app/account/index'
 
 export default {
   name: 'AccountSettings',
@@ -114,7 +114,7 @@ export default {
       formData: {
         username: '',
         sex: '0',
-        phone: '',
+        // phone: '',
         identity_document_number: '',
         attr_01_id: '',
         attr_02_id: '',
@@ -184,7 +184,7 @@ export default {
       this.formData.username = this.user.username
       this.formData.sex = this.user.sex
       this.formData.identity_document_number = this.user.identity_document_number
-      this.formData.phone = this.user.phone
+      // this.formData.phone = this.user.phone
       this.formData.attr_01_id = this.user.attr_01_id
       this.formData.attr_02_id = this.user.attr_02_id
       this.formData.attr_03_id = this.user.attr_03_id
@@ -194,23 +194,37 @@ export default {
     /**
      * @description: 提交用户基本信息更新请求
      */
-    doUpdateAccountBasicInfo() {
+    handleUpdateUserBasicInfo() {
       this.$refs['account_basic_info_form'].validate((valid) => {
         if (valid) {
-          this.formData.phone = this.user.phone
-          // API update
-          apiUpdate(this.formData)
-            .then(function(data) {
+          // this.formData.phone = this.user.phone
+          // apiUpdate(this.formData)
+          //   .then(function(data) {
+          //     // 更新vuex中的user
+          //     this.$store.commit('account/SET_USER', data.user)
+          //     this.$nextTick(() => {
+          //       this.$refs['account_basic_info_form'].clearValidate()
+          //     })
+          //   }.bind(this))
+          //   .catch(function(err) {
+          //     this.$message({
+          //       message: err,
+          //       type: 'warning'
+          //     })
+          //   }.bind(this))
+
+          this.$store.dispatch('account/updateUserBasicInfo', this.formData)
+            .then(() => {
               this.$nextTick(() => {
                 this.$refs['account_basic_info_form'].clearValidate()
               })
-            }.bind(this))
-            .catch(function(err) {
+            })
+            .catch((error) => {
               this.$message({
-                message: err,
-                type: 'warning'
+                type: 'warning',
+                message: error
               })
-            }.bind(this))
+            })
         }
       })
     }

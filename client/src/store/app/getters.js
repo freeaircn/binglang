@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2020-02-08 16:49:52
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-07 12:03:35
+ * @LastEditTime: 2020-11-13 19:54:05
  */
 const getters = {
-  user: state => state.auth.user,
-  reqMenu: state => state.auth.reqMenu,
+  user: state => state.account.user,
+  reqMenu: state => state.account.reqMenu,
   permission_routes: state => state.permission.routes,
   //
   sidebar: state => state.app.sidebar,
