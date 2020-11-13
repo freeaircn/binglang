@@ -1,16 +1,13 @@
 <?php
 /*
- * @Description:
+ * @Description: 公共方法
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-29 21:46:22
+ * @LastEditTime: 2020-11-13 21:45:17
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
-/**
- * Class Common tools
- */
 class Common_tools extends CI_Model
 {
     public function __construct()
@@ -20,8 +17,9 @@ class Common_tools extends CI_Model
     }
 
     /**
-     * 一维数据数组生成数据树
-     *
+     * @Description: 一维数据数组生成数据树
+     * @Author: freeair
+     * @Date: 2019-11-13 20:35:56
      * @param array $list 数据列表
      * @param string $id ID Key
      * @param string $pid 父ID Key
@@ -46,13 +44,13 @@ class Common_tools extends CI_Model
     }
 
     /**
-     * valid client data
+     * @Description: 检查前端请求输入
      *
      * @author freeair
      * @DateTime 2020-02-01
      * @param array $array
-     * @param string $rule_config - rule config file, e.g client_validation/api_user.php
-     * @param string $rule_item - defined by api method, e.g. index_get, index_post ...
+     * @param string $rule_config - 合法性定义文件, 例如： client_validation/api_user.php
+     * @param string $rule_item - API的方法, 例如： index_get, index_post ...
      * @return void
      */
     public function valid_client_data($array = [], $rule_config = '', $rule_item = '')
@@ -93,7 +91,7 @@ class Common_tools extends CI_Model
         // Long password may pose DOS issue (note: strlen gives size in bytes and not in multibyte symbol)
         if (empty($password) || strpos($password, "\0") !== false ||
             strlen($password) > $MAX_PASSWORD_SIZE_BYTES) {
-            SeasLog::error('APP_code: ' . ' - ' . 'input of func hash_password checked failed');
+            $this->app_log('error', "input of func hash_password checked failed.");
             return false;
         }
 
@@ -209,29 +207,64 @@ class Common_tools extends CI_Model
     }
 
     /**
-     * 获取session id，用于log跟踪会话
-     *
-     * @author freeair
-     * @DateTime 2020-01-27
-     * @return str
+     * @Description: 统一log接口
+     * @Author: freeair
+     * @Date: 2020-11-13 20:40:51
+     * @param {*}
+     * @return {*}
      */
-    public function log_session_id()
+    public function app_log($level, $msg)
     {
-        return substr(session_id(), 0, 8);
-    }
-
-    /**
-     * 隐藏 phone，用于log跟踪会话
-     *
-     * @author freeair
-     * @DateTime 2020-01-27
-     * @return str
-     */
-    public function log_phone($phone)
-    {
-        if (empty($phone)) {
-            return "";
+        // 1 组织log header
+        $session = session_id();
+        if (empty($session)) {
+            $session = "";
+        } elseif (strlen($session) >= 8) {
+            $session = substr($session, 0, 8);
+        } else {
+            $session = "";
         }
-        return substr($phone, 0, 3) . "****" . substr($phone, 7, 4);
+
+        $phone = $this->session->userdata('phone');
+        if (empty($phone)) {
+            $phone = "";
+        } elseif (strlen($phone) >= 11) {
+            $phone = substr($phone, 0, 3) . "****" . substr($phone, 7, 4);
+        } else {
+            $phone = "";
+        }
+
+        $msg_header = $session . ' | ' . $phone . ' | ';
+
+        // 2 调用接口写log
+        switch ($level) {
+            case "debug":
+                SeasLog::debug($msg_header . $msg);
+                break;
+            case "info":
+                SeasLog::info($msg_header . $msg);
+                break;
+            case "notice":
+                SeasLog::notice($msg_header . $msg);
+                break;
+            case "warning":
+                SeasLog::warning($msg_header . $msg);
+                break;
+            case "error":
+                SeasLog::error($msg_header . $msg);
+                break;
+            case "critical":
+                SeasLog::critical($msg_header . $msg);
+                break;
+            case "alert":
+                SeasLog::alert($msg_header . $msg);
+                break;
+            case "emergency":
+                SeasLog::emergency($msg_header . $msg);
+                break;
+            default:
+                break;
+        }
+
     }
 }

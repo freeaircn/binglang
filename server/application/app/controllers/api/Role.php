@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-10-17 21:20:58
+ * @LastEditTime: 2020-11-13 21:11:04
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -97,7 +97,7 @@ class Role extends APP_Rest_API
         if ($id === false) {
             $res['code'] = App_Code::CREATE_ROLE_FAILED;
             $res['msg']  = App_Msg::CREATE_ROLE_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "CREATE_ROLE_FAILED");
 
             $this->response($res, 200);
         }
@@ -155,7 +155,7 @@ class Role extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_ROLE_FAILED;
             $res['msg']  = App_Msg::UPDATE_ROLE_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_ROLE_FAILED");
 
             $this->response($res, 200);
         }
@@ -203,7 +203,7 @@ class Role extends APP_Rest_API
         } else {
             $res['code'] = App_Code::DELETE_ROLE_FAILED;
             $res['msg']  = App_Msg::DELETE_ROLE_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "DELETE_ROLE_FAILED");
         }
 
         $this->response($res, 200);

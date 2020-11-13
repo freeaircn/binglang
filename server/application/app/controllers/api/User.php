@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-06 09:34:39
+ * @LastEditTime: 2020-11-13 21:12:07
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -98,7 +98,7 @@ class User extends APP_Rest_API
         if ($hash_pwd === false) {
             $res['code'] = App_Code::HASH_PASSWORD_FAILED;
             $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "HASH_PASSWORD_FAILED");
 
             $this->response($res, 200);
         }
@@ -131,7 +131,7 @@ class User extends APP_Rest_API
         if ($uid === false) {
             $res['code'] = App_Code::CREATE_USER_FAILED;
             $res['msg']  = App_Msg::CREATE_USER_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "CREATE_USER_FAILED");
 
             $this->response($res, 200);
         }
@@ -160,7 +160,7 @@ class User extends APP_Rest_API
             if ($hash_pwd === false) {
                 $res['code'] = App_Code::HASH_PASSWORD_FAILED;
                 $res['msg']  = App_Msg::HASH_PASSWORD_FAILED;
-                SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+                $this->common_tools->app_log('error', "HASH_PASSWORD_FAILED");
 
                 $this->response($res, 200);
             }
@@ -196,7 +196,7 @@ class User extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_USER_FAILED;
             $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_USER_FAILED");
 
             $this->response($res, 200);
         }
@@ -227,7 +227,7 @@ class User extends APP_Rest_API
         } else {
             $res['code'] = App_Code::DELETE_USER_FAILED;
             $res['msg']  = App_Msg::DELETE_USER_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "DELETE_USER_FAILED");
         }
 
         $this->response($res, 200);

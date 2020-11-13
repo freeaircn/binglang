@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 17:40:29
+ * @LastEditTime: 2020-11-13 21:05:21
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -112,7 +112,7 @@ class Auth extends RestController
         $this->auth_model->rehash_password_if_needed($user['password'], $user['phone'], $password);
 
         // 11 记录log
-        SeasLog::notice('[{session}] user - {phone} login successfully.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($phone)]);
+        $this->common_tools->app_log('notice', "login successfully.");
 
         // 12 组织response数据
         $str         = session_id();
@@ -186,7 +186,7 @@ class Auth extends RestController
 
         // 1 log
         $user = $this->session->userdata();
-        SeasLog::notice('[{session}] user - {phone} logout.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($user['phone'])]);
+        $this->common_tools->app_log('notice', "logout.");
 
         // 2 销毁session
         $this->session->sess_destroy();
@@ -324,7 +324,7 @@ class Auth extends RestController
         if ($hash_pwd === false) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "HASH_PASSWORD_FAILED");
 
             $this->response($res, 200);
         }
@@ -334,11 +334,11 @@ class Auth extends RestController
         if (!$result) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "SYS_RESET_PASSWORD_FAILED");
         }
 
         // 4 log
-        SeasLog::warning('[{session}] user - {phone} reset password successfully.', ['{session}' => $this->common_tools->log_session_id(), '{phone}' => $this->common_tools->log_phone($phone)]);
+        $this->common_tools->app_log('warning', "reset password successfully.");
 
         $res['code'] = App_Code::SUCCESS;
         $res['msg']  = '请使用新密码登录!';

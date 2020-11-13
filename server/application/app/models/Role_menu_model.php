@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-10 10:50:08
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-11-13 21:23:20
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -23,7 +23,7 @@ class Role_menu_model extends CI_Model
         $db_name      = $this->config->item('db_name', 'app_config');
         $this->tables = $this->config->item('tables', 'app_config');
 
-        // $this->load->library('common_tools');
+        $this->load->library('common_tools');
 
         if (empty($db_name)) {
             $CI       = &get_instance();
@@ -59,7 +59,7 @@ class Role_menu_model extends CI_Model
 
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $res['menu'] = $query->result_array();
@@ -102,7 +102,7 @@ class Role_menu_model extends CI_Model
         $this->db->trans_complete();
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 

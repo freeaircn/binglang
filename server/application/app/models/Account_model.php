@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-11 22:21:26
+ * @LastEditTime: 2020-11-13 21:15:34
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -55,7 +55,7 @@ class Account_model extends CI_Model
             ->get($this->tables['dept']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $dept_temp = $query->result_array();
@@ -67,7 +67,7 @@ class Account_model extends CI_Model
             ->get($this->tables['job']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $job_list = $query->result_array();
@@ -78,7 +78,7 @@ class Account_model extends CI_Model
             ->get($this->tables['politic']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $politic_list = $query->result_array();
@@ -89,7 +89,7 @@ class Account_model extends CI_Model
             ->get($this->tables['professional_title']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $professional_title_list = $query->result_array();
@@ -120,13 +120,13 @@ class Account_model extends CI_Model
         $this->db->trans_start();
         if ($this->db->where('phone', $phone)->update($this->tables['user'], $data) === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         }
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;

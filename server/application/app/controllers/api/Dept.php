@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-05 17:33:46
+ * @LastEditTime: 2020-11-13 21:06:36
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -99,7 +99,7 @@ class Dept extends APP_Rest_API
         if ($id === false) {
             $res['code'] = App_Code::CREATE_DEPT_FAILED;
             $res['msg']  = App_Msg::CREATE_DEPT_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "CREATE_DEPT_FAILED.");
 
             $this->response($res, 200);
         }
@@ -142,7 +142,7 @@ class Dept extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_DEPT_FAILED;
             $res['msg']  = App_Msg::UPDATE_DEPT_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_DEPT_FAILED.");
 
             $this->response($res, 200);
         }
@@ -175,7 +175,7 @@ class Dept extends APP_Rest_API
         } else {
             $res['code'] = App_Code::DELETE_DEPT_FAILED;
             $res['msg']  = App_Msg::DELETE_DEPT_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "DELETE_DEPT_FAILED.");
         }
 
         $this->response($res, 200);

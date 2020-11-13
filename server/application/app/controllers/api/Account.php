@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 16:25:00
+ * @LastEditTime: 2020-11-13 21:02:12
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -37,13 +37,13 @@ class Account extends APP_Rest_API
         // }
 
         if (isset($client['form']) && $client['form'] === 'list') {
-            $data = $this->account_model->get_form_list();
+            $list = $this->account_model->get_form_list();
             if ($data === false) {
                 $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
                 $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
             } else {
                 $res['code'] = App_Code::SUCCESS;
-                $res['data'] = $data;
+                $res['data'] = $list;
             }
             $this->response($res, 200);
         }
@@ -93,19 +93,19 @@ class Account extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_USER_FAILED;
             $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_USER_FAILED");
 
             $this->response($res, 200);
         }
 
-        // 4 重新查询用户信息，更新session数据
+        // 4 查询用户信息，更新session数据
         $current_user = $this->common_model->get_user_by_phone($phone);
         $user_info    = $this->common_model->build_user_info($current_user);
         $rtn          = $this->common_model->update_session($user_info);
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_USER_FAILED;
             $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_SESSION_FAILED");
 
             $this->response($res, 200);
         }

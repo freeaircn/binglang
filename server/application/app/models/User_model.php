@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-10-17 21:27:47
+ * @LastEditTime: 2020-11-13 21:26:56
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -69,7 +69,7 @@ class User_model extends CI_Model
         $query = $this->db->get($this->tables['user']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $total_rows = $query->num_rows();
@@ -97,7 +97,7 @@ class User_model extends CI_Model
 
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $users = $query->result_array();
@@ -121,7 +121,7 @@ class User_model extends CI_Model
                         ->get($this->tables['job']);
                     if ($query === false) {
                         $error = $this->db->error();
-                        SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                        $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
                         return false;
                     }
                     $job = $query->result_array();
@@ -139,7 +139,7 @@ class User_model extends CI_Model
                         ->get($this->tables['politic']);
                     if ($query === false) {
                         $error = $this->db->error();
-                        SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                        $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
                         return false;
                     }
                     $politic = $query->result_array();
@@ -157,7 +157,7 @@ class User_model extends CI_Model
                         ->get($this->tables['professional_title']);
                     if ($query === false) {
                         $error = $this->db->error();
-                        SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                        $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
                         return false;
                     }
                     $professional_title = $query->result_array();
@@ -176,7 +176,6 @@ class User_model extends CI_Model
                 //     ->get($this->tables['user_attribute']);
                 // if ($query === false) {
                 //     $error = $this->db->error();
-                //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
                 //     return false;
                 // }
                 // $uid_to_attribute = $query->result_array();
@@ -192,7 +191,6 @@ class User_model extends CI_Model
                 //         ->get($this->tables['dict_data']);
                 //     if ($query === false) {
                 //         $error = $this->db->error();
-                //         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
                 //         return false;
                 //     }
                 //     $user_attribute_data = $query->result_array();
@@ -233,7 +231,7 @@ class User_model extends CI_Model
         $this->db->trans_start();
         if (!$this->db->insert($this->tables['user'], $user)) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         }
         $uid = $this->db->insert_id($this->tables['user'] . '_id_seq');
 
@@ -258,7 +256,7 @@ class User_model extends CI_Model
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 
@@ -283,13 +281,13 @@ class User_model extends CI_Model
         $this->db->trans_start();
         if ($this->db->where('id', $uid)->update($this->tables['user'], $user) === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         }
 
         // delete old role
         if ($this->db->where('user_id', $uid)->delete($this->tables['users_roles']) === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         }
         // insert new role
         foreach ($role_list as $role) {
@@ -303,7 +301,6 @@ class User_model extends CI_Model
         // delete old attribute
         // if ($this->db->where('user_id', $uid)->delete($this->tables['user_attribute']) === false) {
         //     $error = $this->db->error();
-        //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         // }
         // insert new attribute
         // foreach ($attribute_list as $attribute) {
@@ -317,7 +314,7 @@ class User_model extends CI_Model
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;
@@ -347,7 +344,7 @@ class User_model extends CI_Model
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;
@@ -371,7 +368,6 @@ class User_model extends CI_Model
         //     ->get($this->tables['dict']);
         // if ($query === false) {
         //     $error = $this->db->error();
-        //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //     return false;
         // }
         // $user_attribute_category = $query->result_array();
@@ -385,7 +381,6 @@ class User_model extends CI_Model
         //         ->get($this->tables['dict_data']);
         //     if ($query === false) {
         //         $error = $this->db->error();
-        //         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //         return false;
         //     }
         //     $user_attribute_data = $query->result_array();
@@ -406,7 +401,7 @@ class User_model extends CI_Model
             ->get($this->tables['role']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $role_list = $query->result_array();
@@ -417,7 +412,7 @@ class User_model extends CI_Model
             ->get($this->tables['dept']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $dept_temp = $query->result_array();
@@ -429,7 +424,7 @@ class User_model extends CI_Model
             ->get($this->tables['job']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $job_list = $query->result_array();
@@ -440,7 +435,7 @@ class User_model extends CI_Model
             ->get($this->tables['politic']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $politic_list = $query->result_array();
@@ -451,7 +446,7 @@ class User_model extends CI_Model
             ->get($this->tables['professional_title']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $professional_title_list = $query->result_array();
@@ -495,7 +490,7 @@ class User_model extends CI_Model
             ->get($this->tables['user']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         // no data in db
@@ -512,7 +507,7 @@ class User_model extends CI_Model
             ->get($this->tables['users_roles']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $temp_role = $query->result_array();
@@ -536,7 +531,6 @@ class User_model extends CI_Model
         //     ->get($this->tables['user_attribute']);
         // if ($query === false) {
         //     $error = $this->db->error();
-        //     SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //     return false;
         // }
         // $uid_to_attribute = $query->result_array();
@@ -549,7 +543,6 @@ class User_model extends CI_Model
         //         ->get($this->tables['dict_data']);
         //     if ($query === false) {
         //         $error = $this->db->error();
-        //         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //         return false;
         //     }
         //     $user_attribute_data = $query->result_array();
@@ -604,7 +597,7 @@ class User_model extends CI_Model
             $query = $this->db->get($tbl);
             if ($query === false) {
                 $error = $this->db->error();
-                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
                 return false;
             } else {
                 $res = $query->result_array();
@@ -744,7 +737,7 @@ class User_model extends CI_Model
             $query_dept_id = $this->db->select('id')->like('label', $client['dept'])->group_by('id')->get($this->tables['dept']);
             if ($query_dept_id === false) {
                 $error = $this->db->error();
-                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             } else {
                 $dept_ids = [];
                 foreach ($query_dept_id->result_array() as $item_dept_id) {
@@ -769,7 +762,7 @@ class User_model extends CI_Model
             $query_job_id = $this->db->select('id')->like('label', $client['job'])->group_by('id')->get($this->tables['job']);
             if ($query_job_id === false) {
                 $error = $this->db->error();
-                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             } else {
                 $job_ids     = $query_job_id->result_array();
                 $job_ids_str = $this->_get_sql_where_in_by_ci_result($job_ids, 'id');
@@ -791,7 +784,7 @@ class User_model extends CI_Model
             $query_politic_id = $this->db->select('id')->like('label', $client['politic'])->group_by('id')->get($this->tables['politic']);
             if ($query_politic_id === false) {
                 $error = $this->db->error();
-                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             } else {
                 $politic_ids     = $query_politic_id->result_array();
                 $politic_ids_str = $this->_get_sql_where_in_by_ci_result($politic_ids, 'id');
@@ -813,7 +806,7 @@ class User_model extends CI_Model
             $query_professional_title_id = $this->db->select('id')->like('label', $client['professional_title'])->group_by('id')->get($this->tables['professional_title']);
             if ($query_professional_title_id === false) {
                 $error = $this->db->error();
-                SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+                $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             } else {
                 $professional_title_ids     = $query_professional_title_id->result_array();
                 $professional_title_ids_str = $this->_get_sql_where_in_by_ci_result($professional_title_ids, 'id');
@@ -835,7 +828,6 @@ class User_model extends CI_Model
         //     $query_politic_id = $this->db->select('id')->like('name', 'user_attr_politic', 'after')->like('label', $client['politic'])->group_by('id')->get($this->tables['dict_data']);
         //     if ($query_politic_id === false) {
         //         $error = $this->db->error();
-        //         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //     } else {
         //         $politic_ids = $query_politic_id->result_array();
         //         if (!empty($politic_ids)) {
@@ -843,7 +835,6 @@ class User_model extends CI_Model
         //             $query_politic_user_id = $this->db->select('user_id')->where_in('dict_data_id', $politic_ids_str)->group_by('user_id')->get($this->tables['user_attribute']);
         //             if ($query_politic_user_id === false) {
         //                 $error = $this->db->error();
-        //                 SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //             } else {
         //                 $politic_user_ids     = $query_politic_user_id->result_array();
         //                 $politic_user_ids_str = $this->_get_sql_where_in_by_ci_result($politic_user_ids, 'user_id');
@@ -867,7 +858,6 @@ class User_model extends CI_Model
         //     $query_professional_title = $this->db->select('id')->like('name', 'user_attr_professional_title', 'after')->like('label', $client['professional_title'])->group_by('id')->get($this->tables['dict_data']);
         //     if ($query_professional_title === false) {
         //         $error = $this->db->error();
-        //         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //     } else {
         //         $professional_titles = $query_professional_title->result_array();
         //         if (!empty($professional_titles)) {
@@ -875,7 +865,6 @@ class User_model extends CI_Model
         //             $query_user              = $this->db->select('user_id')->where_in('dict_data_id', $professional_titles_str)->group_by('user_id')->get($this->tables['user_attribute']);
         //             if ($query_user === false) {
         //                 $error = $this->db->error();
-        //                 SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
         //             } else {
         //                 $user_ids     = $query_user->result_array();
         //                 $user_ids_str = $this->_get_sql_where_in_by_ci_result($user_ids, 'user_id');
@@ -913,7 +902,6 @@ class User_model extends CI_Model
     //         ->get($this->tables['dict']);
     //     if ($query === false) {
     //         $error = $this->db->error();
-    //         SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
     //         return false;
     //     }
     //     return $query->result_array();

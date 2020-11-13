@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-05 17:34:40
+ * @LastEditTime: 2020-11-13 21:09:14
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -86,7 +86,7 @@ class Job extends APP_Rest_API
         if ($id === false) {
             $res['code'] = App_Code::CREATE_JOB_FAILED;
             $res['msg']  = App_Msg::CREATE_JOB_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "CREATE_JOB_FAILED.");
 
             $this->response($res, 200);
         }
@@ -127,7 +127,7 @@ class Job extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_JOB_FAILED;
             $res['msg']  = App_Msg::UPDATE_JOB_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_JOB_FAILED.");
 
             $this->response($res, 200);
         }
@@ -159,7 +159,7 @@ class Job extends APP_Rest_API
         } else {
             $res['code'] = App_Code::DELETE_JOB_FAILED;
             $res['msg']  = App_Msg::DELETE_JOB_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "DELETE_JOB_FAILED.");
         }
 
         $this->response($res, 200);

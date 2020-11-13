@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-02 20:27:38
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-11-13 21:18:35
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -29,6 +29,8 @@ class Dict_data_model extends CI_Model
         } else {
             $this->db = $this->load->database($db_name, true, true);
         }
+
+        $this->load->library('common_tools');
     }
 
     public function db()
@@ -57,7 +59,7 @@ class Dict_data_model extends CI_Model
         $query = $this->db->get($this->tables['dict_data']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $total_rows = $query->num_rows();
@@ -90,7 +92,7 @@ class Dict_data_model extends CI_Model
 
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $result = $query->result_array();
@@ -121,7 +123,7 @@ class Dict_data_model extends CI_Model
 
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 
@@ -151,7 +153,7 @@ class Dict_data_model extends CI_Model
         $id = false;
         if (!$this->db->insert($this->tables['dict_data'], $data)) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         } else {
             $id = $this->db->insert_id($this->tables['dict_data'] . '_id_seq');
         }
@@ -176,7 +178,7 @@ class Dict_data_model extends CI_Model
 
         if ($this->db->where('id', $id)->update($this->tables['dict_data'], $data) === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         } else {
             return true;
@@ -203,7 +205,7 @@ class Dict_data_model extends CI_Model
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;

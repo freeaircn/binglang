@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-06 19:23:23
+ * @LastEditTime: 2020-11-13 21:21:55
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -58,7 +58,7 @@ class Job_model extends CI_Model
         $query = $this->db->get($this->tables['job']);
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $total_rows = $query->num_rows();
@@ -86,7 +86,7 @@ class Job_model extends CI_Model
 
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         $result = $query->result_array();
@@ -117,7 +117,7 @@ class Job_model extends CI_Model
 
         if ($query === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
 
@@ -147,7 +147,7 @@ class Job_model extends CI_Model
         $id = false;
         if (!$this->db->insert($this->tables['job'], $data)) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         } else {
             $id = $this->db->insert_id($this->tables['job'] . '_id_seq');
         }
@@ -172,7 +172,7 @@ class Job_model extends CI_Model
 
         if ($this->db->where('id', $id)->update($this->tables['job'], $data) === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         } else {
             return true;
@@ -199,7 +199,7 @@ class Job_model extends CI_Model
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;

@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-02-17 22:35:46
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 20:11:16
+ * @LastEditTime: 2020-11-13 21:47:09
  */
 import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
 import { apiUpdateUser } from '@/api/app/account/index'
@@ -25,7 +25,7 @@ const mutations = {
 }
 
 const actions = {
-  // 请求登录
+  // 1 请求登录
   login({ commit }, user) {
     const { phone, password } = user
     return new Promise((resolve, reject) => {
@@ -50,7 +50,7 @@ const actions = {
     })
   },
 
-  // 动态路由请求标志位
+  // 2 动态路由请求标志位
   clearReqMenu({ commit }) {
     return new Promise((resolve) => {
       commit('SET_REQ_MENU', false)
@@ -58,7 +58,7 @@ const actions = {
     })
   },
 
-  // 当刷新页面，或打开新窗口，请求用户信息，请求后端检查用户登录状态
+  // 3 当刷新页面，或打开新窗口，请求用户信息，请求后端检查用户登录状态
   getUser({ commit }) {
     return new Promise((resolve, reject) => {
       apiGetUser('').then(response => {
@@ -71,7 +71,7 @@ const actions = {
     })
   },
 
-  // 请求登出
+  // 4 请求登出
   logout({ commit }) {
     return new Promise((resolve, reject) => {
       apiLogout().then(() => {
@@ -84,7 +84,7 @@ const actions = {
     })
   },
 
-  // 请求更改用户基本信息
+  // 5 请求更改用户基本信息
   updateUserBasicInfo({ commit }, user_info) {
     return new Promise((resolve, reject) => {
       apiUpdateUser(user_info).then(data => {

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-05 17:34:01
+ * @LastEditTime: 2020-11-13 21:07:32
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -90,7 +90,7 @@ class Dict_data extends APP_Rest_API
         if ($id === false) {
             $res['code'] = App_Code::CREATE_DICT_DATA_FAILED;
             $res['msg']  = App_Msg::CREATE_DICT_DATA_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "CREATE_DICT_DATA_FAILED.");
 
             $this->response($res, 200);
         }
@@ -134,7 +134,7 @@ class Dict_data extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_DICT_DATA_FAILED;
             $res['msg']  = App_Msg::UPDATE_DICT_DATA_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_DICT_DATA_FAILED.");
 
             $this->response($res, 200);
         }
@@ -165,7 +165,7 @@ class Dict_data extends APP_Rest_API
         } else {
             $res['code'] = App_Code::DELETE_DICT_DATA_FAILED;
             $res['msg']  = App_Msg::DELETE_DICT_DATA_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "DELETE_DICT_DATA_FAILED.");
         }
 
         $this->response($res, 200);

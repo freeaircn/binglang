@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-08 10:22:20
+ * @LastEditTime: 2020-11-13 21:09:56
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -123,7 +123,7 @@ class Menu extends APP_Rest_API
         if ($id === false) {
             $res['code'] = App_Code::CREATE_MENU_FAILED;
             $res['msg']  = App_Msg::CREATE_MENU_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "CREATE_MENU_FAILED.");
 
             $this->response($res, 200);
         }
@@ -177,7 +177,7 @@ class Menu extends APP_Rest_API
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_MENU_FAILED;
             $res['msg']  = App_Msg::UPDATE_MENU_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "UPDATE_MENU_FAILED");
 
             $this->response($res, 200);
         }
@@ -210,7 +210,7 @@ class Menu extends APP_Rest_API
         } else {
             $res['code'] = App_Code::DELETE_MENU_FAILED;
             $res['msg']  = App_Msg::DELETE_MENU_FAILED;
-            SeasLog::error('APP_code: ' . $res['code'] . ' - ' . $res['msg']);
+            $this->common_tools->app_log('error', "DELETE_MENU_FAILED");
         }
 
         $this->response($res, 200);

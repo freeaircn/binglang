@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 17:39:27
+ * @LastEditTime: 2020-11-13 21:15:58
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -424,13 +424,13 @@ class Auth_model extends CI_Model
         $this->db->trans_start();
         if ($this->db->where('phone', $phone)->update($this->tables['user'], $data) === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         }
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
-            SeasLog::error('DB_code: ' . $error['code'] . ' - ' . $error['message']);
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
             return false;
         }
         return true;
