@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-07-28 17:18:09
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-07 13:55:54
+ * @LastEditTime: 2020-11-14 10:13:20
  */
 
 export const appConfig = {
@@ -16,7 +16,8 @@ export const appConfig = {
   /**
    * @description API
    */
-  AVATAR_UPLOAD_API : '/api/avatar/update'
+  // AVATAR_UPLOAD_API : '/api/avatar/update'
+  AVATAR_UPLOAD_API : '/api/account/avatar'
 }
 
 export const appCode = {

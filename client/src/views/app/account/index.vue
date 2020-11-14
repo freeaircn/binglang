@@ -7,7 +7,7 @@
 
         <el-row :gutter="8">
           <el-col :xs="24" :sm="24" :md="4" :lg="4" :xl="4">
-            <app-avatar :avatar-url="avatarUrl" :upload-api="avatarUploadApi" />
+            <app-avatar :avatar-url="avatarUrl" :upload-api="avatarUploadApi" @upload-success="onAvatarUploadSuccess" />
 
             <div class="pages-account-settings-text">
               <p>工号: {{ user.sort }}</p>
@@ -94,7 +94,7 @@ import AppAvatar from './avatar/index'
 // import Activity from './components/Activity'
 // import Timeline from './components/Timeline'
 // import Account from './components/Account'
-import { apiGet } from '@/api/app/account/index'
+import { apiGetBasicList } from '@/api/app/account/index'
 
 export default {
   name: 'AccountSettings',
@@ -153,7 +153,7 @@ export default {
      * @description: 页面加载时，请求form表单各个list的下拉集合。请求数据成功，取消更新按钮的禁用状态，各个表单项赋值。
      */
     getListContent() {
-      apiGet({ form: 'list' })
+      apiGetBasicList({ form: 'list' })
         .then(function(data) {
           this.copyListContent(data)
           this.updateFormData()
@@ -211,6 +211,17 @@ export default {
             })
         }
       })
+    },
+
+    /**
+     * @Description:
+     * @Author: freeair
+     * @Date: 2020-11-14 10:08:30
+     * @param {*}
+     * @return {*}
+     */
+    onAvatarUploadSuccess(res) {
+      this.$store.dispatch('account/updateUserAvatar', res.avatar)
     }
   }
 }

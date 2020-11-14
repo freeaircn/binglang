@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:15:58
+ * @LastEditTime: 2020-11-14 20:06:49
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -213,84 +213,6 @@ class Auth_model extends CI_Model
         $this->db->update($this->tables['user'], ['last_login' => time()], ['id' => $uid]);
         return $this->db->affected_rows() == 1;
     }
-
-    /**
-     * @Description:
-     * @Author: freeair
-     * @Date: 2020-06-03 20:26:14
-     * @param array
-     * @return: array
-     */
-    // public function build_user_info($user)
-    // {
-    //     if (empty($user)) {
-    //         return false;
-    //     }
-
-    //     // 1 去掉敏感用户信息
-    //     $user_info = [
-    //         'id'                       => $user['id'],
-    //         'sort'                     => $user['sort'],
-    //         'username'                 => $user['username'],
-    //         'sex'                      => $user['sex'],
-    //         'phone'                    => $user['phone'],
-    //         'email'                    => $user['email'],
-    //         'identity_document_number' => $user['identity_document_number'],
-    //         'attr_01_id'               => $user['attr_01_id'],
-    //         'attr_02_id'               => $user['attr_02_id'],
-    //         'attr_03_id'               => $user['attr_03_id'],
-    //         'attr_04_id'               => $user['attr_04_id'],
-    //         'avatar_id'                => $user['avatar_id'],
-    //         'avatar_file_name'         => $this->config->item('avatar_default_file', 'app_config'),
-    //         'avatar_file_path'         => $this->config->item('avatar_default_path', 'app_config'),
-    //         'last_login'               => $user['last_login'],
-    //     ];
-
-    //     // 2 查找头像信息
-    //     if (isset($user->avatar_id)) {
-    //         $query = $this->db->select('*')
-    //             ->where('id', $user['avatar_id'])
-    //             ->get($this->tables['user_avatar']);
-    //     } else {
-    //         return $user_info;
-    //     }
-
-    //     if ($query->num_rows() !== 1) {
-    //         return $user_info;
-    //     }
-    //     $avatar                        = $query->result_array()[0];
-    //     $user_info['avatar_file_name'] = $avatar['real_name'];
-    //     $user_info['avatar_file_path'] = $avatar['path'];
-
-    //     // $user_info['avatar_file_name'] = $query->row()->real_name;
-    //     // $user_info['avatar_file_path'] = $query->row()->path;
-
-    //     return $user_info;
-    // }
-
-    /**
-     * @Description:
-     * @Author: freeair
-     * @Date: 2020-06-03 20:26:14
-     * @param array
-     * @return:
-     */
-    // public function set_session($user_info, $other_data)
-    // {
-    //     if (empty($user_info) || empty($other_data)) {
-    //         return false;
-    //     }
-
-    //     $session_data                   = $user_info;
-    //     $session_data['acl']            = $other_data['acl'];
-    //     $session_data['old_last_login'] = $user_info['last_login'];
-    //     $session_data['last_check']     = time();
-    //     $session_data['session_hash']   = $this->config->item('session_hash', 'app_config');
-
-    //     $this->session->set_userdata($session_data);
-
-    //     return true;
-    // }
 
     /**
      * Check if password needs to be rehashed

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:15:34
+ * @LastEditTime: 2020-11-14 19:37:34
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -130,5 +130,54 @@ class Account_model extends CI_Model
             return false;
         }
         return true;
+    }
+
+    /**
+     * @Description: 3 更新前，查询头像文件路径和文件名
+     * @Author: freeair
+     * @Date: 2020-11-14 19:30:57
+     * @param {*}
+     * @return {*}
+     */
+    public function get_avatar_file_info($id = null)
+    {
+        $query = $this->db->select('*')
+            ->where('id', $id)
+            ->get($this->tables['user_avatar']);
+
+        return $query->result_array()[0];
+    }
+
+    /**
+     * @Description: 4 更改数据库中用户头像记录
+     * @Author: freeair
+     * @Date: 2020-11-14 14:59:18
+     * @param {*}
+     * @return {*}id
+     */
+    public function update_user_avatar($id = null, $avatar_file_path = null, $avatar_file_name = null)
+    {
+        if (empty($id) || empty($avatar_file_path) || empty($avatar_file_name)) {
+            return false;
+        }
+
+        $data['path']        = $avatar_file_path;
+        $data['real_name']   = $avatar_file_name;
+        $data['update_time'] = date("Y-m-d H:i:s", time());
+
+        $this->db->trans_start();
+        if ($this->db->where('id', $id)->update($this->tables['user_avatar'], $data) === false) {
+            $error = $this->db->error();
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
+        }
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+        return true;
+
     }
 }

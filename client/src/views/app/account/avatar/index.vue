@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-22 23:15:14
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 09:31:29
+ * @LastEditTime: 2020-11-14 18:52:21
 -->
 <template>
   <div>
@@ -19,6 +19,7 @@
     >
       <el-image
         :src="avatarUrl"
+        fit="cover"
         class="pages-account-settings-avatar"
       >
         <div slot="error" class="pages-account-settings-avatar-img-slot">
@@ -44,6 +45,13 @@ export default {
     }
   },
   methods: {
+    /**
+     * @Description: 1 检查图片文件类型和大小
+     * @Author: freeair
+     * @Date: 2020-11-14 09:52:41
+     * @param {*} file
+     * @return {*}
+     */
     beforeAvatarUpload(file) {
       const isLt2M = file.size / 1024 / 1024 < 2
       const isJPG = file.type === 'image/jpeg'
@@ -59,13 +67,18 @@ export default {
       this.$message.error('上传头像图片只能是 JPG或PNG 格式!')
       return false
     },
+
+    /**
+     * @Description: 2 图片上传成功，发event通知父组件
+     * @Author: freeair
+     * @Date: 2020-11-14 09:53:23
+     * @param {*} res
+     * @param {*} file
+     * @return {*}
+     */
     handleAvatarSuccess(res, file) {
-      console.log('#1')
-      console.log(res)
-      console.log('#2')
-      console.log(file)
-      this.avatarUrl = URL.createObjectURL(file.raw)
-      console.log(this.avatarUrl)
+      this.$emit('upload-success', res)
+      // this.avatarUrl = URL.createObjectURL(file.raw)
     }
   }
 }

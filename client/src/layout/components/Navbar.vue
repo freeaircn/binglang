@@ -6,7 +6,7 @@
     <div class="right-menu">
       <el-dropdown @command="handleDropdownCommand">
         <span>
-          <el-avatar class="avatar-container" size="medium" :src="avatarUrl" />
+          <el-avatar class="avatar-container" fit="cover" size="medium" :src="avatarUrl" />
           <el-link class="avatar-text" :underline="false">{{ user.phone }}</el-link>
         </span>
         <el-dropdown-menu slot="dropdown">

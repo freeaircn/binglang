@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:26:56
+ * @LastEditTime: 2020-11-14 16:31:23
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -321,12 +321,52 @@ class User_model extends CI_Model
     }
 
     /**
-     * delete from user_attribute, users_roles, user table
-     *
-     * @author freeair
-     * @DateTime 2020-01-19
-     * @param [int] $id
-     * @return bool
+     * @Description: 新建用户，创建默认头像记录
+     * @Author: freeair
+     * @Date: 2020-11-14 15:17:21
+     * @param {sex}
+     * @return {avatar_id}
+     */
+    public function create_default_avatar($sex = null)
+    {
+        if ($sex < 0 || $sex > 1) {
+            return false;
+        }
+
+        $data['path']        = $this->config->item('avatar_default_path', 'app_config');
+        $data['update_time'] = date("Y-m-d H:i:s", time());
+        if ($sex === 0) {
+            $data['real_name'] = 'avatar_default_male.jpg';
+        }
+        if ($sex === 1) {
+            $data['real_name'] = 'avatar_default_female.jpg';
+        }
+
+        $avatar_id = false;
+        $this->db->trans_start();
+        if (!$this->db->insert($this->tables['user_avatar'], $data)) {
+            $error = $this->db->error();
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
+        }
+        $avatar_id = $this->db->insert_id($this->tables['user_avatar'] . '_id_seq');
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
+            return false;
+        }
+
+        return $avatar_id;
+
+    }
+
+    /**
+     * @Description: 删除用户记录，关联数据表 users_roles, user_avatar
+     * @Author: freeair
+     * @Date: 2020-11-14 16:16:47
+     * @param {*}
+     * @return {*}
      */
     public function delete($id = null)
     {
@@ -334,11 +374,19 @@ class User_model extends CI_Model
             return false;
         }
 
+        // 1 查询头像ID
+        $query = $this->db->select('avatar_id')
+            ->where('id', $id)
+            ->get($this->tables['user']);
+        $avatar_id = $query->row(0)->avatar_id;
+
+        // 2 删除处理
         $this->db->trans_start();
 
         // $this->db->where('user_id', $id)->delete($this->tables['user_attribute']);
         $this->db->where('user_id', $id)->delete($this->tables['users_roles']);
         $this->db->where('id', $id)->delete($this->tables['user']);
+        $this->db->where('id', $avatar_id)->delete($this->tables['user_avatar']);
 
         $this->db->trans_complete();
 

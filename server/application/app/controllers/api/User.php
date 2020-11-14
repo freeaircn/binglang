@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:12:07
+ * @LastEditTime: 2020-11-14 15:31:38
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -88,7 +88,7 @@ class User extends APP_Rest_API
             $this->response($res, 200);
         }
 
-        // hash password
+        // 1 hash 密码
         if ($client['password'] === '') {
             $res['code'] = App_Code::PASSWORD_IS_EMPTY;
             $res['msg']  = App_Msg::PASSWORD_IS_EMPTY;
@@ -119,11 +119,16 @@ class User extends APP_Rest_API
         $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
         $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
 
-        $data['avatar_id'] = 2;
-        if ($data['sex'] === 1) {
-            $data['avatar_id'] = 1;
-        }
+        // 2 创建default头像
+        $temp_id = $this->user_model->create_default_avatar($data['sex']);
+        if ($temp_id === false) {
+            $res['code'] = App_Code::CREATE_USER_FAILED;
+            $res['msg']  = App_Msg::CREATE_USER_FAILED;
+            $this->common_tools->app_log('error', "CREATE_USER_FAILED");
 
+            $this->response($res, 200);
+        }
+        $data['avatar_id']   = $temp_id;
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
         // insert user table

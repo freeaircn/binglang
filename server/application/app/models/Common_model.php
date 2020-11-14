@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-11-13 11:30:04
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 16:10:23
+ * @LastEditTime: 2020-11-14 20:07:37
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -91,13 +91,13 @@ class Common_model extends CI_Model
             'attr_03_id'               => $user['attr_03_id'],
             'attr_04_id'               => $user['attr_04_id'],
             'avatar_id'                => $user['avatar_id'],
-            'avatar_file_name'         => $this->config->item('avatar_default_file', 'app_config'),
-            'avatar_file_path'         => $this->config->item('avatar_default_path', 'app_config'),
+            'avatar_file_name'         => '',
+            'avatar_file_path'         => '',
             'last_login'               => $user['last_login'],
         ];
 
         // 2 查找头像信息
-        if (isset($user->avatar_id)) {
+        if (isset($user['avatar_id'])) {
             $query = $this->db->select('*')
                 ->where('id', $user['avatar_id'])
                 ->get($this->tables['user_avatar']);

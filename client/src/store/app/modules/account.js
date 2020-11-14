@@ -3,10 +3,10 @@
  * @Author: freeair
  * @Date: 2020-02-17 22:35:46
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:47:09
+ * @LastEditTime: 2020-11-14 19:13:39
  */
 import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
-import { apiUpdateUser } from '@/api/app/account/index'
+import { apiUpdateUserBasicInfo } from '@/api/app/account/index'
 import { setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -18,6 +18,10 @@ const state = {
 const mutations = {
   SET_USER: (state, user) => {
     state.user = user
+  },
+  SET_USER_AVATAR: (state, avatar) => {
+    state.user.avatar_file_path = avatar.avatar_file_path
+    state.user.avatar_file_name = avatar.avatar_file_name
   },
   SET_REQ_MENU: (state, value) => {
     state.reqMenu = value
@@ -87,13 +91,18 @@ const actions = {
   // 5 请求更改用户基本信息
   updateUserBasicInfo({ commit }, user_info) {
     return new Promise((resolve, reject) => {
-      apiUpdateUser(user_info).then(data => {
+      apiUpdateUserBasicInfo(user_info).then(data => {
         commit('SET_USER', data.user)
         resolve()
       }).catch(error => {
         reject(error)
       })
     })
+  },
+
+  // 6 更新用户头像响应
+  updateUserAvatar({ commit }, avatar) {
+    commit('SET_USER_AVATAR', avatar)
   }
 }
 

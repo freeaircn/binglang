@@ -12,6 +12,8 @@ application/app/logs/*
 !application/*/.htaccess
 
 resource/dist/*
+resource/avatar/*
+!resource/avatar/default/*
 
 composer.lock
 

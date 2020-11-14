@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-06 10:04:04
+ * @LastEditTime: 2020-11-14 20:00:17
  */
 
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -58,8 +58,6 @@ $config['argon2_default_params']   = [
 $config['maximum_login_attempts'] = 5; // The maximum number of failed login attempts.
 $config['lockout_time']           = 600; // The number of seconds to lockout an account due to exceeded attempts
 $config['session_hash']           = '6583d6c4f205998ecacc9f51b68a2a2e44ea0006';
-$config['avatar_default_file']    = 'avatar_default_male.jpg';
-$config['avatar_default_path']    = '/resource/avatar/px200/';
 
 /*
 | -------------------------------------------------------------------------
@@ -106,3 +104,8 @@ $config['email_templates'] = 'auth/email/';
 $config['email_verification_code'] = 'verification_code.tpl.php';
 
 $config['verification_code_expire_time'] = 300; // The number of seconds after which a verification code request will expire. If set to 0, will not expire.
+
+$config['avatar_default_file'] = 'avatar_default_male.jpg';
+$config['avatar_default_path'] = '/resource/avatar/default/';
+$config['avatar_active_path']  = '/resource/avatar/active/';
+$config['avatar_upload_path']  = '/resource/avatar/temp/';

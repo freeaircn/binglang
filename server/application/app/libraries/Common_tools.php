@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:45:17
+ * @LastEditTime: 2020-11-14 11:42:51
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -264,6 +264,38 @@ class Common_tools extends CI_Model
                 break;
             default:
                 break;
+        }
+
+    }
+
+    /**
+     * @Description: 修改用户上传的头像图片大小
+     * @Author: freeair
+     * @Date: 2020-11-14 10:48:48
+     * @param {str}
+     * @return {*}
+     */
+    public function resize_avatar_img($source_img, $new_image)
+    {
+        if (empty($source_img) || empty($new_image)) {
+            return false;
+        }
+
+        $config['image_library'] = 'gd2';
+        $config['source_image']  = $source_img;
+        $config['new_image']     = $new_image;
+        // $config['create_thumb']   = true;
+        $config['maintain_ratio'] = true;
+        $config['width']          = 200;
+        $config['height']         = 200;
+
+        $this->load->library('image_lib', $config);
+
+        if (!$this->image_lib->resize()) {
+            // echo $this->image_lib->display_errors();
+            return false;
+        } else {
+            return true;
         }
 
     }
