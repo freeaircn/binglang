@@ -150,7 +150,7 @@ export default {
   },
   methods: {
     /**
-     * @description: 页面加载时，请求form表单隔个list的选项集合。请求数据成功，取消更新按钮的禁用状态，各个表单项赋值。
+     * @description: 页面加载时，请求form表单各个list的下拉集合。请求数据成功，取消更新按钮的禁用状态，各个表单项赋值。
      */
     getListContent() {
       apiGet({ form: 'list' })
@@ -192,27 +192,11 @@ export default {
     },
 
     /**
-     * @description: 提交用户基本信息更新请求
+     * @description: 请求修改用户基本信息
      */
     handleUpdateUserBasicInfo() {
       this.$refs['account_basic_info_form'].validate((valid) => {
         if (valid) {
-          // this.formData.phone = this.user.phone
-          // apiUpdate(this.formData)
-          //   .then(function(data) {
-          //     // 更新vuex中的user
-          //     this.$store.commit('account/SET_USER', data.user)
-          //     this.$nextTick(() => {
-          //       this.$refs['account_basic_info_form'].clearValidate()
-          //     })
-          //   }.bind(this))
-          //   .catch(function(err) {
-          //     this.$message({
-          //       message: err,
-          //       type: 'warning'
-          //     })
-          //   }.bind(this))
-
           this.$store.dispatch('account/updateUserBasicInfo', this.formData)
             .then(() => {
               this.$nextTick(() => {

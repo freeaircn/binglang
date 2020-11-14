@@ -11,6 +11,8 @@ application/app/logs/*
 
 !application/*/.htaccess
 
+resource/dist/*
+
 composer.lock
 
 user_guide_src/build/*

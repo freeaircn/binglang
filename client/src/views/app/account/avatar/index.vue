@@ -3,8 +3,8 @@
  * @Author: freeair
  * @Date: 2020-01-22 23:15:14
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-07 13:39:11
- -->
+ * @LastEditTime: 2020-11-14 09:31:29
+-->
 <template>
   <div>
     <div class="pages-account-settings-avatar-title">头像</div>
