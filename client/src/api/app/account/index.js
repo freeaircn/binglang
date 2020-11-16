@@ -3,15 +3,14 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 10:04:11
+ * @LastEditTime: 2020-11-16 15:59:44
  */
 import request from '@/utils/request'
 
-export function apiGetBasicList(params) {
+export function apiGetBasicInfoFormListContent() {
   return request({
-    url: '/api/account/basic_list',
-    method: 'get',
-    params: params
+    url: '/api/account/basic_Info_form_list_content',
+    method: 'get'
   })
 }
 

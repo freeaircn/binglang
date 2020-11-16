@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-11-13 11:30:04
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 20:07:37
+ * @LastEditTime: 2020-11-16 21:02:50
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -91,8 +91,7 @@ class Common_model extends CI_Model
             'attr_03_id'               => $user['attr_03_id'],
             'attr_04_id'               => $user['attr_04_id'],
             'avatar_id'                => $user['avatar_id'],
-            'avatar_file_name'         => '',
-            'avatar_file_path'         => '',
+            'avatar'                   => ['name' => '', 'path' => ''],
             'last_login'               => $user['last_login'],
         ];
 
@@ -108,9 +107,8 @@ class Common_model extends CI_Model
         if ($query->num_rows() !== 1) {
             return $user_info;
         }
-        $avatar                        = $query->result_array()[0];
-        $user_info['avatar_file_name'] = $avatar['real_name'];
-        $user_info['avatar_file_path'] = $avatar['path'];
+        $avatar              = $query->result_array()[0];
+        $user_info['avatar'] = ['name' => $avatar['real_name'], 'path' => $avatar['path']];
 
         return $user_info;
     }

@@ -2,14 +2,14 @@
   <div class="app-container">
     <!-- <el-tabs v-model="tabIndex" tab-position="left" :before-leave="leaveTab"> -->
     <el-tabs v-model="tabIndex" tab-position="left">
-      <el-tab-pane name="account_basic_info_tab" label="基本信息">
-        <div class="pages-account-settings-title">基本信息</div>
+      <el-tab-pane name="basic_info_tab" label="基本信息">
+        <div class="pages-account-setting-title">基本信息</div>
 
         <el-row :gutter="8">
           <el-col :xs="24" :sm="24" :md="4" :lg="4" :xl="4">
             <app-avatar :avatar-url="avatarUrl" :upload-api="avatarUploadApi" @upload-success="onAvatarUploadSuccess" />
 
-            <div class="pages-account-settings-text">
+            <div class="pages-account-setting-text">
               <p>工号: {{ user.sort }}</p>
               <p>手机: {{ user.phone }}</p>
               <p>邮箱: {{ user.email }}</p>
@@ -17,7 +17,7 @@
 
           </el-col>
           <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-            <el-form ref="account_basic_info_form" :model="formData" :rules="account_basic_info_form_rules" size="mini" label-position="top" label-width="auto">
+            <el-form ref="basic_info_form" :model="formData" :rules="basic_info_form_rules" size="mini" label-position="top" label-width="auto">
 
               <el-form-item label="中文名" prop="username">
                 <el-input v-model="formData.username" class="w-30" clearable />
@@ -86,7 +86,8 @@
 </template>
 
 <script>
-import { appConfig } from '@/app_settings'
+import * as myApp from '@/app_settings'
+import * as utils from '@/utils/app/common'
 import { mapGetters } from 'vuex'
 import TreeSelect from '@/components/app/TreeSelect/index'
 import AppAvatar from './avatar/index'
@@ -94,10 +95,10 @@ import AppAvatar from './avatar/index'
 // import Activity from './components/Activity'
 // import Timeline from './components/Timeline'
 // import Account from './components/Account'
-import { apiGetBasicList } from '@/api/app/account/index'
+import { apiGetBasicInfoFormListContent } from '@/api/app/account/index'
 
 export default {
-  name: 'AccountSettings',
+  name: 'AccountSetting',
   // components: { UserCard, Activity, Timeline, Account },
   components: {
     'tree-select': TreeSelect,
@@ -105,16 +106,15 @@ export default {
   },
   data() {
     return {
-      avatarUploadApi: process.env.VUE_APP_BASE_API + appConfig.AVATAR_UPLOAD_API,
+      avatarUploadApi: process.env.VUE_APP_BASE_API + myApp.config.AVATAR_UPLOAD_API,
 
-      tabIndex: 'account_basic_info_tab',
+      tabIndex: 'basic_info_tab',
       isUpdateBtnDisable: true,
 
       // 表单数据
       formData: {
         username: '',
         sex: '0',
-        // phone: '',
         identity_document_number: '',
         attr_01_id: '',
         attr_02_id: '',
@@ -128,7 +128,7 @@ export default {
       politic_list: [],
       professional_title_list: [],
 
-      account_basic_info_form_rules: {
+      basic_info_form_rules: {
         // sort: [{ required: true, validator: validSort, trigger: 'change' }],
         // username: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
         // phone: [{ required: true, validator: validPhone, trigger: 'change' }],
@@ -142,25 +142,23 @@ export default {
     ]),
     avatarUrl: function() {
       // avatarUrl: process.env.VUE_APP_BASE_API + '/path/avatar.jpg'
-      return process.env.VUE_APP_BASE_API + this.user.avatar_file_path + this.user.avatar_file_name
+      return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
     }
   },
   mounted() {
-    this.getListContent()
+    this.getBasicInfoFormListContent()
   },
   methods: {
     /**
      * @description: 页面加载时，请求form表单各个list的下拉集合。请求数据成功，取消更新按钮的禁用状态，各个表单项赋值。
      */
-    getListContent() {
-      apiGetBasicList({ form: 'list' })
+    getBasicInfoFormListContent() {
+      apiGetBasicInfoFormListContent()
         .then(function(data) {
           this.copyListContent(data)
-          this.updateFormData()
-          //
           this.isUpdateBtnDisable = false
           this.$nextTick(() => {
-            this.$refs['account_basic_info_form'].clearValidate()
+            this.formData = utils.merge(this.user)
           })
         }.bind(this))
         .catch(function(err) {
@@ -179,28 +177,16 @@ export default {
       this.professional_title_list = data.professional_title_list.slice(0)
     },
 
-    updateFormData() {
-      // this.formData = JSON.parse(JSON.stringify(data))
-      this.formData.username = this.user.username
-      this.formData.sex = this.user.sex
-      this.formData.identity_document_number = this.user.identity_document_number
-      // this.formData.phone = this.user.phone
-      this.formData.attr_01_id = this.user.attr_01_id
-      this.formData.attr_02_id = this.user.attr_02_id
-      this.formData.attr_03_id = this.user.attr_03_id
-      this.formData.attr_04_id = this.user.attr_04_id
-    },
-
     /**
      * @description: 请求修改用户基本信息
      */
     handleUpdateUserBasicInfo() {
-      this.$refs['account_basic_info_form'].validate((valid) => {
+      this.$refs['basic_info_form'].validate((valid) => {
         if (valid) {
           this.$store.dispatch('account/updateUserBasicInfo', this.formData)
             .then(() => {
               this.$nextTick(() => {
-                this.$refs['account_basic_info_form'].clearValidate()
+                this.formData = utils.merge(this.user)
               })
             })
             .catch((error) => {
@@ -214,7 +200,7 @@ export default {
     },
 
     /**
-     * @Description:
+     * @Description: 用户头像更新成功响应
      * @Author: freeair
      * @Date: 2020-11-14 10:08:30
      * @param {*}
@@ -228,7 +214,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.pages-account-settings-title {
+.pages-account-setting-title {
   margin-bottom: 12px;
   color: $title-color;
   font-weight: 500;
@@ -236,7 +222,7 @@ export default {
   line-height: 28px;
 }
 
-.pages-account-settings-text {
+.pages-account-setting-text {
   font-size: $font-size-base;
 }
 

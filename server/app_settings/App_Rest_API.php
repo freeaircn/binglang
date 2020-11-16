@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-06-05 14:51:11
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 18:45:20
+ * @LastEditTime: 2020-11-16 21:59:50
  */
 namespace App_Settings;
 
@@ -26,11 +26,10 @@ class APP_Rest_API extends RestController
             $this->response($res, 200);
         }
 
-        // 2 超级用户？
-        if ($phone == '13812345678' || $phone == '13812345677') {
-            // print_r($this->session->userdata('acl'));
-            return;
-        }
+        // 2 ！！！超级用户
+        // if ($phone == '13812345678') {
+        //     return;
+        // }
 
         // 2 提取http request的url和method
         $arr    = explode('/', uri_string());
@@ -44,7 +43,6 @@ class APP_Rest_API extends RestController
         if ($url_1 === 'api') {
             $key   = $url_2 . ':' . $method;
             $roles = $this->session->userdata('acl');
-            // print_r($roles);
             if (empty($roles)) {
                 $res['code'] = App_Code::USER_NOT_APPROVED;
                 $res['msg']  = App_Msg::USER_NOT_APPROVED;

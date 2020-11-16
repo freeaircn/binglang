@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 19:37:34
+ * @LastEditTime: 2020-11-16 21:16:34
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -139,7 +139,7 @@ class Account_model extends CI_Model
      * @param {*}
      * @return {*}
      */
-    public function get_avatar_file_info($id = null)
+    public function get_user_avatar($id = null)
     {
         $query = $this->db->select('*')
             ->where('id', $id)

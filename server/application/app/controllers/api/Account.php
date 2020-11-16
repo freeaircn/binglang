@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 21:15:10
+ * @LastEditTime: 2020-11-16 21:16:07
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -27,31 +27,16 @@ class Account extends APP_Rest_API
         $this->load->library('common_tools');
     }
 
-    public function basic_list_get()
+    public function basic_Info_form_list_content_get()
     {
-        $client = $this->get();
-
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_user', 'index_get');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
-
-        if (isset($client['form']) && $client['form'] === 'list') {
-            $list = $this->account_model->get_form_list();
-            if ($list === false) {
-                $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
-                $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
-            } else {
-                $res['code'] = App_Code::SUCCESS;
-                $res['data'] = $list;
-            }
-            $this->response($res, 200);
+        $list = $this->account_model->get_form_list();
+        if ($list === false) {
+            $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
+            $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
+        } else {
+            $res['code'] = App_Code::SUCCESS;
+            $res['data'] = $list;
         }
-
-        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
-        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
         $this->response($res, 200);
     }
 
@@ -135,8 +120,9 @@ class Account extends APP_Rest_API
         }
 
         // 2 调整上传图片大小
-        $source_image     = $this->upload->data('full_path');
-        $avatar_file_name = $this->upload->data('file_name');
+        $source_image = $this->upload->data('full_path');
+        $name         = $this->upload->data('file_name');
+        $path         = $this->config->item('avatar_active_path', 'app_config');
 
         $new_image = FCPATH . $this->config->item('avatar_active_path', 'app_config');
         if (!$this->common_tools->resize_avatar_img($source_image, $new_image)) {
@@ -146,31 +132,29 @@ class Account extends APP_Rest_API
         }
 
         // 3 查询头像文件路径和文件名，待后续删除旧头像文件
-        $avatar_id                = $this->session->userdata('avatar_id');
-        $current_avatar_file_info = $this->account_model->get_avatar_file_info($avatar_id);
+        $avatar_id      = $this->session->userdata('avatar_id');
+        $current_avatar = $this->account_model->get_user_avatar($avatar_id);
 
         // 4 更改数据库中用户头像记录
-        $avatar_file_path = $this->config->item('avatar_active_path', 'app_config');
-        if (!$this->account_model->update_user_avatar($avatar_id, $avatar_file_path, $avatar_file_name)) {
+        if (!$this->account_model->update_user_avatar($avatar_id, $path, $name)) {
             $res['code'] = 300;
             $res['msg']  = 'update DB failed';
             $this->response($res, 200);
         }
 
         // 5 更新session数据
-        $this->session->set_userdata('avatar_file_path', $avatar_file_path);
-        $this->session->set_userdata('avatar_file_name', $avatar_file_name);
+        $this->session->set_userdata('avatar', ['name' => $name, 'path' => $path]);
 
         // 6 删除旧头像文件
-        if ($current_avatar_file_info['path'] !== $this->config->item('avatar_default_path', 'app_config')) {
-            unlink(FCPATH . $current_avatar_file_info['path'] . $current_avatar_file_info['real_name']);
+        if ($current_avatar['path'] !== $this->config->item('avatar_default_path', 'app_config')) {
+            unlink(FCPATH . $current_avatar['path'] . $current_avatar['real_name']);
         }
-        unlink(FCPATH . $this->config->item('avatar_upload_path', 'app_config') . $avatar_file_name);
+        unlink(FCPATH . $this->config->item('avatar_upload_path', 'app_config') . $name);
 
         // 7 更新后的用户信息返回前端，更新前端vuex
         $res['code']   = App_Code::SUCCESS;
         $res['msg']    = App_Msg::SUCCESS;
-        $res['avatar'] = ['avatar_file_path' => $avatar_file_path, 'avatar_file_name' => $avatar_file_name];
+        $res['avatar'] = ['path' => $path, 'name' => $name];
 
         $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);

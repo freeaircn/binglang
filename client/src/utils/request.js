@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-18 22:07:00
+ * @LastEditTime: 2020-11-15 21:19:58
  */
 import axios from 'axios'
 import qs from 'qs'
@@ -19,12 +19,14 @@ const service = axios.create({
   timeout: 5000 // request timeout
 })
 
-// service.defaults.headers.post['Content-Type'] = 'application/json'
+// Post请求，指定转换请求方法，使用json
+// qs 序列化，undefined或空数组，axios post 提交时，qs不填入http body。
 service.defaults.transformRequest = [function(data) {
   // return qs.stringify(data, { arrayFormat: 'indices' })
   return JSON.stringify(data)
 }]
 
+// Get请求，指定请求参数序列号方法
 service.defaults.paramsSerializer = function(params) {
   return qs.stringify(params, { arrayFormat: 'indices' })
 }
@@ -53,6 +55,7 @@ service.defaults.paramsSerializer = function(params) {
 service.interceptors.response.use(
   // Any status code that lie within the range of 2xx cause this function to trigger
   response => {
+    console.log('--- server response ---')
     console.log(response.data)
     const res = response.data
     if (res.code === 0) {

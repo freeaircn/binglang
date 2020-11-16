@@ -3,12 +3,13 @@
  * @Author: freeair
  * @Date: 2020-02-17 22:35:46
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 19:13:39
+ * @LastEditTime: 2020-11-16 21:13:35
  */
 import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
 import { apiUpdateUserBasicInfo } from '@/api/app/account/index'
 import { setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import * as utils from '@/utils/app/common'
 
 const state = {
   user: {},
@@ -17,11 +18,10 @@ const state = {
 
 const mutations = {
   SET_USER: (state, user) => {
-    state.user = user
+    state.user = utils.merge(user)
   },
   SET_USER_AVATAR: (state, avatar) => {
-    state.user.avatar_file_path = avatar.avatar_file_path
-    state.user.avatar_file_name = avatar.avatar_file_name
+    state.user.avatar = utils.merge(avatar)
   },
   SET_REQ_MENU: (state, value) => {
     state.reqMenu = value
@@ -65,9 +65,8 @@ const actions = {
   // 3 当刷新页面，或打开新窗口，请求用户信息，请求后端检查用户登录状态
   getUser({ commit }) {
     return new Promise((resolve, reject) => {
-      apiGetUser('').then(response => {
-        var user = response.user
-        commit('SET_USER', user)
+      apiGetUser('').then(data => {
+        commit('SET_USER', data.user)
         resolve()
       }).catch(error => {
         reject(error)

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:00:39
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 10:11:17
+ * @LastEditTime: 2020-11-16 21:52:40
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -64,9 +64,9 @@ $route['api/menu']      = 'api/menu';
 $route['api/dept']      = 'api/dept';
 $route['api/job']       = 'api/job';
 $route['api/dict']      = 'api/dict';
-$route['api/dict-data'] = 'api/dict_data';
+$route['api/dict_data'] = 'api/dict_data';
 $route['api/role']      = 'api/role';
-$route['api/role-menu'] = 'api/role_menu';
+$route['api/role_menu'] = 'api/role_menu';
 $route['api/user']      = 'api/user';
 $route['api/avatar']    = 'api/avatar';
 // $route['api/account']   = 'api/account';
@@ -74,13 +74,12 @@ $route['api/avatar']    = 'api/avatar';
 $route['api/auth/(:any)']    = 'api/auth/$1';
 $route['api/account/(:any)'] = 'api/account/$1';
 
-//
-$route['admin/(:any)']   = 'home';
-$route['account/(:any)'] = 'home';
-// $route['(:any)/(:any)/(:any)'] = 'home';
 /*
  * 前端单页面，路由 history模式
  */
+$route['admin/(:any)']   = 'home';
+$route['account/(:any)'] = 'home';
+// $route['(:any)/(:any)/(:any)'] = 'home';
 $route['(:any)'] = 'home';
 
 $route['404_override']         = '';

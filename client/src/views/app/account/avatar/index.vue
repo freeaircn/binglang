@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2020-01-22 23:15:14
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 18:52:21
+ * @LastEditTime: 2020-11-16 20:27:53
 -->
 <template>
   <div>
-    <div class="pages-account-settings-avatar-title">头像</div>
+    <div class="pages-account-setting-avatar-title">头像</div>
     <el-upload
       :action="uploadApi"
       :multiple="false"
@@ -20,9 +20,9 @@
       <el-image
         :src="avatarUrl"
         fit="cover"
-        class="pages-account-settings-avatar"
+        class="pages-account-setting-avatar"
       >
-        <div slot="error" class="pages-account-settings-avatar-img-slot">
+        <div slot="error" class="pages-account-setting-avatar-img-slot">
           <i class="el-icon-picture-outline" />
         </div>
       </el-image>
@@ -85,20 +85,20 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.pages-account-settings-avatar-title {
+.pages-account-setting-avatar-title {
   margin-bottom: 8px;
   font-size: $font-size-base;
   color: $text-color;
 }
 
-.pages-account-settings-avatar {
+.pages-account-setting-avatar {
   width: 178px;
   height: 178px;
   border-radius: 50%;
   display: block;
 }
 
-.pages-account-settings-avatar-img-slot {
+.pages-account-setting-avatar-img-slot {
   display: flex;
   justify-content: center;
   align-items: center;

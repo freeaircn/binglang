@@ -2,14 +2,14 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-10 09:53:44
+ * @LastEditors: freeair
+ * @LastEditTime: 2020-11-16 21:52:54
  */
 import request from '@/utils/request'
 
 export function apiGet(params) {
   return request({
-    url: '/api/role-menu',
+    url: '/api/role_menu',
     method: 'get',
     params: params
   })
@@ -17,7 +17,7 @@ export function apiGet(params) {
 
 export function apiCreate(formData) {
   return request({
-    url: '/api/role-menu',
+    url: '/api/role_menu',
     method: 'post',
     data: formData
   })

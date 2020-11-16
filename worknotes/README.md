@@ -1,8 +1,7 @@
 # APP Worknotes
 ---
 ### 摘要  
-1. 按TODO排序
-2. 缩略字: [G]-global [v]-vue [c]-ci @-框架根目录
+1. 缩略字: [G]-global [v]-vue [c]-ci @-框架根目录
 
 ---
 ### TODO  
@@ -15,7 +14,6 @@
    [done]用户管理页面 检索功能，适应多条件组合  
    [done]后端输入验证  
    [done]前端post, put, delete请求 content-type ；application/json，后端需支持json输入
-   埋点  
 6. 后端log  
 7. 前端log  
 8. [done]编写用户头像功能   
@@ -29,81 +27,21 @@
     [done]前端动态获取后端路由表   
     [done]后端用户验证，权限验证    
     用户头像   
-    
-    
-    
-. 【待测试】有A，但没有A1，A2，user_attribute_dynamic_list去除A的部分   
-. 【待测试】场景：A，B属性，已添加user。新增C属性，查询，新建，编辑user功能   
-. 动态路由，权限管理  
-. 埋点  
+
 . 后端，用户数据/文件的存放文件位置，和访问权限。  
   数据库权限，centos文件路径权限  
 
 ---
 ### 置顶
 ```
-# JS
-  1 Undefined类型只有一个值，即undefined。当声明的变量还未被初始化时，变量的默认值为undefined。
-    Null类型也只有一个值，即null。null用来表示尚未存在的对象，常用来表示函数企图返回一个不存在的对象。
-  2 对象属性的访问一般是通过obj.attr的方式来访问的，或者是obj[attr]的方式来进行操作.
-    属性访问的时候，当对象存在而对象中没有这一属性的时候，如果程序中访问了当前的属性的话我们，js的解析器将会返回undefined的数值.
-    但是如果当前需要访问的对象是不存在的，这个时候js就会返回一个类型错误
-  3 JS 空对象
-    空引用：obj=null 是指变量值指向null变量，当然在js默认不赋值的情况下，一个变量为undefined.
-    原型：原型上包括了继承属性，有可以枚举的属性和不可以枚举的属性。默认对象都继承了Object。
-    自身：自身属性同样包括了可枚举的属性和不可枚举的属性。
-    
-    Object.keys(obj)返回不包括原型上的可枚举属性，即自身的可枚举属性。
-      Object.keys(data).length === 0;
-    Objcet.getOwnPropertyNames(obj)返回不包括原型上的所有自身属性(包括不可枚举的属性)
-      Object.getOwnPropertyNames(data)===0;
-  
-  4 qs 序列化
-    undefined或空数组，axios post 提交时，qs不填入http body。
-    
-  5 php，js，Python时间戳的比较
-    1 单位问题：php中取时间戳时，大多通过time()方法来获得，它获取到数值是以秒作为单位的，而javascript中
-      从Date对象的getTime()方法中获得的数值是以毫秒为单位 ，所以，要比较它们获得的时间是否是同一天，必须
-      要注意把它们的单位转换成一样，1秒=1000毫秒
-    2 时区问题：第一点中说过，php中用time()方法来获得时间戳，为了显示的方便，我们在php代码中会设置好
-      当前服务器所在的时区，如中国大陆的服务器通常会设置成东八区，这样一样，time()方法获得的方法就不再是从
-      1970年1月1日0时0分0秒起，而是从1970年1月1日8时0分0秒起的了，而js中通常没有作时区相关的设置，所以是
-      以1970年1月1日0时0分0秒为计算的起点的，所以容易在这个地方造成不一致。
-       php.ini 文件
-      [Date]
-      ; Defines the default timezone used by the date functions
-      ; http://php.net/date.timezone
-      date.timezone = "Asia/Shangha"
-      
-    3 Python time time() 返回当前时间的时间戳（1970纪元后经过的浮点秒数）
-
-time() = Math.round(new Date().getTime()/1000-28800)
-
 # PHP
-  1 检查多维数组入参。比如；a = [[], []], empty(a) false
-  2 isset - 检测变量是否已设置并且非 NULL。比如；isset('') true
-  3 empty - 判断一个变量是否被认为是空的。当一个变量并不存在，或者它的值等同于FALSE，那么它会被认为不存在。如果变量不存在的话，empty()并不会产生警告。
-    以下的东西被认为是空的：
-      "" (空字符串)
-      0 (作为整数的0)
-      0.0 (作为浮点数的0)
-      "0" (作为字符串的0)
-      NULL
-      FALSE
-      array() (一个空数组)
-      $var; (一个声明了，但是没有值的变量)
-  4 未申明变量，empty($a) - true, isset($a) - false
-  
+
   5 后端api验证client数据
     1 client数据中，包含规定的字段，valide 检查合法。
     2 client数据中，不包含规定的字段，valide 检查存在。
     3 client数据中，包含不规定的字段，只取valide 通过的规定字段。
   
 # CI  
-  1 数据库某字段数据类型为INT，CI查询数据库的结果中，select 字段的值都为字符串类型。
-  2 ci 查询数据表结果->result_array()，为数组结构。
-    示例1 table：id - 1, 查询结果：[{id:1}]。  [{"role_id":"1"},{"role_id":"3"}]
-    示例2 table：id - 1, id - 2，查询结果： [{id:1}, {id:2}]二维数组，res[0]或res[1] 为数组，并且是关联数组。
 
   3 RestController
       # 场景一：
