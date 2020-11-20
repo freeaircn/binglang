@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-16 21:16:07
+ * @LastEditTime: 2020-11-17 17:27:40
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -156,6 +156,19 @@ class Account extends APP_Rest_API
         $res['msg']    = App_Msg::SUCCESS;
         $res['avatar'] = ['path' => $path, 'name' => $name];
 
+        $res['code'] = App_Code::SUCCESS;
+        $this->response($res, 200);
+    }
+
+    /**
+     * @Description: 请求验证码，用于修改绑定的手机号或电子邮箱
+     * @Author: freeair
+     * @Date: 2020-11-17 17:27:10
+     * @param {*}
+     * @return {*}
+     */
+    public function verification_code_get()
+    {
         $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);
     }

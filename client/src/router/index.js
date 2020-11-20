@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
  * @LastEditors: freeair
- * @LastEditTime: 2020-10-16 16:40:33
+ * @LastEditTime: 2020-11-17 14:54:44
  */
 
 import Vue from 'vue'
@@ -53,7 +53,7 @@ Vue.use(Router)
 export const constantRoutes = [
   {
     path: '/',
-    redirect: '/admin/user'
+    redirect: '/account/setting'
   },
   {
     path: '/login',

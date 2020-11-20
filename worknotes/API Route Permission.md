@@ -47,33 +47,39 @@
 ---
 ### 2. 定义：页面url - API url - API权限字
 ```
-页面url           API url                                       API 权限字
-/login            /api/auth/login:post                          pass
-                  /api/auth/logout:post                         pass
-                  /api/auth/check_user:get                      pass
-/find_password    /api/auth/req_verification_code:get           pass
-                  /api/auth/valid_verification_code:post        pass
-                  /api/auth/req_reset_password:post             pass
+页面url                 API url                                       API 权限字
+/login                  /api/auth/login:post                          pass
+                        /api/auth/logout:post                         pass
+                        /api/auth/check_user:get                      pass
+/find_password          /api/auth/req_verification_code:get           pass
+                        /api/auth/valid_verification_code:post        pass
+                        /api/auth/req_reset_password:post             pass
+                        
+/admin/dept             /api/dept                                     dept:get  dept:post dept:put dept:delete
                   
-/admin/dept       /api/dept                                     dept:get  dept:post dept:put dept:delete
-             
-/admin/job        /api/job                                      ...
-
-/admin/user       /api/user                                     ...
-
-/admin/role       /api/role                                     ...
-
-/admin/menu       /api/menu                                     ...
-
-                  /api/role_menu                                ...
+/admin/job              /api/job                                      ...
+      
+/admin/user             /api/user                                     ...
+      
+/admin/role             /api/role                                     ...
+      
+/admin/menu             /api/menu                                     ...
+      
+                        /api/role_menu                                ...
+                        
+/admin/dict             /api/dict                                     ...
+      
+/admin/dict_data        /api/dict_data                                ...
+      
+/account/setting        /api/account/basic_Info_form_list_content:get account:get
+                        /api/account/basic_info:put                   account:put
+                        /api/account/avatar:post                      account:post
+                        /api/account/verification_code:get            account:get
                   
-/admin/dict       /api/dict                                     ...
+                        /api/account/phone:put                        account:put
+                        /api/account/email:put                        account:put
 
-/admin/dict_data  /api/dict_data                                ...
 
-/account/setting  /api/account/basic_Info_form_list_content:get account:get
-                  /api/account/basic_info:put                   account:put
-                  /api/account/avatar:post                      account:post
 ```
 
 ---

@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-02-17 22:35:46
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-16 21:13:35
+ * @LastEditTime: 2020-11-17 16:27:20
  */
 import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
 import { apiUpdateUserBasicInfo } from '@/api/app/account/index'
@@ -12,7 +12,7 @@ import { resetRouter } from '@/router'
 import * as utils from '@/utils/app/common'
 
 const state = {
-  user: {},
+  user: null,
   reqMenu: false
 }
 
@@ -22,6 +22,9 @@ const mutations = {
   },
   SET_USER_AVATAR: (state, avatar) => {
     state.user.avatar = utils.merge(avatar)
+  },
+  CLEAR_USER: (state) => {
+    state.user = null
   },
   SET_REQ_MENU: (state, value) => {
     state.reqMenu = value
@@ -102,11 +105,16 @@ const actions = {
   // 6 更新用户头像响应
   updateUserAvatar({ commit }, avatar) {
     commit('SET_USER_AVATAR', avatar)
+  },
+
+  // 7 清除
+  clearStoreUser({ commit }) {
+    commit('CLEAR_USER')
   }
 }
 
 export const logoutProcess = (commit) => {
-  commit('SET_USER', {})
+  // commit('CLEAR_USER')
   commit('SET_REQ_MENU', false)
   removeToken()
   resetRouter()

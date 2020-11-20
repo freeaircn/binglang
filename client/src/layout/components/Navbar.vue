@@ -41,7 +41,11 @@ export default {
     ]),
     avatarUrl: function() {
       // avatarUrl: process.env.VUE_APP_BASE_API + '/path/avatar.jpg'
-      return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
+      if (this.user === null) {
+        return ''
+      } else {
+        return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
+      }
     }
   },
   methods: {

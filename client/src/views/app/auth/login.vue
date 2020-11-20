@@ -63,6 +63,9 @@ export default {
       immediate: true
     }
   },
+  beforeMount() {
+    this.$store.dispatch('account/clearStoreUser')
+  },
   mounted() {
     if (this.formData.phone === '') {
       this.$refs['phone'].focus()
