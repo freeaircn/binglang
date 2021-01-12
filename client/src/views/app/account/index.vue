@@ -82,7 +82,7 @@
 
       <el-tab-pane name="tab_two" label="安全设置">
         <div class="pages-account-setting-title">安全设置</div>
-        <table class="w-40">
+        <table class="w-30">
           <tbody>
             <tr>
               <td>

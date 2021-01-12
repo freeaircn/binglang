@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 19:58:28
+ * @LastEditTime: 2021-01-09 10:47:23
  */
 import router from './router'
 import store from './store/app'
@@ -32,7 +32,8 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       // next() // 调试
-      if (typeof store.getters.user.phone === 'undefined') {
+      if (store.getters.user === null) {
+      // if (typeof store.getters.user.phone === 'undefined') {
         // 请求用户信息，比如刷新页面，打开新窗口
         store.dispatch('account/getUser').then(() => {
           // 请求用户已授权的页面

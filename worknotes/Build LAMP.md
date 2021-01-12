@@ -1,14 +1,37 @@
 # LAMP环境
 ---
 
-### 概述(2020.06)
-- CentOS 8.1 最小安装
-- MariaDB 10.4.12
-- Apache 2.4.37
-- php 7.3.18
-- phpadmin 5.0.2
+### 概述
+(2021.01)
+- CentOS 7 最小安装
+- MariaDB
+- Apache
+- php
+- phpadmin
 ---
+
+### 0 常用命令
+```
+  1 查看、卸载程序
+    rpm -qa|grep php
+    rpm -e php-pdo-5.1.6-27.el5_5.3
     
+  2 重建yum仓库
+    yum clean all
+    yum makecache
+    
+    yum-config-manager --disable 'remi-php*'
+    yum-config-manager --enable remi-php74
+    
+  3 应用服务启停
+    systemctl restart sshd
+    systemctl start sshd
+    systemctl stop sshd
+    systemctl enable sshd
+    systemctl disable sshd
+
+```
+  
 ### 1 更改ssh端口号   
 ```
   # 找到行 #Port 22，取消注释，并添加自定义的ssh端口,6669端口(BE ASCII)，保留22端口是以防万一，万一端口新增失败，22端口还是能用的，大不了用回22端口上服务器重新设置
@@ -43,6 +66,11 @@
 
 ### 2 aliyun 源镜像
 ```
+  https://developer.aliyun.com/
+
+  0 安装wget
+    yum install wget 
+  
   1 备份默认repo文件
     mv /etc/yum.repos.d/CentOS-AppStream.repo /etc/yum.repos.d/CentOS-AppStream.repo_bk
     mv /etc/yum.repos.d/CentOS-PowerTools.repo /etc/yum.repos.d/CentOS-PowerTools.repo_bk
@@ -53,31 +81,51 @@
   2 下载阿里云镜像repo文件
     wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
   
+    # 更新yum缓存
+      yum clean all
+      yum makecache
+      
   3 安装 epel 配置包
     # 下载文件
-    yum install -y https://mirrors.aliyun.com/epel/epel-release-latest-8.noarch.rpm
+    wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
     
-    # 将 repo 配置中的地址替换为阿里云镜像站地址，下面用sed命令来直接更改EPEL的地址是最高效的，当然，也可直接用vim打开文件来改。
-    sed -i 's|^#baseurl=https://download.fedoraproject.org/pub|baseurl=https://mirrors.aliyun.com|' /etc/yum.repos.d/epel*
-    sed -i 's|^metalink|#metalink|' /etc/yum.repos.d/epel*
-    
-  4 启用/禁用仓库
-    yum-config-manager --set-enabled remi-safe
-    yum-config-manager --set-disabled remi-safe
-    
-  5 查看安装的应用
-    rpm -qa|grep php
+    # 更新yum缓存
+      yum clean all
+      yum makecache
 ```
 
-### 3 安装MariaDB
+### 3 设置NTP对时
+```
+  1 安装
+    yum install ntp
+   
+  2 配置服务器
+    vi /etc/ntp.conf
+    # server 3.centos.pool.ntp.org iburst
+    server ntp.aliyun.com iburst
+    server ntp1.aliyun.com iburst
+  
+  3 启用
+    systemctl enable ntpd
+    systemctl start ntpd
+    
+    chkconfig ntpd on
+  
+  3 查看
+    ntpstat 查看NTP同步结果
+    timedatectl
+
+```
+
+### 4 安装MariaDB
 ```
   1 设置数据源
     # 新建文件
-      cat /etc/yum.repos.d/mariadb.repo
+      vi /etc/yum.repos.d/mariadb.repo
     # 文件输入以下内容
       [mariadb]
       name = MariaDB
-      baseurl=http://mirrors.aliyun.com/mariadb/yum/10.4/centos8-amd64/
+      baseurl=http://mirrors.aliyun.com/mariadb/yum/10.5/centos/7/x86_64/
       gpgkey=https://mirrors.aliyun.com/mariadb/yum/RPM-GPG-KEY-MariaDB 
       #enabled=1
       gpgcheck=1
@@ -87,12 +135,13 @@
       
   2 安装
     # --disablerepo=AppStream 禁用仓库标识为 AppStream 的主软件仓库
-    yum -y install galera-4
-    yum -y install MariaDB-server MariaDB-client  --disablerepo=AppStream
+    # yum -y install galera-4
+    # yum -y install MariaDB-server MariaDB-client  --disablerepo=AppStream
+    yum -y install mariadb mariadb-server
   
   3 启动
-    systemctl start mariadb
     systemctl enable mariadb
+    systemctl start mariadb
     systemctl restart mariadb
     systemctl stop mariadb.service
   
@@ -117,26 +166,31 @@
     vi /etc/my.cnf.d/mysql-clients.cnf
     [mysql]
     default-character-set=utf8
-
-  6 重启进程
+  
+  6 设置时区
+    /etc/my.cnf
+    在 [mysqld] 之下加
+    default-time-zone = '+8:00'
+  
+  7 重启进程
     systemctl restart mariadb
   
-  7 查看设置结果
+  8 查看设置结果
     mysql -uroot -p
     show variables like "%character%";
     show variables like "%collation%";
   
-  8 用户
-    create user app@localhost identified by 'pwd';
-    grant all on db_name.* to app@localhost;
-    REVOKE all ON db_name.* FROM 'app'@'localhost';
+  9 用户
+    create user app@localhost identified by 'Sql@1234';
+    grant all on binglang.* to app@localhost;
+    REVOKE all ON binglang.* FROM 'app'@'localhost';
     show grants;
     show grants for app@localhost;
     
     SET password for 'root'@'localhost'=password('pwd');
 ```
 
-### 4 安装Apache HTTP
+### 5 安装Apache HTTP
 ```
   1 安装
     yum install httpd
@@ -148,34 +202,61 @@
   2 设置防火墙允许
     firewall-cmd --permanent --add-service=http 
     firewall-cmd --permanent --add-port=80/tcp
+    firewall-cmd --permanent --add-port=8080/tcp
     firewall-cmd --reload 
 
+  3 配置
+    /etc/httpd/conf/httpd.conf
+    # Listen 12.34.56.78:80
+    Listen 192.168.1.92:80
+    Listen 192.168.1.92:8080
+    
 ```
 
-### 5 安装PHP
+### 6 安装PHP
 ```
+  http://rpms.remirepo.net/wizard/
+  
   1 设置数据源
-    wget https://mirrors.tuna.tsinghua.edu.cn/remi/enterprise/remi-release-8.rpm
-    yum install remi-release-8.rpm
+    wget https://mirrors.tuna.tsinghua.edu.cn/remi/enterprise/remi-release-7.rpm
+    yum install remi-release-7.rpm
     yum module list php
     
-  2 安装php7.3
+  2 安装php7.4
     yum install yum-utils
-    yum module enable php:remi-7.3
     
-    yum install php
+    yum-config-manager --disable 'remi-php*'
+    yum-config-manager --enable remi-php74
     
-  3 安装模块
-    yum install php-mysqli
+    yum clean all
+    yum makecache
     
-    # yum install php-gd php-ldap php-odbc php-pear php-xml php-xmlrpc php-snmp php-soap curl curl-devel php-bcmath php-intl php-imagick php-curl php-imap php-ssh2 php-apcu
- 
-    # systemctl enable --now php-fpm
+    yum install php php-cli php-fpm php-mysqlnd php-zip php-devel php-gd php-pecl-mcrypt php-mbstring php-curl php-xml php-pear php-bcmath php-json php-redis
+       
+  3 查看启用的模块
+    php -v
     
-  4 查看启用的模块
     php --modules
+    
+    systemctl restart httpd.service
+    
+  4 启用php-fpm
+    # PHP-FPM(PHP FastCGI Process Manager)意：PHP FastCGI 进程管理器，用于管理PHP 进程池的软件，用于接受web服务器的请求。
+    # PHP-FPM提供了更好的PHP进程管理方式，可以有效控制内存和进程、可以平滑重载PHP配置。
+    
+    /etc/php.ini，修改 cgi.fix_pathinfo=1 为 cgi.fix_pathinfo=0
+    
+    systemctl enable php-fpm
+    
+    systemctl start php-fpm
+    
+    systemctl disable php-fpm
   
-  5 测试
+  5 设置时区
+    /etc/php.ini 文件中，搜索“timezone”，添加
+    date.timezone ="Asia/Shanghai"
+  
+  6 测试
     cd /var/www/html
     vi info.php
     <?php
@@ -184,9 +265,9 @@
 
     systemctl restart httpd.service
     
-    http://192.168.1.89/info.php
+    http://192.168.1.92/info.php
   
-  6 卸载
+  7 卸载
     # 查看php相关安装包
       rpm -qa|grep php
     # 卸载
@@ -194,15 +275,15 @@
       
 ```
 
-### 6 安装phpMyAdmin
+### 7 安装phpMyAdmin
 ```
   1 下载
     cd /var/www/html/
-    wget https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.tar.gz
+    wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.tar.gz
   
   2 解压
-    tar xvf phpMyAdmin-5.0.2-all-languages.tar.gz
-    mv phpMyAdmin-5.0.2-all-languages phpmyadmin  
+    tar xvf phpMyAdmin-5.0.4-all-languages.tar.gz
+    mv phpMyAdmin-5.0.4-all-languages phpmyadmin  
     
   3 配置
     cd /var/www/html/phpmyadmin
@@ -291,9 +372,14 @@
       #    </Directory>
       #</IfModule>
 
+  5 使用
+    systemctl restart httpd.service
+    
+    http://192.168.1.92/phpmyadmin
+    
 ```
 
-### 7 APP Web
+### 8 APP Web
 ```
   1 目录结构
     Appache Document Root：/var/www/html
@@ -307,9 +393,9 @@
     # 把 Require all denied默认拒绝访问设置为允许访问： Require all granted
   
   3 新建app 的vhost配置文件
-    vi /etc/httpd/conf.d/vhost_app.conf
+    vi /etc/httpd/conf.d/binglang.conf
     # 写文件
-      <VirtualHost *:80>
+      <VirtualHost *:8080>
         DocumentRoot "/var/www/html/binglang/server"
         <Directory "/var/www/html/binglang/server/">
           Options -Indexes -Includes +FollowSymLinks -MultiViews
@@ -320,7 +406,14 @@
 
   4 http重定向至https，出去url中index.php
     vi /var/www/html/binglang/server/.htaccess
-    # 写文件
+    
+    # 写文件 HTTP
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+    
+    # 写文件 HTTPS
     RewriteEngine On
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{SERVER_NAME}/$1 [R,L]
@@ -331,8 +424,11 @@
   5 重启httpd
     systemctl restart httpd.service
   
-  7 APP数据库写入Maria DB
-    
+  6 APP数据库导入Maria DB
+  
+  7 测试
+       
+    http://192.168.1.92
     
   8 FAQ - appache rewrite
     RewriteRule Pattern Substitution [flags]
@@ -352,98 +448,6 @@
     （8）.QSA：此标记强制重写引擎在已有的替换串中追加一个请求串，而不是简单的替换。
 ```
 
-### 8 开启自签名SSL
-```
-  1 参考
-    # https://www.cnblogs.com/nidey/p/9041960.html
-    # https://www.cnblogs.com/walk1314/p/9100019.html
-    
-    # https://www.cnblogs.com/jie-hu/p/8034226.html
-    # https://www.cnblogs.com/xiaoleiel/p/11160661.html
-    # https://www.cnblogs.com/idjl/p/9610561.html
-  
-  2 Appache安装ssl模块，安装完后在/etc/httpd/conf.d/会有一个ssl.conf的文件，打开文件以后找到SSLCertificateFile和SSLCertificateKeyFile2行，可以看到后面我们要生成的密钥的配置信息
-    yum install mod_ssl
-  
-  3 安装openssl
-    yum install openssl
-  
-  4 ca配置文件
-    vi ca.conf
-    [ req ]
-    default_bits       = 4096
-    distinguished_name = req_distinguished_name
-
-    [ req_distinguished_name ]
-    countryName                 = CN
-    stateOrProvinceName         = YunNan
-    localityName                = BaoShan
-    organizationName            = BingLangJiang Co.,Ltd.
-    organizationalUnitName      = Freeair Studio 
-    commonName                  = Own CA
-    commonName_max              = 64
-  
-    # 生成ca秘钥，得到ca.key
-    openssl genrsa -out ca.key 4096
-    
-    # 生成ca证书签发请求，得到ca.csr
-    openssl req -new -sha256 -out ca.csr -key ca.key -config ca.conf
-    pwd/6669
-    
-    # 生成ca根证书，得到ca.crt
-    openssl x509 -req -days 365 -in ca.csr -signkey ca.key -out ca.crt
-
-  # appache侧
-    # 配置文件
-    vi server.conf
-    [ req ]
-    default_bits       = 2048
-    distinguished_name = req_distinguished_name
-    req_extensions     = req_ext
-
-    [ req_distinguished_name ]
-    countryName                 = Country Name (2 letter code)
-    countryName_default         = CN
-    stateOrProvinceName         = State or Province Name (full name)
-    stateOrProvinceName_default = YunNan
-    localityName                = Locality Name (eg, city)
-    localityName_default        = BaoShan
-    organizationName            = Organization Name (eg, company)
-    organizationName_default    = BingLangJiang Co.,Ltd. 
-    commonName                  = Common Name (e.g. server FQDN or YOUR name)
-    commonName_max              = 64
-    commonName_default          = www.be-green.com
-
-    [ req_ext ]
-    subjectAltName = @alt_names
-
-    [alt_names]
-    DNS.1   = www.be-green.com
-    IP.1    = 182.247.101.235
-    IP.2    = 192.168.205.60
-
-    
-    # 生成秘钥，得到server.key
-    openssl genrsa -out server.key 2048
-    
-    # 生成证书签发请求，得到server.csr
-    openssl req -new -sha256 -out server.csr -key server.key -config server.conf
-    
-    # 用CA证书签名证书，得到server.crt
-    openssl x509 -req -days 365 -CA ca.crt -CAkey ca.key -CAcreateserial -in server.csr -out server.crt -extensions req_ext -extfile server.conf
-    
-    # 存放文件
-    /etc/pki/tls/certs/server.crt
-    /etc/pki/tls/private/server.key
-  
-  # 配置防火墙
-  firewall-cmd --permanent --add-service=https 
-  firewall-cmd --permanent --add-port=443/tcp
-  firewall-cmd --reload
-  
-  # 用户侧主机安装ca.crt
-  右键ca.crt安装，安装到“受信任的根证书颁发机构”（不然server.crt还是不受信任的）
-```
 
 ### 9 工具
 ```
@@ -518,219 +522,8 @@
     sestatus
 ```
 
-### owncloud 源
-```
-  # https://download.owncloud.org/download/repositories/stable/owncloud/index.html
-  # Run the following shell commands as root to trust the repository.
-  rpm --import https://download.owncloud.org/download/repositories/production/CentOS_7/repodata/repomd.xml.key
-  wget http://download.owncloud.org/download/repositories/production/CentOS_7/ce:stable.repo -O /etc/yum.repos.d/ce:stable.repo
- 
- 
-  yum install owncloud-files
 
-  # Appache owncloud config
-  Alias /owncloud "/var/www/html/owncloud/"
-  
-  <Directory /var/www/html/owncloud/>
-    Options +FollowSymlinks
-    AllowOverride All
-  <IfModule mod_dav.c>
-    Dav off
-  </IfModule>
-  </Directory>
-
-  # db and account
-  # account - freeair/Free@321
-  
-  CREATE USER 'oc_admin'@'localhost' IDENTIFIED BY 'Bing@753';
-  CREATE DATABASE IF NOT EXISTS owncloud;
-  GRANT ALL PRIVILEGES ON owncloud.* TO oc_admin@localhost;
-  # 撤销授权
-  revoke all on owncloud.* from oc_admin@localhost;
-  Delete FROM user Where User='oc_admin' and Host='localhost';
-  
-
-  # add selinux config
-  semanage fcontext -a -t httpd_sys_rw_content_t '/stations/oc_data(/.*)?'
-  semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/html/owncloud/data(/.*)?'
-  semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/html/owncloud/config(/.*)?'
-  semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/html/owncloud/apps(/.*)?'
-  semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/html/owncloud/apps-external(/.*)?'
-  semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/html/owncloud/.htaccess'
-  semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/html/owncloud/.user.ini'
-
-  restorecon -Rv '/var/www/html/owncloud/'
-  restorecon -Rv '/stations/'
-
-  # remove selinux config
-  semanage fcontext -d '/stations/oc_data(/.*)?'
-  semanage fcontext -d '/var/www/html/owncloud/data(/.*)?'
-  semanage fcontext -d '/var/www/html/owncloud/config(/.*)?'
-  semanage fcontext -d '/var/www/html/owncloud/apps(/.*)?'
-  semanage fcontext -d '/var/www/html/owncloud/apps-external(/.*)?'
-  semanage fcontext -d '/var/www/html/owncloud/.htaccess'
-  semanage fcontext -d '/var/www/html/owncloud/.user.ini'
-  
-  restorecon -Rv '/var/www/html/owncloud/'
-  restorecon -Rv '/stations/'
-```
-
-### 申请免费域名
-```
-  # chrome 安装“谷歌访问助手”插件
-  # https://www.jianshu.com/p/6086ec29c173
-    # 克隆或下载仓库到本地
-    # 打开Chrome浏览器的扩展程序管理器，然后勾选开发者模式。
-    # 在左上角点击加载已解压的扩展程序，选在在第一步下载的谷歌访问助手文件夹
-    # 当然，如果想在其他非chrome浏览器安装谷歌访问助手，怎么办呢？别担心，开发者为我们考虑到这点。同样在上面的GitHub网页上，开发者提供了一个网站http://www.ggfwzs.com
-    
-  # 免费域名申请，需要gmail账号（freeair.sam@gmail.com）
-  https://www.freenom.com/en/index.html
-  www.binglang.cf  182.247.101.235
-```
-
-### 申请免费ssl证书
-```
-  # 为appache安装ssl模块，安装完后在/etc/httpd/conf.d/会有一个ssl.conf的文件，打开文件以后找到SSLCertificateFile和SSLCertificateKeyFile，可以看到后面我们要生成的密钥的配置信息
-  yum install mod_ssl
-
-  # https://www.cnblogs.com/esofar/p/9291685.html
-  # https://www.jianshu.com/p/3aa5cb957d9f  
-  
-  # 用第三方客户端 acme.sh 申请
-  # 把 acme.sh 安装到当前用户的主目录$HOME下的.acme.sh文件夹中，即~/.acme.sh/，之后所有生成的证书也会放在这个目录下
-  # 安装 acme.sh
-  cd ~/.acme.sh
-  curl https://get.acme.sh | sh
-  
-  # 创建了一个指令别名alias acme.sh=~/.acme.sh/acme.sh，这样我们可以通过acme.sh命令方便快速地使用 acme.sh 脚本
-  # acme.sh --version确认是否能正常使用acme.sh命令。
-  
-  # 生成证书
-  # acme.sh --issue -d xxx.cn -d www.xxx.cn -w /var/www/html
-  --issue是 acme.sh 脚本用来颁发证书的指令；
-  -d是--domain的简称，其后面须填写已备案的域名；
-  -w是--webroot的简称，其后面须填写网站的根目录。
-  
-  acme.sh --issue -d binglang.cf -d www.binglang.cf -w /var/www/html
-  
-  # 存放证书
-  /etc/pki/tls/certs/fullchain.cer
-  /etc/pki/tls/private/be-green.ga.key
-  
-  # 配置防火墙
-  firewall-cmd --permanent --add-service=https 
-  firewall-cmd --permanent --add-port=443/tcp
-  firewall-cmd --reload
-  
-  # 重启httpd
-  systemctl restart httpd.service
-  
-  # 检测网站的安全级别：
-  https://myssl.com
-  https://www.ssllabs.com
-  
-  # 更新证书，目前 Let's Encrypt 的证书有效期是90天，时间到了会自动更新，您无需任何操作
-    # 强制续签证书
-    acme.sh --renew -d example.com --force
- ```   
-    
-    
-
-### [备选] 开启自签名SSL
-```
-  # https://www.cnblogs.com/nidey/p/9041960.html
-  # https://www.cnblogs.com/walk1314/p/9100019.html
-  
-  # https://www.cnblogs.com/jie-hu/p/8034226.html
-  # https://www.cnblogs.com/xiaoleiel/p/11160661.html
-  # https://www.cnblogs.com/idjl/p/9610561.html
-  
-  # 为appache安装ssl模块，安装完后在/etc/httpd/conf.d/会有一个ssl.conf的文件，打开文件以后找到SSLCertificateFile和SSLCertificateKeyFile2行，可以看到后面我们要生成的密钥的配置信息
-  yum install mod_ssl
-  
-  # openssl
-  yum install openssl
-  
-  # CA侧
-    # ca配置文件
-    vi ca.conf
-    [ req ]
-    default_bits       = 4096
-    distinguished_name = req_distinguished_name
-
-    [ req_distinguished_name ]
-    countryName                 = CN
-    stateOrProvinceName         = YunNan
-    localityName                = BaoShan
-    organizationName            = BingLangJiang Co.,Ltd.
-    organizationalUnitName      = Freeair Studio 
-    commonName                  = Own CA
-    commonName_max              = 64
-  
-    # 生成ca秘钥，得到ca.key
-    openssl genrsa -out ca.key 4096
-    
-    # 生成ca证书签发请求，得到ca.csr
-    openssl req -new -sha256 -out ca.csr -key ca.key -config ca.conf
-    pwd/6669
-    
-    # 生成ca根证书，得到ca.crt
-    openssl x509 -req -days 365 -in ca.csr -signkey ca.key -out ca.crt
-
-  # appache侧
-    # 配置文件
-    vi server.conf
-    [ req ]
-    default_bits       = 2048
-    distinguished_name = req_distinguished_name
-    req_extensions     = req_ext
-
-    [ req_distinguished_name ]
-    countryName                 = Country Name (2 letter code)
-    countryName_default         = CN
-    stateOrProvinceName         = State or Province Name (full name)
-    stateOrProvinceName_default = YunNan
-    localityName                = Locality Name (eg, city)
-    localityName_default        = BaoShan
-    organizationName            = Organization Name (eg, company)
-    organizationName_default    = BingLangJiang Co.,Ltd. 
-    commonName                  = Common Name (e.g. server FQDN or YOUR name)
-    commonName_max              = 64
-    commonName_default          = www.be-green.com
-
-    [ req_ext ]
-    subjectAltName = @alt_names
-
-    [alt_names]
-    DNS.1   = www.be-green.com
-    IP.1    = 182.247.101.235
-    IP.2    = 192.168.205.60
-
-    
-    # 生成秘钥，得到server.key
-    openssl genrsa -out server.key 2048
-    
-    # 生成证书签发请求，得到server.csr
-    openssl req -new -sha256 -out server.csr -key server.key -config server.conf
-    
-    # 用CA证书签名证书，得到server.crt
-    openssl x509 -req -days 365 -CA ca.crt -CAkey ca.key -CAcreateserial -in server.csr -out server.crt -extensions req_ext -extfile server.conf
-    
-    # 存放文件
-    /etc/pki/tls/certs/server.crt
-    /etc/pki/tls/private/server.key
-  
-  # 配置防火墙
-  firewall-cmd --permanent --add-service=https 
-  firewall-cmd --permanent --add-port=443/tcp
-  firewall-cmd --reload
-  
-  # 用户侧主机安装ca.crt
-  右键ca.crt安装，安装到“受信任的根证书颁发机构”（不然server.crt还是不受信任的）
-```  
-
-### 7 APP Web
+### APP Web
 ```
   # Appache Document Root：/var/www/html
   # APP根目录：/var/www/html/green.ga/CI框架

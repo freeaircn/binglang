@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 11:42:51
+ * @LastEditTime: 2021-01-09 16:31:39
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -213,28 +213,32 @@ class Common_tools extends CI_Model
      * @param {*}
      * @return {*}
      */
-    public function app_log($level, $msg)
+    public function app_log($level, $msg, $where = '')
     {
-        // 1 组织log header
+        // 1 组织日志消息头内容
         $session = session_id();
         if (empty($session)) {
-            $session = "";
+            $session = "trace_id";
         } elseif (strlen($session) >= 8) {
             $session = substr($session, 0, 8);
         } else {
-            $session = "";
+            $session = "trace_id";
         }
 
         $phone = $this->session->userdata('phone');
         if (empty($phone)) {
-            $phone = "";
+            $phone = "phone";
         } elseif (strlen($phone) >= 11) {
             $phone = substr($phone, 0, 3) . "****" . substr($phone, 7, 4);
         } else {
-            $phone = "";
+            $phone = "phone";
         }
 
-        $msg_header = $session . ' | ' . $phone . ' | ';
+        if (empty($where)) {
+            $msg_header = $session . ' | ' . $phone . ' | ' . 'where' . ' | ';
+        } else {
+            $msg_header = $session . ' | ' . $phone . ' | ' . $where . ' | ';
+        }
 
         // 2 调用接口写log
         switch ($level) {

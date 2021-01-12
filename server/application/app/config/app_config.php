@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 20:00:17
+ * @LastEditTime: 2021-01-08 14:32:57
  */
 
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -47,7 +47,7 @@ $config['bcrypt_default_cost']     = 12; // Set cost according to your server be
 $config['argon2_default_params']   = [
     'memory_cost' => 1 << 14, // 16MB
     'time_cost'   => 4,
-    'threads'     => 2,
+    'threads'     => PASSWORD_ARGON2_DEFAULT_THREADS,
 ];
 
 /*

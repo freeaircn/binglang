@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-16 21:38:54
+ * @LastEditTime: 2021-01-09 16:27:25
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -112,7 +112,7 @@ class Auth extends RestController
         $this->auth_model->rehash_password_if_needed($user['password'], $user['phone'], $password);
 
         // 11 记录log
-        $this->common_tools->app_log('notice', "login successfully.");
+        $this->common_tools->app_log('notice', "login successfully.", 'auth-login');
 
         // 12 组织response数据
         $str         = session_id();
@@ -186,7 +186,7 @@ class Auth extends RestController
 
         // 1 log
         $user = $this->session->userdata();
-        $this->common_tools->app_log('notice', "logout.");
+        $this->common_tools->app_log('notice', "logout.", 'auth-logout');
 
         // 2 销毁session
         $this->session->sess_destroy();
@@ -324,7 +324,7 @@ class Auth extends RestController
         if ($hash_pwd === false) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            $this->common_tools->app_log('error', "HASH_PASSWORD_FAILED");
+            $this->common_tools->app_log('error', "HASH_PASSWORD_FAILED", 'auth-req_reset_pwd');
 
             $this->response($res, 200);
         }
@@ -334,11 +334,11 @@ class Auth extends RestController
         if (!$result) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            $this->common_tools->app_log('error', "SYS_RESET_PASSWORD_FAILED");
+            $this->common_tools->app_log('error', "SYS_RESET_PASSWORD_FAILED", 'auth-req_reset_pwd');
         }
 
         // 4 log
-        $this->common_tools->app_log('warning', "reset password successfully.");
+        $this->common_tools->app_log('warning', "reset password successfully.", 'auth-req_reset_pwd');
 
         $res['code'] = App_Code::SUCCESS;
         $res['msg']  = '请使用新密码登录!';

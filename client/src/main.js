@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2020-10-19 19:40:16
+ * @LastEditTime: 2021-01-09 10:51:42
  */
 import Vue from 'vue'
 
-import './utils/app/error-log' // error log
+// import './utils/app/error-log' // error log
 
 import Cookies from 'js-cookie'
 
