@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-22 23:15:14
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-16 20:27:53
+ * @LastEditTime: 2021-01-15 19:37:27
 -->
 <template>
   <div>
@@ -92,8 +92,8 @@ export default {
 }
 
 .pages-account-setting-avatar {
-  width: 178px;
-  height: 178px;
+  width: 144px;
+  height: 144px;
   border-radius: 50%;
   display: block;
 }

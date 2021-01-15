@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-02-08 16:49:52
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 19:54:05
+ * @LastEditTime: 2021-01-13 23:39:26
  */
 const getters = {
   user: state => state.account.user,
@@ -11,7 +11,8 @@ const getters = {
   permission_routes: state => state.permission.routes,
   //
   sidebar: state => state.app.sidebar,
-  device: state => state.app.device
+  device: state => state.app.device,
+  isDesktop: state => state.app.isDesktop
   // sidebar: state => state.app.sidebar,
   // device: state => state.app.device,
   // token: state => state.user.token,

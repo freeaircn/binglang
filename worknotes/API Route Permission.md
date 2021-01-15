@@ -76,8 +76,7 @@
                         /api/account/avatar:post                      account:post
                         /api/account/verification_code:get            account:get
                   
-                        /api/account/phone:put                        account:put
-                        /api/account/email:put                        account:put
+                        /api/account/security_setting:put             account:put
 
 
 ```

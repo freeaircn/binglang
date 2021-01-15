@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-17 17:22:43
+ * @LastEditTime: 2021-01-15 22:10:06
  */
 import request from '@/utils/request'
 
@@ -14,17 +14,27 @@ export function apiGetBasicInfoFormListContent() {
   })
 }
 
-export function apiGetVerificationCode() {
+export function apiUpdateUserBasicInfo(formData) {
+  return request({
+    url: '/api/account/basic_info',
+    method: 'put',
+    data: formData
+  })
+}
+
+// 请求验证码
+export function apiReqVerificationCode() {
   return request({
     url: '/api/account/verification_code',
     method: 'get'
   })
 }
 
-export function apiUpdateUserBasicInfo(formData) {
+// 提交更改安全设置
+export function apiPostSecuritySetting(data) {
   return request({
-    url: '/api/account/basic_info',
-    method: 'put',
-    data: formData
+    url: '/api/account/security_setting',
+    method: 'post',
+    data: data
   })
 }

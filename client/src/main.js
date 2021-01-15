@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-09 10:51:42
+ * @LastEditTime: 2021-01-14 22:50:57
  */
 import Vue from 'vue'
 
@@ -32,7 +32,29 @@ Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })
 
-// register global utility filters
+// 引入Vant
+import { Button as VanButton } from 'vant'
+import { Cell, CellGroup } from 'vant'
+import { Field } from 'vant'
+Vue.use(Cell)
+Vue.use(CellGroup)
+Vue.use(Field)
+Vue.component(VanButton.name, VanButton)
+
+// 引入antd
+// import Antd from 'ant-design-vue'
+// import 'ant-design-vue/dist/antd.css'
+// Vue.use(Antd)
+// import { Input as AInput } from 'ant-design-vue'
+// import { Select as ASelect } from 'ant-design-vue'
+// import { Tree as ATree } from 'ant-design-vue'
+// import { TreeSelect as ATreeSelect } from 'ant-design-vue'
+// Vue.component(AInput.name, AInput)
+// Vue.component(ASelect.name, ASelect)
+// Vue.component(ATree.name, ATree)
+// Vue.component(ATreeSelect.name, ATreeSelect)
+
+// register global utility filtersA
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })

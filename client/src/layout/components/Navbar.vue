@@ -1,13 +1,13 @@
 <template>
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-    <bread-crumb id="breadcrumb-container" class="breadcrumb-container" />
+    <bread-crumb v-if="isDesktop" id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
       <el-dropdown @command="handleDropdownCommand">
         <span>
           <el-avatar class="avatar-container" fit="cover" size="medium" :src="avatarUrl" />
-          <el-link class="avatar-text" :underline="false">{{ user.phone }}</el-link>
+          <el-link v-if="isDesktop" class="avatar-text" :underline="false">{{ user.phone }}</el-link>
         </span>
         <el-dropdown-menu slot="dropdown">
           <router-link to="#">
@@ -37,7 +37,7 @@ export default {
     ...mapGetters([
       'user',
       'sidebar',
-      'device'
+      'isDesktop'
     ]),
     avatarUrl: function() {
       // avatarUrl: process.env.VUE_APP_BASE_API + '/path/avatar.jpg'

@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-18 22:06:11
+ * @LastEditTime: 2021-01-15 22:24:15
  */
 import request from '@/utils/request'
 
@@ -40,7 +40,7 @@ export function apiLogout() {
 
 export function apiReqVerificationCode(params) {
   return request({
-    url: '/api/auth/req_verification_code',
+    url: '/api/auth/verification_code',
     method: 'get',
     params: params
   })

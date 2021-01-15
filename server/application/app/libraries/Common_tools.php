@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-09 16:31:39
+ * @LastEditTime: 2021-01-15 22:59:57
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -14,6 +14,7 @@ class Common_tools extends CI_Model
     {
         // Check compat first
         $this->config->load('app_config', true);
+        $this->load->library(['email']);
     }
 
     /**
@@ -302,5 +303,30 @@ class Common_tools extends CI_Model
             return true;
         }
 
+    }
+
+    public function api_send_mail($email_address = '', $data = [])
+    {
+        if (empty($data) || empty($email_address)) {
+            return false;
+        }
+
+        $message = $this->load->view($this->config->item('email_templates', 'app_config') . $this->config->item('email_verification_code', 'app_config'), $data, true);
+
+        $email_config = $this->config->item('email_config', 'app_config');
+        $this->email->clear();
+        $this->email->initialize($email_config);
+
+        $this->email->from($this->config->item('sys_mail', 'app_config'), $this->config->item('mail_title', 'app_config'));
+        $this->email->to($email_address);
+        $this->email->subject($this->config->item('mail_title', 'app_config') . ' - ' . '验证码 ' . $data['verification_code']);
+        $this->email->message($message);
+
+        if ($this->email->send() === true) {
+            return true;
+        } else {
+            return false;
+        }
+        // $this->email->print_debugger();
     }
 }

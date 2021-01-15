@@ -3,10 +3,10 @@
  * @Author: freeair
  * @Date: 2020-02-17 22:35:46
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-17 16:27:20
+ * @LastEditTime: 2021-01-16 01:13:58
  */
 import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
-import { apiUpdateUserBasicInfo } from '@/api/app/account/index'
+import { apiUpdateUserBasicInfo, apiPostSecuritySetting } from '@/api/app/account/index'
 import { setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import * as utils from '@/utils/app/common'
@@ -96,6 +96,24 @@ const actions = {
       apiUpdateUserBasicInfo(user_info).then(data => {
         commit('SET_USER', data.user)
         resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 更改安全设置
+  updateUserSecuritySetting({ commit }, securityData) {
+    return new Promise((resolve, reject) => {
+      apiPostSecuritySetting(securityData).then(data => {
+        if (typeof data.cmd !== 'undefined') {
+          if (data.cmd === 'logout') {
+            resolve('logout')
+          }
+        } else {
+          commit('SET_USER', data.user)
+          resolve('')
+        }
       }).catch(error => {
         reject(error)
       })

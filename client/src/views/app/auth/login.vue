@@ -1,10 +1,10 @@
 <template>
-  <div class="login-wrapper">
-    <div class="login-container mb-4">
-      <div class="login-header py-responsive is-center">
+  <div class="wrapper">
+    <div class="container container-responsive mb-4">
+      <div class="login-header py-3 is-center">
         <router-link to="/home"><span><svg-logo logo-class="be_green" /></span></router-link>
       </div>
-      <el-form ref="form" :model="formData" :rules="rules" class="container-sm px-responsive" label-position="left">
+      <el-form ref="form" :model="formData" :rules="rules" label-position="left">
         <el-form-item prop="phone">
           <el-input ref="phone" v-model="formData.phone" type="text" tabindex="1" prefix-icon="el-icon-mobile-phone" placeholder="请输入手机号" clearable />
         </el-form-item>
@@ -106,12 +106,12 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.login-wrapper {
+.wrapper {
   width: 100%;
   height: 100%;
   background-color:  $bg-gray-light;
 }
-.login-container {
+.container {
   position: absolute;
   left: 0;
   right: 0;

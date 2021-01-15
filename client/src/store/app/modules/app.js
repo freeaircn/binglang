@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: freeair
+ * @Date: 2020-02-11 12:25:03
+ * @LastEditors: freeair
+ * @LastEditTime: 2021-01-14 00:20:43
+ */
 import Cookies from 'js-cookie'
 
 const state = {
@@ -6,7 +13,8 @@ const state = {
     withoutAnimation: false
   },
   device: 'desktop',
-  size: Cookies.get('size') || 'medium'
+  size: Cookies.get('size') || 'medium',
+  isDesktop: true
 }
 
 const mutations = {
@@ -30,6 +38,9 @@ const mutations = {
   SET_SIZE: (state, size) => {
     state.size = size
     Cookies.set('size', size)
+  },
+  TOGGLE_DESKTOP: (state, val) => {
+    state.isDesktop = val
   }
 }
 
@@ -45,6 +56,9 @@ const actions = {
   },
   setSize({ commit }, size) {
     commit('SET_SIZE', size)
+  },
+  toggleDesktop({ commit }, val) {
+    commit('TOGGLE_DESKTOP', val)
   }
 }
 

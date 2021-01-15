@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-09 16:27:25
+ * @LastEditTime: 2021-01-15 23:03:21
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -23,7 +23,7 @@ class Auth extends RestController
         $this->config->load('config', true);
         $this->load->model('auth_model');
         $this->load->model('common_model');
-        $this->load->library(['email', 'common_tools']);
+        $this->load->library(['common_tools']);
     }
 
     /** 1
@@ -202,7 +202,7 @@ class Auth extends RestController
      * @param {*}
      * @return {*}
      */
-    public function req_verification_code_get()
+    public function verification_code_get()
     {
         // $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         // $client       = json_decode($stream_clean, true);
@@ -245,25 +245,14 @@ class Auth extends RestController
             'verification_code' => $code,
             'dt'                => date("Y-m-d H:i:s"),
         ];
-        $message = $this->load->view($this->config->item('email_templates', 'app_config') . $this->config->item('email_verification_code', 'app_config'), $data, true);
 
-        $email_config = $this->config->item('email_config', 'app_config');
-        $this->email->clear();
-        $this->email->initialize($email_config);
-
-        $this->email->from($this->config->item('sys_mail', 'app_config'), $this->config->item('mail_title', 'app_config'));
-        $this->email->to($email);
-        $this->email->subject($this->config->item('mail_title', 'app_config') . ' - ' . '验证码 ' . $code);
-        $this->email->message($message);
-
-        if ($this->email->send() === true) {
+        if ($this->common_model->api_send_mail($email, $data) === true) {
             $res['data'] = ['email' => $email];
             $res['code'] = App_Code::SUCCESS;
         } else {
             $res['code'] = App_Code::SYS_SEND_MAIL_FAILED;
             $res['msg']  = App_Msg::SYS_SEND_MAIL_FAILED;
         }
-        // $this->email->print_debugger();
         $this->response($res, 200);
     }
 

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-17 17:27:40
+ * @LastEditTime: 2021-01-16 01:12:42
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -161,7 +161,7 @@ class Account extends APP_Rest_API
     }
 
     /**
-     * @Description: 请求验证码，用于修改绑定的手机号或电子邮箱
+     * @Description: 请求验证码，用于修改安全设置，例如：绑定手机号，邮箱，密码
      * @Author: freeair
      * @Date: 2020-11-17 17:27:10
      * @param {*}
@@ -169,6 +169,106 @@ class Account extends APP_Rest_API
      */
     public function verification_code_get()
     {
+        $phone = $this->session->userdata('phone');
+
+        // 1 查询用户是否存在
+        $user = $this->common_model->get_user_by_phone($phone);
+        if ($user === false) {
+            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $this->response($res, 200);
+        }
+
+        // 2 查询用户的email是否存在
+        $email = $user['email'];
+        if (empty($email)) {
+            $res['code'] = App_Code::USER_EMAIL_NOT_EXISTING;
+            $res['msg']  = App_Msg::USER_EMAIL_NOT_EXISTING;
+            $this->response($res, 200);
+        }
+
+        // 3 生成验证码
+        $code = $this->account_model->create_verification_code($phone);
+        if ($code === false) {
+            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $this->response($res, 200);
+        }
+
+        // 4 发送邮件
+        $data = [
+            'phone'             => $phone,
+            'verification_code' => $code,
+            'dt'                => date("Y-m-d H:i:s"),
+        ];
+
+        if ($this->common_tools->api_send_mail($email, $data) === true) {
+            $res['data'] = ['email' => $email];
+            $res['code'] = App_Code::SUCCESS;
+        } else {
+            $res['code'] = App_Code::SYS_SEND_MAIL_FAILED;
+            $res['msg']  = App_Msg::SYS_SEND_MAIL_FAILED;
+        }
+        $this->response($res, 200);
+    }
+
+    // 提交修改安全设置，例如：绑定手机号，邮箱，密码
+    public function security_setting_post()
+    {
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $phone = $this->session->userdata('phone');
+
+        $code = $client['code'];
+        $prop = $client['prop'];
+        $data = [
+            'prop'      => $prop,
+            'new_phone' => $client['new_phone'],
+            'new_email' => $client['new_email'],
+        ];
+
+        // 1 验证用户请求
+        $is_valid = $this->account_model->check_verification_code($phone, $code, true);
+        if (!$is_valid) {
+            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            $this->response($res, 200);
+        }
+
+        // 2 更新安全设置
+        $result = $this->account_model->update_security_setting_by_phone($phone, $data);
+        if (!$result) {
+            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
+            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            $this->common_tools->app_log('error', "SYS_RESET_PASSWORD_FAILED", 'account-update_security_setting');
+        }
+
+        // 4 修改email，更新session
+        if ($prop === 'email') {
+
+            // 查询用户信息，更新session数据
+            $current_user = $this->common_model->get_user_by_phone($phone);
+            $user_info    = $this->common_model->build_user_info($current_user);
+            $rtn          = $this->common_model->update_session($user_info);
+
+            $res['msg']  = App_Msg::SUCCESS;
+            $res['data'] = ['user' => $user_info];
+        }
+
+        // 5 log
+        $this->common_tools->app_log('warning', $prop . " security setting successfully.", 'account-update_security_setting');
+
+        // 5 修改手机号，强制清除session
+        if ($prop === 'phone') {
+            $this->common_tools->app_log('notice', "force logout.", 'account-update_security_setting');
+
+            $this->session->sess_destroy();
+
+            $res['msg']  = '请使用新手机号登录！';
+            $res['data'] = ['cmd' => 'logout'];
+        }
+
         $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);
     }

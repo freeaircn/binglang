@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-15 21:19:58
+ * @LastEditTime: 2021-01-16 00:26:57
  */
 import axios from 'axios'
 import qs from 'qs'
@@ -71,7 +71,10 @@ service.interceptors.response.use(
         return Promise.resolve()
       }
     } else {
-      const msg = res.msg
+      let msg = ''
+      if (typeof res.msg !== 'undefined') {
+        msg = res.msg
+      }
       return Promise.reject(msg)
     }
   },
