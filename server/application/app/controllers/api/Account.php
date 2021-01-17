@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-16 01:12:42
+ * @LastEditTime: 2021-01-18 01:10:50
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -52,48 +52,65 @@ class Account extends APP_Rest_API
         //     $this->response($res, 200);
         // }
 
-        // 1 根据手机号匹配数据表用户记录，必须核对用户手机号，防止用户A修改了用户B
-        $phone = $this->session->userdata('phone');
-
-        $data['username'] = $client['username'];
-        $data['sex']      = (int) $client['sex'];
-
-        $data['identity_document_number'] = $client['identity_document_number'];
+        // 1 处理输入
+        $user_prop_mask = $this->common_model->get_user_prop_by_mask($this->config->item('user_prop_edit_mask', 'app_config'));
+        $data           = array_intersect_key($client, $user_prop_mask);
 
         // 2 非必填下拉表单项，例如job, 因为job_id是数据表的外键fk，外键不能为空字符串''
-        $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
-        $data['attr_02_id'] = $client['attr_02_id'] === '' ? null : $client['attr_02_id'];
-        $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
-        $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
+        foreach ($data as $i => $value) {
+            if (stripos($i, '_id') && $value === '') {
+                $data[$i] = null;
+            }
+        }
+
+        // $data['username'] = $client['username'];
+        // $data['sex']      = $client['sex'];
+
+        // $data['identity_document_number'] = $client['identity_document_number'];
+
+        // 2 非必填下拉表单项，例如job, 因为job_id是数据表的外键fk，外键不能为空字符串''
+        // $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
+        // $data['attr_02_id'] = $client['attr_02_id'] === '' ? null : $client['attr_02_id'];
+        // $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
+        // $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
 
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
-        // 3 更新用户基本信息
-        $rtn = $this->account_model->update_user_basic_info($phone, $data);
+        // 3 更新用户基本信息，从session获取用户phone，必须核对用户手机号，防止用户A修改了用户B
+        $phone = $this->session->userdata('phone');
+        $rtn   = $this->account_model->update_user_basic_info($phone, $data);
         if ($rtn === false) {
             $res['code'] = App_Code::UPDATE_USER_FAILED;
             $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-            $this->common_tools->app_log('error', "UPDATE_USER_FAILED");
+            $this->common_tools->app_log('error', "UPDATE_USER_FAILED", 'account-update_basic_info');
 
             $this->response($res, 200);
         }
 
         // 4 查询用户信息，更新session数据
-        $current_user = $this->common_model->get_user_by_phone($phone);
-        $user_info    = $this->common_model->build_user_info($current_user);
-        $rtn          = $this->common_model->update_session($user_info);
-        if ($rtn === false) {
-            $res['code'] = App_Code::UPDATE_USER_FAILED;
-            $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-            $this->common_tools->app_log('error', "UPDATE_SESSION_FAILED");
+        if ($this->common_tools->update_user_prop_in_session($data) === false) {
+            $res['code'] = App_Code::UPDATE_SESSION_FAILED;
+            $res['msg']  = App_Msg::UPDATE_SESSION_FAILED;
+            $this->common_tools->app_log('error', "UPDATE_SESSION_FAILED", 'account-update_basic_info');
 
             $this->response($res, 200);
         }
 
+        // $current_user = $this->common_model->get_user_by_phone($phone);
+        // $user_info    = $this->common_model->build_user_info($current_user);
+        // $rtn          = $this->common_model->update_session($user_info);
+        // if ($rtn === false) {
+        //     $res['code'] = App_Code::UPDATE_USER_FAILED;
+        //     $res['msg']  = App_Msg::UPDATE_USER_FAILED;
+        //     $this->common_tools->app_log('error', "UPDATE_SESSION_FAILED", 'account-update_basic_info');
+
+        //     $this->response($res, 200);
+        // }
+
         // 5 更新后的用户信息返回前端，更新前端vuex
         $res['code'] = App_Code::SUCCESS;
         $res['msg']  = App_Msg::SUCCESS;
-        $res['data'] = ['user' => $user_info];
+        $res['data'] = ['user' => $data];
 
         $this->response($res, 200);
     }
@@ -143,7 +160,8 @@ class Account extends APP_Rest_API
         }
 
         // 5 更新session数据
-        $this->session->set_userdata('avatar', ['name' => $name, 'path' => $path]);
+        // $this->session->set_userdata('avatar', ['name' => $name, 'path' => $path]);
+        $this->session->set_userdata('avatar', $path . $name);
 
         // 6 删除旧头像文件
         if ($current_avatar['path'] !== $this->config->item('avatar_default_path', 'app_config')) {
@@ -152,9 +170,10 @@ class Account extends APP_Rest_API
         unlink(FCPATH . $this->config->item('avatar_upload_path', 'app_config') . $name);
 
         // 7 更新后的用户信息返回前端，更新前端vuex
-        $res['code']   = App_Code::SUCCESS;
-        $res['msg']    = App_Msg::SUCCESS;
-        $res['avatar'] = ['path' => $path, 'name' => $name];
+        $res['code'] = App_Code::SUCCESS;
+        $res['msg']  = App_Msg::SUCCESS;
+        // $res['avatar'] = ['path' => $path, 'name' => $name];
+        $res['avatar'] = $path . $name;
 
         $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);
@@ -221,46 +240,57 @@ class Account extends APP_Rest_API
         $phone = $this->session->userdata('phone');
 
         $code = $client['code'];
-        $prop = $client['prop'];
-        $data = [
-            'prop'      => $prop,
-            'new_phone' => $client['new_phone'],
-            'new_email' => $client['new_email'],
-        ];
+        $key  = $client['prop'];
 
-        // 1 验证用户请求
+        $data = [];
+        foreach ($client as $index => $value) {
+            if ($index === $key) {
+                $data[$key] = $value;
+            }
+        }
+
+        // 1 验证码
         $is_valid = $this->account_model->check_verification_code($phone, $code, true);
         if (!$is_valid) {
-            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
-            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
+            $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
             $this->response($res, 200);
         }
 
-        // 2 更新安全设置
+        // 2 手机号，邮箱是否被绑定
+        foreach ($data as $index => $value) {
+            if ($index === $key) {
+                if ($this->common_model->is_existing_in_tbl($key, $value, 'user')) {
+                    $res['code'] = App_Code::ACCOUNT_NEW_SECURITY_SETTING_EXISTING;
+                    $res['msg']  = $value . App_Msg::ACCOUNT_NEW_SECURITY_SETTING_EXISTING;
+                    $this->response($res, 200);
+                }
+            }
+        }
+
+        // 3 更新安全设置
         $result = $this->account_model->update_security_setting_by_phone($phone, $data);
         if (!$result) {
-            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
-            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            $this->common_tools->app_log('error', "SYS_RESET_PASSWORD_FAILED", 'account-update_security_setting');
+            $this->common_tools->app_log('error', "ACCOUNT_UPDATE_SECURITY_SETTING_FAILED", 'account-update_security_setting');
+
+            $res['code'] = App_Code::ACCOUNT_UPDATE_SECURITY_SETTING_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_UPDATE_SECURITY_SETTING_FAILED;
+            $this->response($res, 200);
         }
 
         // 4 修改email，更新session
-        if ($prop === 'email') {
-
-            // 查询用户信息，更新session数据
-            $current_user = $this->common_model->get_user_by_phone($phone);
-            $user_info    = $this->common_model->build_user_info($current_user);
-            $rtn          = $this->common_model->update_session($user_info);
+        if ($key === 'email') {
+            $this->common_tools->update_user_prop_in_session($data);
 
             $res['msg']  = App_Msg::SUCCESS;
-            $res['data'] = ['user' => $user_info];
+            $res['data'] = ['user' => $data];
         }
 
         // 5 log
-        $this->common_tools->app_log('warning', $prop . " security setting successfully.", 'account-update_security_setting');
+        $this->common_tools->app_log('warning', $key . " security setting successfully.", 'account-update_security_setting');
 
-        // 5 修改手机号，强制清除session
-        if ($prop === 'phone') {
+        // 6 修改手机号，强制清除session
+        if ($key === 'phone') {
             $this->common_tools->app_log('notice', "force logout.", 'account-update_security_setting');
 
             $this->session->sess_destroy();

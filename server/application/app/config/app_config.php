@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-08 14:32:57
+ * @LastEditTime: 2021-01-18 00:22:31
  */
 
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -109,3 +109,11 @@ $config['avatar_default_file'] = 'avatar_default_male.jpg';
 $config['avatar_default_path'] = '/resource/avatar/default/';
 $config['avatar_active_path']  = '/resource/avatar/active/';
 $config['avatar_upload_path']  = '/resource/avatar/temp/';
+
+//
+$config['user_prop_dict_name'] = 'user_prop_mask';
+// 数据词典Mask - 用户属性过滤，mask二进制位定义 - ... bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0
+// bit0 - 是否存储session和store - 1:是 0: 否
+// bit1 - 用户可修改 - 1：是 0：否 - 用户可修改项集合 小于 存储集合
+$config['user_prop_cache_mask'] = 1;
+$config['user_prop_edit_mask']  = 2;

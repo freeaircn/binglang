@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-15 22:59:57
+ * @LastEditTime: 2021-01-18 00:49:33
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -328,5 +328,29 @@ class Common_tools extends CI_Model
             return false;
         }
         // $this->email->print_debugger();
+    }
+
+    public function update_user_prop_in_session($data = [])
+    {
+        if (empty($data)) {
+            return false;
+        }
+
+        // 1 读取当前session数据
+        $current = $this->session->userdata();
+        if (empty($current['acl'])) {
+            return false;
+        }
+
+        // 2 查找并更改
+        foreach ($data as $i => $i_value) {
+            foreach ($current as $j => $j_value) {
+                if ($i === $j) {
+                    $this->session->set_userdata($i, $i_value);
+                }
+            }
+        }
+
+        return true;
     }
 }

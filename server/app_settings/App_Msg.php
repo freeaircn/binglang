@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2020-09-18 20:36:02
+ * @LastEditTime: 2021-01-16 17:25:31
  */
 namespace App_Settings;
 
@@ -19,7 +19,7 @@ class App_Msg
     const PASSWORD_IS_EMPTY             = '密码不能为空！';
     const HASH_PASSWORD_FAILED          = '密码处理错误，请稍后重试！';
     const SYS_SEND_MAIL_FAILED          = '系统发送邮件失败，请稍后重试！';
-    const SYS_VERIFICATION_CODE_INVALID = '验证错误！';
+    const SYS_VERIFICATION_CODE_INVALID = '验证码错误！';
     const SYS_RESET_PASSWORD_FAILED     = '重置密码失败，请重试！';
 
     const USER_NOT_LOGIN    = '用户未登陆，或登录已失效！';
@@ -72,6 +72,9 @@ class App_Msg
     const USERNAME_OR_PASSWORD_WRONG = '账号或密码输入错误！';
     const USER_NOT_ENABLED           = '用户未激活，请联系管理员！';
     const USER_EMAIL_NOT_EXISTING    = '用户未绑定电子邮箱!';
+    // api account
+    const ACCOUNT_NEW_SECURITY_SETTING_EXISTING  = ' 已被用户绑定!';
+    const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = '修改未成功，请稍后重试!';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';

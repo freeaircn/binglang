@@ -6,13 +6,13 @@
         <el-button style="float: right; padding: 3px 0" type="text" @click="handleClose()">关闭</el-button>
       </div>
       <el-form ref="update_form" :model="formData" :rules="update_form_rules" label-position="top" label-width="auto">
-        <div v-if="updateProp === 'phone'">
+        <div v-if="propName === 'phone'">
           <el-form-item ref="phone" label="新的手机号" prop="phone">
             <el-input v-model="formData.phone" name="phone" type="text" tabindex="1" placeholder="输入新的手机号" clearable />
           </el-form-item>
         </div>
 
-        <div v-if="updateProp === 'email'">
+        <div v-if="propName === 'email'">
           <el-form-item ref="email" label="新的邮箱" prop="email">
             <el-input v-model="formData.email" name="email" type="text" tabindex="1" placeholder="输入新的邮箱" clearable />
           </el-form-item>
@@ -42,7 +42,7 @@ export default {
       type: String,
       default: () => { return '' }
     },
-    updateProp: {
+    propName: {
       type: String,
       default: () => { return 'phone' }
     }
@@ -71,15 +71,15 @@ export default {
   },
   methods: {
     handleClose() {
-      this.$emit('close', this.updateProp)
+      this.$emit('close', this.propName)
     },
 
     handleRequestCode() {
       let isFieldValid = ''
-      if (this.updateProp === 'phone') {
+      if (this.propName === 'phone') {
         this.$refs.update_form.validateField('phone')
         isFieldValid = this.$refs.phone.validateMessage
-      } else if (this.updateProp === 'email') {
+      } else if (this.propName === 'email') {
         this.$refs.update_form.validateField('email')
         isFieldValid = this.$refs.email.validateMessage
       }
@@ -115,10 +115,10 @@ export default {
 
     handlePostBtn() {
       let isFieldValid = ''
-      if (this.updateProp === 'phone') {
+      if (this.propName === 'phone') {
         this.$refs.update_form.validateField('phone')
         isFieldValid = this.$refs.phone.validateMessage
-      } else if (this.updateProp === 'email') {
+      } else if (this.propName === 'email') {
         this.$refs.update_form.validateField('email')
         isFieldValid = this.$refs.email.validateMessage
       }
@@ -126,7 +126,7 @@ export default {
       isFieldValid = isFieldValid + this.$refs.code.validateMessage
 
       if (isFieldValid === '') {
-        this.$emit('post', this.updateProp, this.formData)
+        this.$emit('post', this.propName, this.formData)
       }
     }
   }

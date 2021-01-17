@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-15 23:47:23
+ * @LastEditTime: 2021-01-16 22:31:05
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -105,11 +105,11 @@ class User extends APP_Rest_API
 
         $data['sort']     = $client['sort'];
         $data['username'] = $client['username'];
-        $data['sex']      = (int) $client['sex'];
+        $data['sex']      = $client['sex'];
         $data['phone']    = $client['phone'];
         $data['email']    = $client['email'];
         $data['password'] = $hash_pwd;
-        $data['enabled']  = (int) $client['enabled'];
+        $data['enabled']  = $client['enabled'];
 
         $data['identity_document_number'] = $client['identity_document_number'];
 
@@ -175,10 +175,10 @@ class User extends APP_Rest_API
         $uid              = $client['id'];
         $data['sort']     = $client['sort'];
         $data['username'] = $client['username'];
-        $data['sex']      = (int) $client['sex'];
+        $data['sex']      = $client['sex'];
         $data['phone']    = $client['phone'];
         $data['email']    = $client['email'];
-        $data['enabled']  = (int) $client['enabled'];
+        $data['enabled']  = $client['enabled'];
 
         $data['identity_document_number'] = $client['identity_document_number'];
 

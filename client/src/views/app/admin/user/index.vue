@@ -53,7 +53,7 @@
 
       <el-table-column v-if="columnOpt.visible('update_time')" prop="update_time" label="更新日期" />
 
-      <el-table-column label="操作" width="130px" align="center" fixed="right">
+      <el-table-column label="操作" width="135px" align="center" fixed="right">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="preUpdate(row.id)" />
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="doDelete(row.id)" />

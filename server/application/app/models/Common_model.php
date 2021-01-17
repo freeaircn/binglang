@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-11-13 11:30:04
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-16 21:02:50
+ * @LastEditTime: 2021-01-18 01:02:27
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -64,6 +64,23 @@ class Common_model extends CI_Model
         return $query->result_array()[0];
     }
 
+    public function is_existing_in_tbl($key, $value, $tbl_name)
+    {
+        if (empty($key) || empty($value) || empty($tbl_name)) {
+            return false;
+        }
+
+        $query = $this->db->select('*')
+            ->where($key, $value)
+            ->get($this->tables[$tbl_name]);
+
+        if ($query->num_rows() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * @Description: 提取用户信息，去掉敏感数据，用于写入session和返回前端
      * @Author: freeair
@@ -77,23 +94,11 @@ class Common_model extends CI_Model
             return false;
         }
 
-        // 1 去掉敏感用户信息
-        $user_info = [
-            'id'                       => $user['id'],
-            'sort'                     => $user['sort'],
-            'username'                 => $user['username'],
-            'sex'                      => $user['sex'],
-            'phone'                    => $user['phone'],
-            'email'                    => $user['email'],
-            'identity_document_number' => $user['identity_document_number'],
-            'attr_01_id'               => $user['attr_01_id'],
-            'attr_02_id'               => $user['attr_02_id'],
-            'attr_03_id'               => $user['attr_03_id'],
-            'attr_04_id'               => $user['attr_04_id'],
-            'avatar_id'                => $user['avatar_id'],
-            'avatar'                   => ['name' => '', 'path' => ''],
-            'last_login'               => $user['last_login'],
-        ];
+        // 1 去敏感数据
+        $user_info           = [];
+        $user_prop_mask      = $this->get_user_prop_by_mask($this->config->item('user_prop_cache_mask', 'app_config'));
+        $user_info           = array_intersect_key($user, $user_prop_mask);
+        $user_info['avatar'] = '';
 
         // 2 查找头像信息
         if (isset($user['avatar_id'])) {
@@ -107,10 +112,54 @@ class Common_model extends CI_Model
         if ($query->num_rows() !== 1) {
             return $user_info;
         }
-        $avatar              = $query->result_array()[0];
-        $user_info['avatar'] = ['name' => $avatar['real_name'], 'path' => $avatar['path']];
+        $avatar = $query->result_array()[0];
+        // $user_info['avatar'] = ['name' => $avatar['real_name'], 'path' => $avatar['path']];
+        $user_info['avatar'] = $avatar['path'] . $avatar['real_name'];
 
         return $user_info;
+    }
+
+    public function get_user_prop_by_mask($mask)
+    {
+        if (gettype($mask) !== 'integer') {
+            return [];
+        }
+
+        $query = $this->db->select('id')
+            ->where('name', $this->config->item('user_prop_dict_name', 'app_config'))
+            ->get($this->tables['dict']);
+        if ($query->num_rows() !== 1) {
+            return [];
+        }
+
+        $dict_id = $query->result_array()[0]['id'];
+
+        $query = [];
+        $query = $this->db->select('name, code')
+            ->where('dict_id', $dict_id)
+            ->get($this->tables['dict_data']);
+
+        $res = [];
+        foreach ($query->result_array() as $row) {
+            $name = $row['name'];
+            $code = (int) $row['code'];
+            if ($code & $mask) {
+                $res[$name] = $name;
+            }
+        }
+
+        return $res;
+    }
+
+    public function build_user_session_data($user_info, $acl)
+    {
+        if (empty($user_info) || empty($acl)) {
+            return false;
+        }
+        $data        = $user_info;
+        $data['acl'] = $acl;
+
+        return $data;
     }
 
     /**
@@ -120,22 +169,22 @@ class Common_model extends CI_Model
      * @param {array}
      * @return {bool}
      */
-    public function set_session($user_info, $other_data)
-    {
-        if (empty($user_info) || empty($other_data)) {
-            return false;
-        }
+    // public function set_session($user_info, $other_data)
+    // {
+    //     if (empty($user_info) || empty($other_data)) {
+    //         return false;
+    //     }
 
-        $session_data                   = $user_info;
-        $session_data['acl']            = $other_data['acl'];
-        $session_data['old_last_login'] = $user_info['last_login'];
-        $session_data['last_check']     = time();
-        $session_data['session_hash']   = $this->config->item('session_hash', 'app_config');
+    //     $session_data                   = $user_info;
+    //     $session_data['acl']            = $other_data['acl'];
+    //     $session_data['old_last_login'] = $user_info['last_login'];
+    //     $session_data['last_check']     = time();
+    //     $session_data['session_hash']   = $this->config->item('session_hash', 'app_config');
 
-        $this->session->set_userdata($session_data);
+    //     $this->session->set_userdata($session_data);
 
-        return true;
-    }
+    //     return true;
+    // }
 
     /**
      * @Description: 用户更改个人信息后，更新session数据
@@ -144,29 +193,53 @@ class Common_model extends CI_Model
      * @param {*}
      * @return {*}
      */
-    public function update_session($user_info)
-    {
-        if (empty($user_info)) {
-            return false;
-        }
+    // public function update_session($user_info)
+    // {
+    //     if (empty($user_info)) {
+    //         return false;
+    //     }
 
-        // 1 读取当前session数据
-        $current = $this->session->userdata();
-        if (empty($current['acl'])) {
-            return false;
-        }
+    //     // 1 读取当前session数据
+    //     $current = $this->session->userdata();
+    //     if (empty($current['acl'])) {
+    //         return false;
+    //     }
 
-        // 2 组织session数据，更新session
-        $session_data                   = $user_info;
-        $session_data['acl']            = $current['acl'];
-        $session_data['old_last_login'] = $user_info['last_login'];
-        $session_data['last_check']     = time();
-        $session_data['session_hash']   = $this->config->item('session_hash', 'app_config');
+    //     // 2 组织session数据，更新session
+    //     $session_data                   = $user_info;
+    //     $session_data['acl']            = $current['acl'];
+    //     $session_data['old_last_login'] = $user_info['last_login'];
+    //     $session_data['last_check']     = time();
+    //     $session_data['session_hash']   = $this->config->item('session_hash', 'app_config');
 
-        $this->session->set_userdata($session_data);
-        $this->session->sess_regenerate(true);
+    //     $this->session->set_userdata($session_data);
+    //     // $this->session->sess_regenerate(true);
 
-        return true;
-    }
+    //     return true;
+    // }
+
+    // public function update_user_prop_in_session($data = [])
+    // {
+    //     if (empty($data)) {
+    //         return false;
+    //     }
+
+    //     // 1 读取当前session数据
+    //     $current = $this->session->userdata();
+    //     if (empty($current['acl'])) {
+    //         return false;
+    //     }
+
+    //     // 2 查找并更改
+    //     foreach ($data as $i => $i_value) {
+    //         foreach ($current as $j => $j_value) {
+    //             if ($i === $j) {
+    //                 $this->session->set_userdata($i, $i_value);
+    //             }
+    //         }
+    //     }
+
+    //     return true;
+    // }
 
 }

@@ -3,8 +3,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-25 23:39:38
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-02 20:47:03
+ * @LastEditors: freeair
+ * @LastEditTime: 2021-01-17 00:14:04
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -74,7 +74,7 @@ $config['index_get'] = [
                         return true;
                     }
                     // e.g. 0 or 1
-                    return $str === '' ? true : (bool) preg_match('/^[a-z_]{1,63}$/', $str);
+                    return $str === '' ? true : (bool) preg_match('/^[a-z_0-9]{1,63}$/', $str);
                 },
             ],
         ],
@@ -179,7 +179,7 @@ $config['index_post'] = [
                         return true;
                     }
                     // e.g. 0 or 1
-                    return (bool) preg_match('/^[a-z_]{1,63}$/', $str);
+                    return (bool) preg_match('/^[a-z_0-9]{1,63}$/', $str);
                 },
             ],
         ],

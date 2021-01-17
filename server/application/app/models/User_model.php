@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-14 16:31:23
+ * @LastEditTime: 2021-01-16 22:18:38
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -329,16 +329,16 @@ class User_model extends CI_Model
      */
     public function create_default_avatar($sex = null)
     {
-        if ($sex < 0 || $sex > 1) {
+        if ($sex !== '0' && $sex !== '1') {
             return false;
         }
 
         $data['path']        = $this->config->item('avatar_default_path', 'app_config');
         $data['update_time'] = date("Y-m-d H:i:s", time());
-        if ($sex === 0) {
+        if ($sex === '0') {
             $data['real_name'] = 'avatar_default_male.jpg';
         }
-        if ($sex === 1) {
+        if ($sex === '1') {
             $data['real_name'] = 'avatar_default_female.jpg';
         }
 

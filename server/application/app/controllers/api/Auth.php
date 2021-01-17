@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-15 23:03:21
+ * @LastEditTime: 2021-01-17 20:52:50
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -94,14 +94,13 @@ class Auth extends RestController
         $user_acl = $this->auth_model->get_user_acl_by_uid($user['id']);
 
         // 8 提取用户信息，记录session
-        $user_info  = $this->common_model->build_user_info($user);
-        $other_data = [
-            'acl' => $user_acl,
-        ];
-        $this->common_model->set_session($user_info, $other_data);
-        // $this->session->sess_regenerate(true);
+        $user_info    = $this->common_model->build_user_info($user);
+        $session_data = $this->common_model->build_user_session_data($user_info, $user_acl);
+        // $this->common_model->set_session($user_info, $other_data);
+        $this->session->set_userdata($session_data);
+        $this->session->sess_regenerate(true);
 
-        // // 9 remember用户，处理
+        // 9 remember用户，处理
         // if ($remember) {
         //     $this->remember_user($phone);
         // } else {
@@ -133,30 +132,17 @@ class Auth extends RestController
      */
     public function check_user_get()
     {
-        $user = $this->session->userdata();
+        $phone = $this->session->userdata('phone');
 
-        if (empty($user['phone'])) {
+        if (empty($phone)) {
             $res['code'] = App_Code::USER_NOT_LOGIN;
             $res['msg']  = App_Msg::USER_NOT_LOGIN;
             $this->response($res, 200);
         } else {
-            // $user_data = [
-            //     'sort'                     => $user['sort'],
-            //     'username'                 => $user['username'],
-            //     'sex'                      => $user['sex'],
-            //     'phone'                    => $user['phone'],
-            //     'email'                    => $user['email'],
-            //     'identity_document_number' => $user['identity_document_number'],
-            //     'attr_03_id'               => $user['attr_03_id'],
-            //     'attr_01_id'               => $user['attr_01_id'],
-            //     'attr_02_id'               => $user['attr_02_id'],
-            //     'attr_04_id'               => $user['attr_04_id'],
-            // ];
-            // $res['data'] = ['user' => $user_data];
+            $user      = $this->common_model->get_user_by_phone($phone);
+            $user_info = $this->common_model->build_user_info($user);
 
-            $user_info   = $this->common_model->build_user_info($user);
             $res['data'] = ['user' => $user_info];
-
             $res['code'] = App_Code::SUCCESS;
             $this->response($res, 200);
         }

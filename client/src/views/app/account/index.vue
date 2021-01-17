@@ -111,10 +111,10 @@
             </div>
 
             <!-- 修改手机号 -->
-            <app-req-update-prop v-if="isVisibleUpdatePhone" update-prop="phone" card-text="手机" @close="onCloseUpdateCard" @req_code="onReqCode" @post="onPostSecuritySetting" />
+            <app-req-update-prop v-if="isVisibleUpdatePhone" prop-name="phone" card-text="手机" @close="onCloseUpdateCard" @req_code="onReqCode" @post="onPostSecuritySetting" />
 
             <!-- 修改Email -->
-            <app-req-update-prop v-if="isVisibleUpdateEmail" update-prop="email" card-text="邮箱" @close="onCloseUpdateCard" @req_code="onReqCode" @post="onPostSecuritySetting" />
+            <app-req-update-prop v-if="isVisibleUpdateEmail" prop-name="email" card-text="邮箱" @close="onCloseUpdateCard" @req_code="onReqCode" @post="onPostSecuritySetting" />
 
           </div>
         </el-tab-pane>
@@ -183,9 +183,13 @@ export default {
       if (this.user === null) {
         return ''
       } else {
-        return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
+        // return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
+        return process.env.VUE_APP_BASE_API + this.user.avatar
       }
     }
+    // formData: function() {
+    //   return utils.merge(this.user)
+    // }
   },
   mounted() {
     this.getBasicInfoFormListContent()
@@ -259,10 +263,10 @@ export default {
       })
     },
 
-    onCloseUpdateCard(updateProp) {
-      if (updateProp === 'phone') {
+    onCloseUpdateCard(propName) {
+      if (propName === 'phone') {
         this.isVisibleUpdatePhone = false
-      } else if (updateProp === 'email') {
+      } else if (propName === 'email') {
         this.isVisibleUpdateEmail = false
       }
     },
@@ -289,11 +293,11 @@ export default {
     },
 
     // 提交更改安全设置
-    onPostSecuritySetting(updateProp, data) {
+    onPostSecuritySetting(propName, data) {
       const securityData = {
-        prop: updateProp,
-        new_phone: data.phone,
-        new_email: data.email,
+        prop: propName,
+        phone: data.phone,
+        email: data.email,
         code: data.code
       }
 
@@ -315,24 +319,6 @@ export default {
             message: error
           })
         })
-
-      // apiPostSecuritySetting(reqData)
-      //   .then(function(data) {
-      //     if (typeof data !== 'undefined') {
-      //       if (typeof data.cmd !== 'undefined') {
-      //         if (data.cmd === 'logout') {
-      //           this.logout()
-      //         }
-      //       }
-      //     }
-      //   }.bind(this))
-      //   .catch(function(err) {
-      //     this.$message({
-      //       type: 'error',
-      //       message: err,
-      //       duration: 3 * 1000
-      //     })
-      //   }.bind(this))
     },
 
     async logout() {

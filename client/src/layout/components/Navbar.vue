@@ -44,7 +44,8 @@ export default {
       if (this.user === null) {
         return ''
       } else {
-        return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
+        // return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
+        return process.env.VUE_APP_BASE_API + this.user.avatar
       }
     }
   },

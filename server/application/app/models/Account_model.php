@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-15 23:45:17
+ * @LastEditTime: 2021-01-16 20:29:06
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -275,26 +275,14 @@ class Account_model extends CI_Model
 
     }
 
-    public function update_security_setting_by_phone($phone = null, $data = [])
+    public function update_security_setting_by_phone($phone = '', $data = [])
     {
         if (empty($phone) || empty($data)) {
             return false;
         }
 
-        $db_data = [];
-        if ($data['prop'] === 'phone') {
-            $db_data['phone'] = $data['new_phone'];
-        }
-        if ($data['prop'] === 'email') {
-            $db_data['email'] = $data['new_email'];
-        }
-
-        if (empty($db_data)) {
-            return false;
-        }
-
         $this->db->trans_start();
-        if ($this->db->where('phone', $phone)->update($this->tables['user'], $db_data) === false) {
+        if ($this->db->where('phone', $phone)->update($this->tables['user'], $data) === false) {
             $error = $this->db->error();
             $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
         }

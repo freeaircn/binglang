@@ -98,7 +98,7 @@ import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/dict/dict-data-search-mixin'
 
 // import utils
-import { validSort, validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/common'
+import { validSort, validChineseLetter, validLowerLetterNumUnderline } from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/dict-data'
@@ -139,7 +139,7 @@ export default {
       rules: {
         sort: [{ required: true, validator: validSort, trigger: 'change' }],
         label: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
-        name: [{ required: true, validator: validLowerLetterUnderline, trigger: 'change' }],
+        name: [{ required: true, validator: validLowerLetterNumUnderline, trigger: 'change' }],
         code: [{ required: true, validator: validSort, trigger: 'change' }]
       }
     }

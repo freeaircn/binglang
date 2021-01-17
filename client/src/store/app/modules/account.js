@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-02-17 22:35:46
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-16 01:13:58
+ * @LastEditTime: 2021-01-18 00:59:34
  */
 import { apiLogin, apiLogout, apiGetUser } from '@/api/app/auth'
 import { apiUpdateUserBasicInfo, apiPostSecuritySetting } from '@/api/app/account/index'
@@ -20,8 +20,18 @@ const mutations = {
   SET_USER: (state, user) => {
     state.user = utils.merge(user)
   },
+  UPDATE_USER: (state, user) => {
+    let i, j
+    for (i in user) {
+      for (j in state.user) {
+        if (i === j) {
+          state.user[j] = user[i]
+        }
+      }
+    }
+  },
   SET_USER_AVATAR: (state, avatar) => {
-    state.user.avatar = utils.merge(avatar)
+    state.user.avatar = avatar
   },
   CLEAR_USER: (state) => {
     state.user = null
@@ -90,11 +100,11 @@ const actions = {
     })
   },
 
-  // 5 请求更改用户基本信息
+  // 5 更改用户基本信息
   updateUserBasicInfo({ commit }, user_info) {
     return new Promise((resolve, reject) => {
       apiUpdateUserBasicInfo(user_info).then(data => {
-        commit('SET_USER', data.user)
+        commit('UPDATE_USER', data.user)
         resolve()
       }).catch(error => {
         reject(error)
@@ -111,7 +121,7 @@ const actions = {
             resolve('logout')
           }
         } else {
-          commit('SET_USER', data.user)
+          commit('UPDATE_USER', data.user)
           resolve('')
         }
       }).catch(error => {

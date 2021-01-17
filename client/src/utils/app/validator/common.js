@@ -3,13 +3,14 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-08 08:40:37
+ * @LastEditTime: 2021-01-17 00:11:31
  */
 
 const regexSort = /^([1-9][0-9]*)$/
 const regexChineseLetter = /^([\u4e00-\u9fa5]){1,15}$/
 const regexEnglishChineseLetter = /^([a-zA-z\u4e00-\u9fa5]{1,40})$/u
 const regexLowerLetterUnderline = /^[a-z_]{1,60}$/
+const regexLowerLetterNumUnderline = /^[a-z_0-9]{1,60}$/
 const regexPhone = /^[1][3,4,5,7,8][0-9]{9}$/
 const regexPassword = /^[0-9a-zA-Z]+$/
 const regexEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/
@@ -53,6 +54,16 @@ export function validLowerLetterUnderline(rule, value, callback) {
     return callback(new Error('请输入小写字母或下划线，最多60个'))
   } else if (!regexLowerLetterUnderline.test(value)) {
     return callback(new Error('请输入小写字母或下划线，最多60个'))
+  } else {
+    callback()
+  }
+}
+
+export function validLowerLetterNumUnderline(rule, value, callback) {
+  if (!value) {
+    return callback(new Error('请输入小写字母，数字或下划线，最多60个'))
+  } else if (!regexLowerLetterNumUnderline.test(value)) {
+    return callback(new Error('请输入小写字母，数字或下划线，最多60个'))
   } else {
     callback()
   }
