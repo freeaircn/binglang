@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 18:17:32
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-16 21:44:13
+ * @LastEditTime: 2021-01-18 22:11:15
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -325,37 +325,6 @@ class Auth_model extends CI_Model
             return true;
         }
 
-    }
-
-    /**
-     * update user password
-     *
-     * @author freeair
-     * @DateTime 2020-01-19
-     * @param int $id
-     * @param [array] $data
-     * @return bool
-     */
-    public function update_password_by_phone($phone = null, $new_password = null)
-    {
-        if (empty($phone) || empty($new_password)) {
-            return false;
-        }
-
-        $data['password'] = $new_password;
-        $this->db->trans_start();
-        if ($this->db->where('phone', $phone)->update($this->tables['user'], $data) === false) {
-            $error = $this->db->error();
-            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
-        }
-        $this->db->trans_complete();
-
-        if ($this->db->trans_status() === false) {
-            $error = $this->db->error();
-            $this->common_tools->app_log('error', 'DB_ERR: ' . $error['code'] . ' - ' . $error['message']);
-            return false;
-        }
-        return true;
     }
 
     /**

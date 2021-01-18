@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-16 17:22:49
+ * @LastEditTime: 2021-01-18 22:28:22
  */
 namespace App_Settings;
 
@@ -75,6 +75,10 @@ class App_Code
     // api account
     const ACCOUNT_NEW_SECURITY_SETTING_EXISTING  = 300;
     const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = 302;
+    const ACCOUNT_CHANGE_PWD_FAILED              = 301;
+    const ACCOUNT_UPDATE_AVATAR_FAILED           = 303;
+    const ACCOUNT_UPDATE_USER_FAILED             = 304;
+    const ACCOUNT_GET_CODE_FAILED                = 305;
 
     // old
     const USERS_TOKEN_INVALID = 110;

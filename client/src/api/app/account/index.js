@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 13:36:29
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-15 22:10:06
+ * @LastEditTime: 2021-01-18 21:32:21
  */
 import request from '@/utils/request'
 
@@ -35,6 +35,15 @@ export function apiPostSecuritySetting(data) {
   return request({
     url: '/api/account/security_setting',
     method: 'post',
+    data: data
+  })
+}
+
+// 提交新密码
+export function apiPostPassword(data) {
+  return request({
+    url: '/api/account/password',
+    method: 'put',
     data: data
   })
 }

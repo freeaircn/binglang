@@ -7,7 +7,7 @@
       <el-dropdown @command="handleDropdownCommand">
         <span>
           <el-avatar class="avatar-container" fit="cover" size="medium" :src="avatarUrl" />
-          <el-link v-if="isDesktop" class="avatar-text" :underline="false">{{ user.phone }}</el-link>
+          <el-link v-if="isDesktop" class="avatar-text" :underline="false">{{ user.username }}</el-link>
         </span>
         <el-dropdown-menu slot="dropdown">
           <router-link to="#">

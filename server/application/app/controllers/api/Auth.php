@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-17 20:52:50
+ * @LastEditTime: 2021-01-18 22:11:45
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -305,7 +305,7 @@ class Auth extends RestController
         }
 
         // 3 重置密码
-        $result = $this->auth_model->update_password_by_phone($phone, $hash_pwd);
+        $result = $this->common_model->update_password_by_phone($phone, $hash_pwd);
         if (!$result) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;

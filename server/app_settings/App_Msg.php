@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-16 17:25:31
+ * @LastEditTime: 2021-01-18 22:28:38
  */
 namespace App_Settings;
 
@@ -74,7 +74,11 @@ class App_Msg
     const USER_EMAIL_NOT_EXISTING    = '用户未绑定电子邮箱!';
     // api account
     const ACCOUNT_NEW_SECURITY_SETTING_EXISTING  = ' 已被用户绑定!';
-    const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = '修改未成功，请稍后重试!';
+    const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = '修改失败，请稍后重试!';
+    const ACCOUNT_CHANGE_PWD_FAILED              = '修改失败，请稍后重试!';
+    const ACCOUNT_UPDATE_AVATAR_FAILED           = '修改头像失败，请稍后重试!';
+    const ACCOUNT_UPDATE_USER_FAILED             = '修改失败，请稍后重试!';
+    const ACCOUNT_GET_CODE_FAILED                = '获取验证码失败，请稍后重试!';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';

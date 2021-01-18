@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 01:10:50
+ * @LastEditTime: 2021-01-18 22:35:01
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -57,22 +57,12 @@ class Account extends APP_Rest_API
         $data           = array_intersect_key($client, $user_prop_mask);
 
         // 2 非必填下拉表单项，例如job, 因为job_id是数据表的外键fk，外键不能为空字符串''
+        // $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
         foreach ($data as $i => $value) {
             if (stripos($i, '_id') && $value === '') {
                 $data[$i] = null;
             }
         }
-
-        // $data['username'] = $client['username'];
-        // $data['sex']      = $client['sex'];
-
-        // $data['identity_document_number'] = $client['identity_document_number'];
-
-        // 2 非必填下拉表单项，例如job, 因为job_id是数据表的外键fk，外键不能为空字符串''
-        // $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
-        // $data['attr_02_id'] = $client['attr_02_id'] === '' ? null : $client['attr_02_id'];
-        // $data['attr_03_id'] = $client['attr_03_id'] === '' ? null : $client['attr_03_id'];
-        // $data['attr_04_id'] = $client['attr_04_id'] === '' ? null : $client['attr_04_id'];
 
         $data['update_time'] = date("Y-m-d H:i:s", time());
 
@@ -80,32 +70,21 @@ class Account extends APP_Rest_API
         $phone = $this->session->userdata('phone');
         $rtn   = $this->account_model->update_user_basic_info($phone, $data);
         if ($rtn === false) {
-            $res['code'] = App_Code::UPDATE_USER_FAILED;
-            $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-            $this->common_tools->app_log('error', "UPDATE_USER_FAILED", 'account-update_basic_info');
+            $res['code'] = App_Code::ACCOUNT_UPDATE_USER_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_UPDATE_USER_FAILED;
+            $this->common_tools->app_log('error', "update user info to db failed.", 'account-update_basic_info');
 
             $this->response($res, 200);
         }
 
         // 4 查询用户信息，更新session数据
         if ($this->common_tools->update_user_prop_in_session($data) === false) {
-            $res['code'] = App_Code::UPDATE_SESSION_FAILED;
-            $res['msg']  = App_Msg::UPDATE_SESSION_FAILED;
-            $this->common_tools->app_log('error', "UPDATE_SESSION_FAILED", 'account-update_basic_info');
+            $res['code'] = App_Code::ACCOUNT_UPDATE_USER_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_UPDATE_USER_FAILED;
+            $this->common_tools->app_log('error', "update user session failed.", 'account-update_basic_info');
 
             $this->response($res, 200);
         }
-
-        // $current_user = $this->common_model->get_user_by_phone($phone);
-        // $user_info    = $this->common_model->build_user_info($current_user);
-        // $rtn          = $this->common_model->update_session($user_info);
-        // if ($rtn === false) {
-        //     $res['code'] = App_Code::UPDATE_USER_FAILED;
-        //     $res['msg']  = App_Msg::UPDATE_USER_FAILED;
-        //     $this->common_tools->app_log('error', "UPDATE_SESSION_FAILED", 'account-update_basic_info');
-
-        //     $this->response($res, 200);
-        // }
 
         // 5 更新后的用户信息返回前端，更新前端vuex
         $res['code'] = App_Code::SUCCESS;
@@ -143,8 +122,10 @@ class Account extends APP_Rest_API
 
         $new_image = FCPATH . $this->config->item('avatar_active_path', 'app_config');
         if (!$this->common_tools->resize_avatar_img($source_image, $new_image)) {
-            $res['code'] = 300;
-            $res['msg']  = 'resize img failed';
+            $res['code'] = App_Code::ACCOUNT_UPDATE_AVATAR_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_UPDATE_AVATAR_FAILED;
+            $this->common_tools->app_log('error', "resize avatar img failed.", 'account-avatar');
+
             $this->response($res, 200);
         }
 
@@ -154,13 +135,14 @@ class Account extends APP_Rest_API
 
         // 4 更改数据库中用户头像记录
         if (!$this->account_model->update_user_avatar($avatar_id, $path, $name)) {
-            $res['code'] = 300;
-            $res['msg']  = 'update DB failed';
+            $res['code'] = App_Code::ACCOUNT_UPDATE_AVATAR_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_UPDATE_AVATAR_FAILED;
+            $this->common_tools->app_log('error', "update avatar to db failed.", 'account-avatar');
+
             $this->response($res, 200);
         }
 
         // 5 更新session数据
-        // $this->session->set_userdata('avatar', ['name' => $name, 'path' => $path]);
         $this->session->set_userdata('avatar', $path . $name);
 
         // 6 删除旧头像文件
@@ -170,12 +152,10 @@ class Account extends APP_Rest_API
         unlink(FCPATH . $this->config->item('avatar_upload_path', 'app_config') . $name);
 
         // 7 更新后的用户信息返回前端，更新前端vuex
-        $res['code'] = App_Code::SUCCESS;
-        $res['msg']  = App_Msg::SUCCESS;
-        // $res['avatar'] = ['path' => $path, 'name' => $name];
+        $res['code']   = App_Code::SUCCESS;
+        $res['msg']    = App_Msg::SUCCESS;
         $res['avatar'] = $path . $name;
 
-        $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);
     }
 
@@ -193,24 +173,30 @@ class Account extends APP_Rest_API
         // 1 查询用户是否存在
         $user = $this->common_model->get_user_by_phone($phone);
         if ($user === false) {
-            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
-            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $res['code'] = App_Code::ACCOUNT_GET_CODE_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_GET_CODE_FAILED;
+            $this->common_tools->app_log('error', "user's phone not existing.", 'account-verification_code');
+
             $this->response($res, 200);
         }
 
         // 2 查询用户的email是否存在
         $email = $user['email'];
         if (empty($email)) {
-            $res['code'] = App_Code::USER_EMAIL_NOT_EXISTING;
-            $res['msg']  = App_Msg::USER_EMAIL_NOT_EXISTING;
+            $res['code'] = App_Code::ACCOUNT_GET_CODE_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_GET_CODE_FAILED;
+            $this->common_tools->app_log('error', "user's email not existing.", 'account-verification_code');
+
             $this->response($res, 200);
         }
 
         // 3 生成验证码
         $code = $this->account_model->create_verification_code($phone);
         if ($code === false) {
-            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
-            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $res['code'] = App_Code::ACCOUNT_GET_CODE_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_GET_CODE_FAILED;
+            $this->common_tools->app_log('error', "create code failed.", 'account-verification_code');
+
             $this->response($res, 200);
         }
 
@@ -225,8 +211,9 @@ class Account extends APP_Rest_API
             $res['data'] = ['email' => $email];
             $res['code'] = App_Code::SUCCESS;
         } else {
-            $res['code'] = App_Code::SYS_SEND_MAIL_FAILED;
-            $res['msg']  = App_Msg::SYS_SEND_MAIL_FAILED;
+            $res['code'] = App_Code::ACCOUNT_GET_CODE_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_GET_CODE_FAILED;
+            $this->common_tools->app_log('error', "send mail failed.", 'account-verification_code');
         }
         $this->response($res, 200);
     }
@@ -251,11 +238,11 @@ class Account extends APP_Rest_API
 
         // 1 验证码
         $is_valid = $this->account_model->check_verification_code($phone, $code, true);
-        if (!$is_valid) {
-            $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
-            $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
-            $this->response($res, 200);
-        }
+        // if (!$is_valid) {
+        //     $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
+        //     $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
+        //     $this->response($res, 200);
+        // }
 
         // 2 手机号，邮箱是否被绑定
         foreach ($data as $index => $value) {
@@ -271,14 +258,17 @@ class Account extends APP_Rest_API
         // 3 更新安全设置
         $result = $this->account_model->update_security_setting_by_phone($phone, $data);
         if (!$result) {
-            $this->common_tools->app_log('error', "ACCOUNT_UPDATE_SECURITY_SETTING_FAILED", 'account-update_security_setting');
-
             $res['code'] = App_Code::ACCOUNT_UPDATE_SECURITY_SETTING_FAILED;
             $res['msg']  = App_Msg::ACCOUNT_UPDATE_SECURITY_SETTING_FAILED;
+            $this->common_tools->app_log('error', "update data to db failed.", 'account-update_security_setting');
+
             $this->response($res, 200);
         }
 
-        // 4 修改email，更新session
+        // 4 log
+        $this->common_tools->app_log('warning', $key . " security setting successfully.", 'account-update_security_setting');
+
+        // 5 修改email，更新session
         if ($key === 'email') {
             $this->common_tools->update_user_prop_in_session($data);
 
@@ -286,13 +276,8 @@ class Account extends APP_Rest_API
             $res['data'] = ['user' => $data];
         }
 
-        // 5 log
-        $this->common_tools->app_log('warning', $key . " security setting successfully.", 'account-update_security_setting');
-
         // 6 修改手机号，强制清除session
         if ($key === 'phone') {
-            $this->common_tools->app_log('notice', "force logout.", 'account-update_security_setting');
-
             $this->session->sess_destroy();
 
             $res['msg']  = '请使用新手机号登录！';
@@ -300,6 +285,40 @@ class Account extends APP_Rest_API
         }
 
         $res['code'] = App_Code::SUCCESS;
+        $this->response($res, 200);
+    }
+
+    public function password_put()
+    {
+        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+        $client       = json_decode($stream_clean, true);
+
+        $phone    = $this->session->userdata('phone');
+        $password = $client['password'];
+
+        // 1 hash密码
+        $hash_pwd = $this->common_tools->hash_password($password);
+        if ($hash_pwd === false) {
+            $res['code'] = App_Code::ACCOUNT_CHANGE_PWD_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_CHANGE_PWD_FAILED;
+            $this->common_tools->app_log('error', "hash pwd failed.", 'account-change_password');
+
+            $this->response($res, 200);
+        }
+
+        // 2 修改密码
+        $result = $this->common_model->update_password_by_phone($phone, $hash_pwd);
+        if (!$result) {
+            $res['code'] = App_Code::ACCOUNT_CHANGE_PWD_FAILED;
+            $res['msg']  = App_Msg::ACCOUNT_CHANGE_PWD_FAILED;
+            $this->common_tools->app_log('error', "update pwd to db failed.", 'account-change_password');
+        }
+
+        // 3 log
+        $this->common_tools->app_log('warning', "change password successfully.", 'account-change_password');
+
+        $res['code'] = App_Code::SUCCESS;
+        $res['msg']  = App_Msg::SUCCESS;
         $this->response($res, 200);
     }
 }

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <el-card class="mt-2 w-40">
-      <div slot="header">
-        <span>修改绑定{{ cardText }}</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="handleClose()">关闭</el-button>
-      </div>
+    <el-dialog :title="title" :visible.sync="visible2" :destroy-on-close="true" @close="handleClose">
       <el-form ref="update_form" :model="formData" :rules="update_form_rules" label-position="top" label-width="auto">
         <div v-if="propName === 'phone'">
           <el-form-item ref="phone" label="新的手机号" prop="phone">
@@ -19,16 +15,16 @@
         </div>
 
         <el-form-item ref="code" label="验证码" prop="code">
-          <el-input v-model="formData.code" name="code" type="text" style="width:55%;float:left;" class="code-field" placeholder="输入验证码" clearable />
+          <el-input v-model="formData.code" name="code" type="text" tabindex="2" style="width:55%;float:left;" class="code-field" placeholder="输入验证码" clearable />
           <!-- <input v-model="btnReqCodeText" :disabled="isBtnDisable || isValidCode" type="button" class="btn-code" @click="handleRequestCode"> -->
           <el-button plain style="width:40%;float:right;" :disabled="isBtnDisable" @click.native.prevent="handleRequestCode">{{ btnReqCodeText }}</el-button>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" style="width:100%;" @click.native.prevent="handlePostBtn">提交</el-button>
+          <el-button type="primary" tabindex="3" style="width:100%;" @click.native.prevent="handlePostBtn">提交</el-button>
         </el-form-item>
       </el-form>
-    </el-card>
+    </el-dialog>
   </div>
 </template>
 
@@ -36,15 +32,19 @@
 import { validPhone, validEmail, validVerificationCode } from '@/utils/app/validator/common'
 
 export default {
-  name: 'AppReqUpdateProp',
+  name: 'AppChangeProp',
   props: {
-    cardText: {
+    title: {
       type: String,
       default: () => { return '' }
     },
     propName: {
       type: String,
       default: () => { return 'phone' }
+    },
+    visible: {
+      type: Boolean,
+      default: () => { return false }
     }
   },
   data() {
@@ -69,9 +69,19 @@ export default {
       }
     }
   },
+  computed: {
+    visible2: {
+      get() {
+        return this.visible
+      },
+      set(val) {
+        this.$emit('update:visible', val)
+      }
+    }
+  },
   methods: {
     handleClose() {
-      this.$emit('close', this.propName)
+      this.$refs['update_form'].resetFields()
     },
 
     handleRequestCode() {

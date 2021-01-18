@@ -520,6 +520,13 @@
 
   3 查看状态
     sestatus
+    
+  4 fsockopen() Permission denied
+    # https://blog.csdn.net/pennyliang/article/details/7342042
+    fsockopen()  unable to connect to 127.0.0.1:80 (Permission denied)" error 
+    
+    用以下命令，不需重启
+    setsebool -P httpd_can_network_connect 1
 ```
 
 

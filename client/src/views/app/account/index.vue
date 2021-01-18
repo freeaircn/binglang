@@ -93,7 +93,7 @@
                       <li><span class="pages-account-setting-text-light">{{ user.phone }}</span></li>
                     </ul>
                   </td>
-                  <td class="td-button"><el-button type="text" @click="handleReqUpdatePhone()">修改</el-button></td>
+                  <td class="td-button"><el-button type="text" @click="handleReqChangePhone()">修改</el-button></td>
                 </tr>
                 <tr>
                   <td>
@@ -102,7 +102,15 @@
                       <li><span class="pages-account-setting-text-light">{{ user.email }}</span></li>
                     </ul>
                   </td>
-                  <td class="td-button"><el-button type="text" @click="handleReqUpdateEmail()">修改</el-button></td>
+                  <td class="td-button"><el-button type="text" @click="handleReqChangeEmail()">修改</el-button></td>
+                </tr>
+                <tr>
+                  <td>
+                    <ul>
+                      <li><span class="pages-account-setting-text-dark">账号密码</span></li>
+                    </ul>
+                  </td>
+                  <td class="td-button"><el-button type="text" @click="handleReqChangePwd()">修改</el-button></td>
                 </tr>
               </tbody>
             </table>
@@ -111,11 +119,13 @@
             </div>
 
             <!-- 修改手机号 -->
-            <app-req-update-prop v-if="isVisibleUpdatePhone" prop-name="phone" card-text="手机" @close="onCloseUpdateCard" @req_code="onReqCode" @post="onPostSecuritySetting" />
+            <app-change-prop title="修改手机号" prop-name="phone" :visible.sync="isVisibleChangePhone" @req_code="onReqCode" @post="onPostSecuritySetting" />
 
             <!-- 修改Email -->
-            <app-req-update-prop v-if="isVisibleUpdateEmail" prop-name="email" card-text="邮箱" @close="onCloseUpdateCard" @req_code="onReqCode" @post="onPostSecuritySetting" />
+            <app-change-prop title="修改邮箱" prop-name="email" :visible.sync="isVisibleChangeEmail" @req_code="onReqCode" @post="onPostSecuritySetting" />
 
+            <!-- 修改密码 -->
+            <app-change-pwd :visible.sync="isVisibleChangePwd" @post="onPostChangePwd" />
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -133,20 +143,22 @@
 // 组件
 import TreeSelect from '@/components/app/TreeSelect/index'
 import AppAvatar from './components/avatar'
-import AppReqUpdateProp from './components/AppReqUpdateProp'
+import AppChangeProp from './components/AppChangeProp'
+import AppChangePwd from './components/AppChangePwd'
 //
 import * as myApp from '@/app_settings'
 import * as utils from '@/utils/app/common'
 import { mapGetters } from 'vuex'
 // API
-import { apiGetBasicInfoFormListContent, apiReqVerificationCode } from '@/api/app/account/index'
+import { apiGetBasicInfoFormListContent, apiReqVerificationCode, apiPostPassword } from '@/api/app/account/index'
 
 export default {
   name: 'AccountSetting',
   components: {
     'tree-select': TreeSelect,
     'app-avatar': AppAvatar,
-    'app-req-update-prop': AppReqUpdateProp
+    'app-change-prop': AppChangeProp,
+    'app-change-pwd': AppChangePwd
   },
   data() {
     return {
@@ -169,8 +181,9 @@ export default {
         // username: [{ required: true, validator: validChineseLetter, trigger: 'change' }]
       },
 
-      isVisibleUpdatePhone: false,
-      isVisibleUpdateEmail: false
+      isVisibleChangePhone: false,
+      isVisibleChangeEmail: false,
+      isVisibleChangePwd: false
     }
   },
   computed: {
@@ -183,13 +196,9 @@ export default {
       if (this.user === null) {
         return ''
       } else {
-        // return process.env.VUE_APP_BASE_API + this.user.avatar.path + this.user.avatar.name
         return process.env.VUE_APP_BASE_API + this.user.avatar
       }
     }
-    // formData: function() {
-    //   return utils.merge(this.user)
-    // }
   },
   mounted() {
     this.getBasicInfoFormListContent()
@@ -248,27 +257,17 @@ export default {
       this.$store.dispatch('account/updateUserAvatar', res.avatar)
     },
 
-    // 请求更改安全设置
-    handleReqUpdatePhone() {
-      this.isVisibleUpdateEmail = false
-      this.$nextTick(() => {
-        this.isVisibleUpdatePhone = true
-      })
+    // 请求修改手机号
+    handleReqChangePhone() {
+      this.isVisibleChangePhone = true
     },
-
-    handleReqUpdateEmail() {
-      this.isVisibleUpdatePhone = false
-      this.$nextTick(() => {
-        this.isVisibleUpdateEmail = true
-      })
+    // 请求修改邮箱
+    handleReqChangeEmail() {
+      this.isVisibleChangeEmail = true
     },
-
-    onCloseUpdateCard(propName) {
-      if (propName === 'phone') {
-        this.isVisibleUpdatePhone = false
-      } else if (propName === 'email') {
-        this.isVisibleUpdateEmail = false
-      }
+    // 请求修改密码
+    handleReqChangePwd() {
+      this.isVisibleChangePwd = true
     },
 
     // 请求验证码
@@ -304,8 +303,8 @@ export default {
       this.$store.dispatch('account/updateUserSecuritySetting', securityData)
         .then((res) => {
           if (res === '') {
-            this.isVisibleUpdatePhone = false
-            this.isVisibleUpdateEmail = false
+            this.isVisibleChangePhone = false
+            this.isVisibleChangeEmail = false
             this.$nextTick(() => {
               this.formData = utils.merge(this.user)
             })
@@ -316,9 +315,28 @@ export default {
         .catch((error) => {
           this.$message({
             type: 'error',
-            message: error
+            message: error,
+            duration: 3 * 1000
           })
         })
+    },
+
+    // 提交新密码
+    onPostChangePwd(password) {
+      const data = {
+        password: password
+      }
+      apiPostPassword(data)
+        .then(function() {
+          this.isVisibleChangePwd = false
+        }.bind(this))
+        .catch(function(error) {
+          this.$message({
+            type: 'error',
+            message: error,
+            duration: 3 * 1000
+          })
+        }.bind(this))
     },
 
     async logout() {
