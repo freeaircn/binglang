@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 22:35:01
+ * @LastEditTime: 2021-01-24 16:43:44
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -238,11 +238,11 @@ class Account extends APP_Rest_API
 
         // 1 验证码
         $is_valid = $this->account_model->check_verification_code($phone, $code, true);
-        // if (!$is_valid) {
-        //     $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
-        //     $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
-        //     $this->response($res, 200);
-        // }
+        if (!$is_valid) {
+            $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
+            $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
+            $this->response($res, 200);
+        }
 
         // 2 手机号，邮箱是否被绑定
         foreach ($data as $index => $value) {

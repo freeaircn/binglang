@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-15 22:24:15
+ * @LastEditTime: 2021-01-24 17:00:59
  */
 import request from '@/utils/request'
 
@@ -46,17 +46,9 @@ export function apiReqVerificationCode(params) {
   })
 }
 
-export function apiValidVerificationCode(data) {
+export function apiResetPassword(data) {
   return request({
-    url: '/api/auth/valid_verification_code',
-    method: 'post',
-    data
-  })
-}
-
-export function apiReqResetPassword(data) {
-  return request({
-    url: '/api/auth/req_reset_password',
+    url: '/api/auth/reset_password',
     method: 'post',
     data
   })

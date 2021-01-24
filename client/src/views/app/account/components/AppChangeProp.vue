@@ -15,7 +15,7 @@
         </div>
 
         <el-form-item ref="code" label="验证码" prop="code">
-          <el-input v-model="formData.code" name="code" type="text" tabindex="2" style="width:55%;float:left;" class="code-field" placeholder="输入验证码" clearable />
+          <el-input v-model="formData.code" name="code" type="text" tabindex="2" style="width:55%;float:left;" placeholder="输入验证码" clearable />
           <!-- <input v-model="btnReqCodeText" :disabled="isBtnDisable || isValidCode" type="button" class="btn-code" @click="handleRequestCode"> -->
           <el-button plain style="width:40%;float:right;" :disabled="isBtnDisable" @click.native.prevent="handleRequestCode">{{ btnReqCodeText }}</el-button>
         </el-form-item>

@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-17 14:54:44
+ * @LastEditTime: 2021-01-24 17:03:15
  */
 
 import Vue from 'vue'
@@ -62,10 +62,10 @@ export const constantRoutes = [
     meta: { title: '登录' }
   },
   {
-    path: '/find_password',
-    component: () => import('@/views/app/auth/find_password'),
+    path: '/forget_password',
+    component: () => import('@/views/app/auth/forget_password'),
     hidden: true,
-    meta: { title: '找回密码' }
+    meta: { title: '忘记密码' }
   },
   {
     path: '/404',

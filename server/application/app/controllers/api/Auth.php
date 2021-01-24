@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 22:11:45
+ * @LastEditTime: 2021-01-24 16:53:01
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -23,7 +23,7 @@ class Auth extends RestController
         $this->config->load('config', true);
         $this->load->model('auth_model');
         $this->load->model('common_model');
-        $this->load->library(['common_tools']);
+        $this->load->library('common_tools');
     }
 
     /** 1
@@ -204,8 +204,8 @@ class Auth extends RestController
         // 1 查询用户是否存在
         $user = $this->common_model->get_user_by_phone($phone);
         if ($user === false) {
-            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
-            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $res['code'] = App_Code::PHONE_NOT_EXISTING;
+            $res['msg']  = App_Msg::PHONE_NOT_EXISTING;
             $this->response($res, 200);
         }
 
@@ -232,41 +232,14 @@ class Auth extends RestController
             'dt'                => date("Y-m-d H:i:s"),
         ];
 
-        if ($this->common_model->api_send_mail($email, $data) === true) {
+        if ($this->common_tools->api_send_mail($email, $data) === true) {
             $res['data'] = ['email' => $email];
             $res['code'] = App_Code::SUCCESS;
         } else {
             $res['code'] = App_Code::SYS_SEND_MAIL_FAILED;
             $res['msg']  = App_Msg::SYS_SEND_MAIL_FAILED;
+            $this->common_tools->app_log('error', "send mail failed.", 'auth-verification_code');
         }
-        $this->response($res, 200);
-    }
-
-    /** 5
-     * @Description: 忘记密码处理，核对前端验证码
-     * @Author: freeair
-     * @Date: 2020-11-13 16:44:31
-     * @param {*}
-     * @return {*}
-     */
-    public function valid_verification_code_post()
-    {
-        $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
-        $client       = json_decode($stream_clean, true);
-
-        $phone             = $client['phone'];
-        $verification_code = $client['verification_code'];
-
-        $is_valid = $this->auth_model->check_verification_code($phone, $verification_code, false);
-
-        if ($is_valid) {
-            $res['code'] = App_Code::SUCCESS;
-            $res['msg']  = '请设置新的密码！';
-        } else {
-            $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
-            $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
-        }
-
         $this->response($res, 200);
     }
 
@@ -277,29 +250,29 @@ class Auth extends RestController
      * @param {*}
      * @return {*}
      */
-    public function req_reset_password_post()
+    public function reset_password_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        $phone             = $client['phone'];
-        $verification_code = $client['verificationCode'];
-        $new_password      = $client['newPassword'];
+        $phone    = $client['phone'];
+        $code     = $client['code'];
+        $password = $client['password'];
 
         // 1 验证用户请求
-        $is_valid = $this->auth_model->check_verification_code($phone, $verification_code, true);
+        $is_valid = $this->auth_model->check_verification_code($phone, $code, true);
         if (!$is_valid) {
-            $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
-            $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
+            $res['code'] = App_Code::SYS_VERIFICATION_CODE_INVALID;
+            $res['msg']  = App_Msg::SYS_VERIFICATION_CODE_INVALID;
             $this->response($res, 200);
         }
 
         // 2 hash密码
-        $hash_pwd = $this->common_tools->hash_password($new_password);
+        $hash_pwd = $this->common_tools->hash_password($password);
         if ($hash_pwd === false) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            $this->common_tools->app_log('error', "HASH_PASSWORD_FAILED", 'auth-req_reset_pwd');
+            $this->common_tools->app_log('error', "create password hash failed.", 'auth-reset_pwd');
 
             $this->response($res, 200);
         }
@@ -309,11 +282,11 @@ class Auth extends RestController
         if (!$result) {
             $res['code'] = App_Code::SYS_RESET_PASSWORD_FAILED;
             $res['msg']  = App_Msg::SYS_RESET_PASSWORD_FAILED;
-            $this->common_tools->app_log('error', "SYS_RESET_PASSWORD_FAILED", 'auth-req_reset_pwd');
+            $this->common_tools->app_log('error', "update password to db failed.", 'auth-reset_pwd');
         }
 
         // 4 log
-        $this->common_tools->app_log('warning', "reset password successfully.", 'auth-req_reset_pwd');
+        $this->common_tools->app_log('error', "reset password successfully.", 'auth-reset_pwd');
 
         $res['code'] = App_Code::SUCCESS;
         $res['msg']  = '请使用新密码登录!';

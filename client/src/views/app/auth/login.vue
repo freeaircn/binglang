@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="container container-responsive mb-4">
-      <div class="login-header py-3 is-center">
+      <div class="py-3 is-center">
         <router-link to="/home"><span><svg-logo logo-class="be_green" /></span></router-link>
       </div>
       <el-form ref="form" :model="formData" :rules="rules" label-position="left">
@@ -22,10 +22,11 @@
           />
         </el-form-item>
 
-        <div style="margin: 0px 0px 15px 0px; color: #409EFF; "><router-link to="/find_password">忘记密码？</router-link></div>
+        <div style="margin: 0px 0px 15px 0px; color: #409EFF; "><router-link to="/forget_password">忘记密码？</router-link></div>
         <!-- <div style="display:inline-block; margin: 0px 0px 15px 0px; color: #409EFF; float:right;"><router-link to="/find_password">忘记密码？</router-link></div> -->
         <el-form-item>
-          <el-button :loading="loading" type="primary" style="width:100%;" @click="handleLogin">登 录</el-button>
+          <el-button type="primary" plain style="width:45%" @click.native.prevent="handleClickClear">清 空</el-button>
+          <el-button :loading="loading" type="primary" tabindex="3" style="width:45%; float:right;" @click="handleLogin">登 录</el-button>
         </el-form-item>
       </el-form>
 
@@ -100,6 +101,10 @@ export default {
           return false
         }
       })
+    },
+
+    handleClickClear() {
+      this.$refs['form'].resetFields()
     }
   }
 }

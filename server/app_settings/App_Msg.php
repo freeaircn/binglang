@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 22:28:38
+ * @LastEditTime: 2021-01-24 16:36:09
  */
 namespace App_Settings;
 
@@ -70,6 +70,7 @@ class App_Msg
 
     const MAX_LOGIN_ATTEMPT_EXCEEDED = '连续多次登陆尝试失败，请5分钟后再登陆！';
     const USERNAME_OR_PASSWORD_WRONG = '账号或密码输入错误！';
+    const PHONE_NOT_EXISTING         = '用户手机号不存在！';
     const USER_NOT_ENABLED           = '用户未激活，请联系管理员！';
     const USER_EMAIL_NOT_EXISTING    = '用户未绑定电子邮箱!';
     // api account

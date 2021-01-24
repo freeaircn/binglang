@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-09 10:47:23
+ * @LastEditTime: 2021-01-24 17:05:21
  */
 import router from './router'
 import store from './store/app'
@@ -19,7 +19,7 @@ import { filterAsyncRouter } from '@/store/app/modules/permission'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/find_password'] // no redirect whitelist
+const whiteList = ['/login', '/forget_password'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   NProgress.start()

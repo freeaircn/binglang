@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 22:28:22
+ * @LastEditTime: 2021-01-24 16:35:33
  */
 namespace App_Settings;
 
@@ -70,6 +70,7 @@ class App_Code
     // api auth
     const MAX_LOGIN_ATTEMPT_EXCEEDED = 280;
     const USERNAME_OR_PASSWORD_WRONG = 281;
+    const PHONE_NOT_EXISTING         = 283;
     const USER_NOT_ENABLED           = 282;
     const USER_EMAIL_NOT_EXISTING    = 290;
     // api account

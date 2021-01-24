@@ -8,6 +8,7 @@ application/logs/*
 
 application/app/logs/*
 !application/app/logs/index.html
+application/app/logs/default/*
 
 !application/*/.htaccess
 
