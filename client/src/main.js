@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-14 22:50:57
+ * @LastEditTime: 2021-01-24 22:45:16
  */
 import Vue from 'vue'
 
@@ -36,10 +36,24 @@ Vue.use(Element, {
 import { Button as VanButton } from 'vant'
 import { Cell, CellGroup } from 'vant'
 import { Field } from 'vant'
+import { Tab as VanTab, Tabs as VanTabs } from 'vant'
+import { RadioGroup as VanRadioGroup, Radio as VanRadio } from 'vant'
+import { Popup as VanPopup } from 'vant'
+import { Picker as VanPicker } from 'vant'
+import { Form as VanForm } from 'vant'
+import { Cascader } from 'vant'
 Vue.use(Cell)
 Vue.use(CellGroup)
 Vue.use(Field)
 Vue.component(VanButton.name, VanButton)
+Vue.component(VanTab.name, VanTab)
+Vue.component(VanTabs.name, VanTabs)
+Vue.component(VanRadioGroup.name, VanRadioGroup)
+Vue.component(VanRadio.name, VanRadio)
+Vue.component(VanPopup.name, VanPopup)
+Vue.component(VanPicker.name, VanPicker)
+Vue.component(VanForm.name, VanForm)
+Vue.use(Cascader)
 
 // 引入antd
 // import Antd from 'ant-design-vue'

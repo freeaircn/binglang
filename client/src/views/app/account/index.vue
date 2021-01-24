@@ -132,9 +132,45 @@
     </div>
 
     <div v-else>
-      <van-cell-group>
-        <van-field v-model="formData.username" label="文本" placeholder="请输入用户名" />
-      </van-cell-group>
+      <van-tabs v-model="tabIndex">
+        <van-tab title="基本信息" name="basic_info_tab">
+          <van-form ref="vant_user_form">
+            <van-field
+              v-model="formData.username"
+              name="username"
+              label="中文名"
+            />
+
+            <van-field name="sex" label="性别">
+              <template #input>
+                <van-radio-group v-model="formData.sex" direction="horizontal">
+                  <van-radio name="0">男</van-radio>
+                  <van-radio name="1">女</van-radio>
+                </van-radio-group>
+              </template>
+            </van-field>
+
+            <van-field
+              v-model="formData.identity_document_number"
+              name="identity_document_number"
+              label="身份证号"
+            />
+
+            <app-vant-select-pop label="政治面貌" :value.sync="formData.attr_03_id" :list="politic_list" />
+
+            <app-vant-tree-select-pop label="部门" :value.sync="formData.attr_01_id" :options="dept_list" />
+
+            <app-vant-select-pop label="岗位" :value.sync="formData.attr_02_id" :list="job_list" />
+
+            <app-vant-select-pop label="职称" :value.sync="formData.attr_04_id" :list="professional_title_list" />
+
+            <div style="margin: 16px;">
+              <van-button block type="info" :disabled="isUpdateBasicInfoBtnDisable" @click="handleUpdateUserBasicInfo2()">更新基本信息</van-button>
+            </div>
+          </van-form>
+        </van-tab>
+        <van-tab title="安全设置" name="tab_two">内容 2</van-tab>
+      </van-tabs>
     </div>
   </div>
 </template>
@@ -145,6 +181,8 @@ import TreeSelect from '@/components/app/TreeSelect/index'
 import AppAvatar from './components/avatar'
 import AppChangeProp from './components/AppChangeProp'
 import AppChangePwd from './components/AppChangePwd'
+import AppVantSelectPop from '@/components/app/vant/AppVantSelectPop'
+import AppVantTreeSelectPop from '@/components/app/vant/AppVantTreeSelectPop'
 //
 import * as myApp from '@/app_settings'
 import * as utils from '@/utils/app/common'
@@ -158,7 +196,9 @@ export default {
     'tree-select': TreeSelect,
     'app-avatar': AppAvatar,
     'app-change-prop': AppChangeProp,
-    'app-change-pwd': AppChangePwd
+    'app-change-pwd': AppChangePwd,
+    'app-vant-select-pop': AppVantSelectPop,
+    'app-vant-tree-select-pop': AppVantTreeSelectPop
   },
   data() {
     return {
@@ -183,7 +223,12 @@ export default {
 
       isVisibleChangePhone: false,
       isVisibleChangeEmail: false,
-      isVisibleChangePwd: false
+      isVisibleChangePwd: false,
+
+      // vant
+      showPickerPolitical: false,
+      politic_list2: []
+
     }
   },
   computed: {
@@ -250,6 +295,24 @@ export default {
             })
         }
       })
+    },
+
+    handleUpdateUserBasicInfo2() {
+      this.$refs['vant_user_form'].validate()
+        .then(() => {
+          this.$store.dispatch('account/updateUserBasicInfo', this.formData)
+            .then(() => {
+              this.$nextTick(() => {
+                this.formData = utils.merge(this.user)
+              })
+            })
+            .catch((error) => {
+              this.$message({
+                type: 'warning',
+                message: error
+              })
+            })
+        })
     },
 
     // 用户头像更新成功响应
