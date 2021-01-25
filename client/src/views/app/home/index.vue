@@ -9,12 +9,12 @@
           </el-col>
           <el-col :xs="0" :sm="16" :md="16" :lg="16" :xl="16" class="v-center-item">
             <div>
-              <img class="is-center img-responsive" src="@/assets/app/home_lg.svg" alt="web_pic" >
+              <img class="is-center img-responsive" src="@/assets/app/home_lg.svg" alt="web_pic">
             </div>
           </el-col>
         </el-row>
         <div>
-          <img class="is-center img-responsive sm-and-up-hidden" src="@/assets/app/home_xs.svg" alt="web_pic" >
+          <img class="is-center img-responsive sm-and-up-hidden" src="@/assets/app/home_xs.svg" alt="web_pic">
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
         <el-row :gutter="30">
           <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
             <el-card shadow="hover" class="is-center mb-2">
-              <img class="w-20" src="@/assets/app/start_stop.svg" alt="web_pic" >
+              <img class="w-20" src="@/assets/app/start_stop.svg" alt="web_pic">
               <h4 class="content-subhead">机组启停</h4>
               <el-divider />
               <router-link to="/generator/start_stop/log">查看详情</router-link>
@@ -32,7 +32,7 @@
           </el-col>
           <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
             <el-card shadow="hover" class="is-center mb-2">
-              <img class="w-20" src="@/assets/app/electricity_quantity.svg" alt="web_pic" >
+              <img class="w-20" src="@/assets/app/electricity_quantity.svg" alt="web_pic">
               <h4 class="content-subhead">电量</h4>
               <el-divider />
               <router-link to="#">查看详情</router-link>
@@ -40,7 +40,7 @@
           </el-col>
           <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
             <el-card shadow="hover" class="is-center mb-2">
-              <img class="w-20" src="@/assets/app/others.svg" alt="web_pic" >
+              <img class="w-20" src="@/assets/app/others.svg" alt="web_pic">
               <h4 class="content-subhead">更多功能</h4>
               <el-divider />
               <router-link to="#">查看详情</router-link>

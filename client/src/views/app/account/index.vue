@@ -134,12 +134,16 @@
     <div v-else>
       <van-tabs v-model="tabIndex">
         <van-tab title="基本信息" name="basic_info_tab">
+          <div class="py-2" style="text-align: center;">
+            <app-avatar :avatar-url="avatarUrl" :upload-api="avatarUploadApi" @upload-success="onAvatarUploadSuccess" />
+          </div>
+
+          <van-field :value="user.sort" name="sort" label="工号" readonly @click="clickSortField" />
+          <van-field :value="user.phone" name="phone" label="手机" readonly @click="clickPhoneField" />
+          <van-field :value="user.email" name="email" label="邮箱" readonly @click="clickEmailField" />
+
           <van-form ref="vant_user_form">
-            <van-field
-              v-model="formData.username"
-              name="username"
-              label="中文名"
-            />
+            <van-field v-model="formData.username" name="username" label="中文名" />
 
             <van-field name="sex" label="性别">
               <template #input>
@@ -150,11 +154,7 @@
               </template>
             </van-field>
 
-            <van-field
-              v-model="formData.identity_document_number"
-              name="identity_document_number"
-              label="身份证号"
-            />
+            <van-field v-model="formData.identity_document_number" name="identity_document_number" label="身份证号" />
 
             <app-vant-select-pop label="政治面貌" :value.sync="formData.attr_03_id" :list="politic_list" />
 
@@ -169,7 +169,24 @@
             </div>
           </van-form>
         </van-tab>
-        <van-tab title="安全设置" name="tab_two">内容 2</van-tab>
+
+        <van-tab title="安全设置" name="tab_two">
+          <div class="py-2">
+            <van-field :value="user.phone" name="phone" label="绑定手机" readonly @click="handleReqChangePhone()" />
+            <van-field :value="user.email" name="email" label="绑定邮箱" readonly @click="handleReqChangeEmail()" />
+            <van-field value="********" name="password" label="账号密码" readonly @click="handleReqChangePwd()" />
+
+            <!-- 修改手机号 -->
+            <app-change-prop title="修改手机号" prop-name="phone" width="90%" :visible.sync="isVisibleChangePhone" @req_code="onReqCode" @post="onPostSecuritySetting" />
+
+            <!-- 修改Email -->
+            <app-change-prop title="修改邮箱" prop-name="email" width="90%" :visible.sync="isVisibleChangeEmail" @req_code="onReqCode" @post="onPostSecuritySetting" />
+
+            <!-- 修改密码 -->
+            <app-change-pwd width="90%" :visible.sync="isVisibleChangePwd" @post="onPostChangePwd" />
+          </div>
+
+        </van-tab>
       </van-tabs>
     </div>
   </div>
@@ -189,6 +206,8 @@ import * as utils from '@/utils/app/common'
 import { mapGetters } from 'vuex'
 // API
 import { apiGetBasicInfoFormListContent, apiReqVerificationCode, apiPostPassword } from '@/api/app/account/index'
+// Validate
+import { validChineseLetter, validIDNumber } from '@/utils/app/validator/common'
 
 export default {
   name: 'AccountSetting',
@@ -218,7 +237,8 @@ export default {
       professional_title_list: [],
 
       basic_info_form_rules: {
-        // username: [{ required: true, validator: validChineseLetter, trigger: 'change' }]
+        username: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
+        identity_document_number: [{ validator: validIDNumber, trigger: 'blur' }]
       },
 
       isVisibleChangePhone: false,
@@ -241,7 +261,7 @@ export default {
       if (this.user === null) {
         return ''
       } else {
-        return process.env.VUE_APP_BASE_API + this.user.avatar
+        return process.env.VUE_APP_BASE_API + '/' + this.user.avatar
       }
     }
   },
@@ -405,6 +425,16 @@ export default {
     async logout() {
       await this.$store.dispatch('account/logout')
       this.$router.push(`/login`)
+    },
+
+    clickSortField() {
+      this.$toast('不允许修改！')
+    },
+    clickPhoneField() {
+      this.$toast('请在“安全设置”修改手机号码！')
+    },
+    clickEmailField() {
+      this.$toast('请在“安全设置”修改邮箱！')
     }
   }
 }

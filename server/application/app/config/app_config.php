@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 19:25:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 00:22:31
+ * @LastEditTime: 2021-01-26 00:22:20
  */
 
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -106,9 +106,9 @@ $config['email_verification_code'] = 'verification_code.tpl.php';
 $config['verification_code_expire_time'] = 300; // The number of seconds after which a verification code request will expire. If set to 0, will not expire.
 
 $config['avatar_default_file'] = 'avatar_default_male.jpg';
-$config['avatar_default_path'] = '/resource/avatar/default/';
-$config['avatar_active_path']  = '/resource/avatar/active/';
-$config['avatar_upload_path']  = '/resource/avatar/temp/';
+$config['avatar_default_path'] = 'resource/avatar/default/';
+$config['avatar_active_path']  = 'resource/avatar/active/';
+$config['avatar_upload_path']  = 'resource/avatar/temp/';
 
 //
 $config['user_prop_dict_name'] = 'user_prop_mask';

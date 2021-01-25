@@ -3,11 +3,13 @@
  * @Author: freeair
  * @Date: 2020-01-22 23:15:14
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-25 19:20:24
+ * @LastEditTime: 2021-01-25 19:12:07
 -->
 <template>
   <div>
-    <!-- <div class="pages-account-setting-avatar-title">头像</div> -->
+    <van-uploader v-model="fileList" :deletable="false" />
+
+    <div class="pages-account-setting-avatar-title">头像</div>
     <el-upload
       :action="uploadApi"
       :multiple="false"
@@ -33,7 +35,7 @@
 
 <script>
 export default {
-  name: 'AppAvatar',
+  name: 'AppVantAvatar',
   props: {
     avatarUrl: {
       type: String,

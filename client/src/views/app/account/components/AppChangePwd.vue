@@ -3,11 +3,11 @@
  * @Author: freeair
  * @Date: 2021-01-18 09:35:37
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 22:02:38
+ * @LastEditTime: 2021-01-25 20:11:38
 -->
 <template>
   <div>
-    <el-dialog title="修改密码" :visible.sync="visible2" :destroy-on-close="true" @close="handleClose">
+    <el-dialog title="修改密码" :visible.sync="visible2" :width="width" :destroy-on-close="true" @close="handleClose">
       <el-form ref="update_form" :model="formData" :rules="update_form_rules" label-position="top" label-width="auto">
         <el-form-item ref="new_pwd" label="新密码" prop="new_pwd">
           <el-input v-model="formData.new_pwd" name="new_pwd" type="text" tabindex="1" placeholder="输入新密码" show-password clearable />
@@ -34,6 +34,10 @@ export default {
     visible: {
       type: Boolean,
       default: () => { return false }
+    },
+    width: {
+      type: String,
+      default: () => { return '50%' }
     }
   },
   data() {

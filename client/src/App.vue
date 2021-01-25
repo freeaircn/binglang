@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2019-12-27 18:10:06
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-25 01:05:43
+ * @LastEditTime: 2021-01-25 20:43:05
 -->
 <template>
   <div id="app">
@@ -24,8 +24,8 @@ export default {
       if (flag) {
         this.$store.dispatch('app/toggleDesktop', false)
       } else {
-        // this.$store.dispatch('app/toggleDesktop', true)
-        this.$store.dispatch('app/toggleDesktop', false)
+        this.$store.dispatch('app/toggleDesktop', true)
+        // this.$store.dispatch('app/toggleDesktop', false)
       }
     }
   }

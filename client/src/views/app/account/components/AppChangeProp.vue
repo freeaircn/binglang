@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="title" :visible.sync="visible2" :destroy-on-close="true" @close="handleClose">
+    <el-dialog :title="title" :visible.sync="visible2" :width="width" :destroy-on-close="true" @close="handleClose">
       <el-form ref="update_form" :model="formData" :rules="update_form_rules" label-position="top" label-width="auto">
         <div v-if="propName === 'phone'">
           <el-form-item ref="phone" label="新的手机号" prop="phone">
@@ -23,6 +23,7 @@
         <el-form-item>
           <el-button type="primary" tabindex="3" style="width:100%;" @click.native.prevent="handlePostBtn">提交</el-button>
         </el-form-item>
+        <p>验证码发送至绑定的邮箱!</p>
       </el-form>
     </el-dialog>
   </div>
@@ -45,6 +46,10 @@ export default {
     visible: {
       type: Boolean,
       default: () => { return false }
+    },
+    width: {
+      type: String,
+      default: () => { return '50%' }
     }
   },
   data() {

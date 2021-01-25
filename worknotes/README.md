@@ -876,6 +876,9 @@
       FCPATH: "D:\www\binglang\server\"
       SELF: "index.php"
       SYSDIR: "system"
+      
+      chown -R apache:apache /var/www/html/binglang/server/resource/avatar
+      chmod -R 777 /var/www/html/binglang/server/resource/avatar
   
 ```
 

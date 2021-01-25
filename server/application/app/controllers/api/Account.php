@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-24 16:43:44
+ * @LastEditTime: 2021-01-26 00:24:51
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -112,6 +112,7 @@ class Account extends APP_Rest_API
         if (!$this->upload->do_upload('file')) {
             $res['code'] = 300;
             $res['msg']  = $this->upload->display_errors();
+            $res['msg1'] = $config['upload_path'];
             $this->response($res, 200);
         }
 

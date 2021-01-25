@@ -2,11 +2,11 @@
  * @Description:
  * @Author: freeair
  * @Date: 2019-12-24 09:56:03
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-13 23:32:29
+ * @LastEditors: freeair
+ * @LastEditTime: 2021-01-25 20:17:48
  */
 module.exports = {
-  title: 'BE Admin',
+  title: 'BE',
 
   /**
    * @type {boolean} true | false
