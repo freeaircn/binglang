@@ -75,8 +75,7 @@
 import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/job/job-search-mixin'
 
-// import utils
-import { validSort, validEnglishChineseLetter } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/job'
@@ -109,8 +108,8 @@ export default {
         enabled: '1'
       },
       rules: {
-        sort: [{ required: true, validator: validSort, trigger: 'change' }],
-        label: [{ required: true, validator: validEnglishChineseLetter, trigger: 'change' }]
+        sort: [{ required: true, pattern: validator.sort.regex, message: validator.sort.msg }],
+        label: [{ required: true, pattern: validator.englishChineseLetter.regex, message: validator.englishChineseLetter.msg }]
       }
     }
   },

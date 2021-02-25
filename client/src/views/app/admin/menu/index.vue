@@ -197,8 +197,7 @@ import searchOptionsConfig from '@/views/app/admin/menu/menu-search-mixin'
 import TreeSelect from '@/components/app/TreeSelect/index'
 import IconSelect from '@/components/app/IconSelect'
 
-// import utils
-import { validSort, validChineseLetter } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 // import { filterAsyncRouter } from '@/utils/app/common'
 
 // import api
@@ -245,8 +244,8 @@ export default {
         pid: ''
       },
       rules: {
-        sort: [{ required: true, validator: validSort, trigger: 'change' }],
-        title: [{ required: true, validator: validChineseLetter, trigger: 'change' }]
+        sort: [{ required: true, pattern: validator.sort.regex, message: validator.sort.msg }],
+        title: [{ required: true, pattern: validator.chineseLetter.regex, message: validator.chineseLetter.msg }]
         // name: [{ required: true, validator: validName, trigger: 'change' }],
         // path: [{ required: true, validator: validPath, trigger: 'change' }],
         // permission: [{ validator: validName, trigger: 'change' }],

@@ -2,9 +2,9 @@
 namespace App_Settings;
 
 use \Exception as Exception;
-use \App_Settings\App_Code;
 
-class APP_Config {
+class APP_Config
+{
 
     private static $TestMsg = 'Conf Here';
 
@@ -14,7 +14,8 @@ class APP_Config {
     // private static $JwtExp = 3600;
     // private static $JwtSecretCode = 'QaLmW2N7';
 
-    public static function __callStatic($name, $arguemnts) {
+    public static function __callStatic($name, $arguemnts)
+    {
         $class = get_class();
 
         if (strpos($name, 'get') === 0) {
@@ -36,8 +37,8 @@ class APP_Config {
         }
 
         if (strpos($name, 'set') === 0) {
-            $key = preg_replace('/^set/', '', $name);
-            $value = isset($arguemnts[0]) ? $arguemnts[0] : NULL;
+            $key   = preg_replace('/^set/', '', $name);
+            $value = isset($arguemnts[0]) ? $arguemnts[0] : null;
 
             if (property_exists($class, $key)) {
                 if (gettype($value) === gettype(self::$$key)) {
@@ -52,7 +53,8 @@ class APP_Config {
         throw new Exception("Call to undefined method {$class}::{$name}()", 1);
     }
 
-    public static function setup($config = NULL) {
+    public static function setup($config = null)
+    {
         if (!is_array($config)) {
             throw new Exception(Constants::E_INIT_LOST_CONFIG);
         }

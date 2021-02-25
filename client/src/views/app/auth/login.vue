@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { validPhone } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 
 export default {
   name: 'AuthLogin',
@@ -49,8 +49,8 @@ export default {
       loading: false,
       redirect: undefined,
       rules: {
-        phone: [{ required: true, validator: validPhone, trigger: 'change' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'change' }]
+        phone: [{ required: true, pattern: validator.phone.regex, message: validator.phone.msg }],
+        password: [{ required: true, message: validator.password.msg }]
       },
       treeExpandedKeys: [],
       value: undefined

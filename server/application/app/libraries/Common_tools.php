@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2020-01-01 20:00:26
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-18 00:49:33
+ * @LastEditTime: 2021-02-24 21:17:43
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -70,6 +70,61 @@ class Common_tools extends CI_Model
 
         if ($this->app_form_validation->run($rule_item) === false) {
             return $this->app_form_validation->error_string();
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * @Description:
+     * @Author: freeair
+     * @Date: 2021-02-24 17:25:18
+     * @param {*} $field_list
+     * @return {*}
+     */
+    public function gen_validation_rule($field_list = [])
+    {
+        if (empty($field_list)) {
+            return false;
+        }
+
+        $config_path = 'validation/api';
+        $this->config->load($config_path, true);
+
+        $temp = [];
+        foreach ($field_list as $key) {
+            $temp[] = $this->config->item($key, $config_path);
+        }
+
+        return $temp;
+    }
+
+    /**
+     * @Description:
+     * @Author: freeair
+     * @Date: 2021-02-24 17:24:20
+     * @param {*} $data
+     * @param {*} $field_list
+     * @return {*}
+     */
+    public function check_client_data($data = [], $field_list = [])
+    {
+        if (empty($data) || empty($field_list)) {
+            return false;
+        }
+
+        $rule = $this->gen_validation_rule($field_list);
+        if ($rule === false) {
+            return false;
+        }
+
+        $this->load->library('app_form_validation', $rule);
+
+        $this->app_form_validation->reset_validation();
+        $this->app_form_validation->set_data($data);
+
+        if ($this->app_form_validation->run() === false) {
+            return false;
         } else {
             return true;
         }

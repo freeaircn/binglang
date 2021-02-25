@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-24 16:53:01
+ * @LastEditTime: 2021-02-24 20:42:46
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -38,12 +38,12 @@ class Auth extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_auth', 'index_post');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
+        $valid = $this->common_tools->check_client_data($client, ['phone', 'password']);
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+            $this->response($res, 200);
+        }
 
         $phone    = $client['phone'];
         $password = $client['password'];
@@ -73,7 +73,7 @@ class Auth extends RestController
             $this->auth_model->increase_login_attempts($phone, $ip_address);
 
             $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
-            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG . '！！';
+            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
             $this->response($res, 200);
         }
 
@@ -190,16 +190,16 @@ class Auth extends RestController
      */
     public function verification_code_get()
     {
-        // $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
-        // $client       = json_decode($stream_clean, true);
         $client = $this->get();
 
-        $phone = $client['phone'];
-        if (empty($phone)) {
+        $valid = $this->common_tools->check_client_data($client, ['phone']);
+        if ($valid !== true) {
             $res['code'] = App_Code::PARAMS_INVALID;
             $res['msg']  = App_Msg::PARAMS_INVALID;
             $this->response($res, 200);
         }
+
+        $phone = $client['phone'];
 
         // 1 查询用户是否存在
         $user = $this->common_model->get_user_by_phone($phone);
@@ -220,8 +220,8 @@ class Auth extends RestController
         // 3 生成验证码
         $code = $this->auth_model->create_verification_code($phone);
         if ($code === false) {
-            $res['code'] = App_Code::USERNAME_OR_PASSWORD_WRONG;
-            $res['msg']  = App_Msg::USERNAME_OR_PASSWORD_WRONG;
+            $res['code'] = App_Code::GEN_VERIFICATION_CODE_FAILED;
+            $res['msg']  = App_Msg::GEN_VERIFICATION_CODE_FAILED;
             $this->response($res, 200);
         }
 
@@ -254,6 +254,13 @@ class Auth extends RestController
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
+
+        $valid = $this->common_tools->check_client_data($client, ['phone', 'password', 'verification_code']);
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+            $this->response($res, 200);
+        }
 
         $phone    = $client['phone'];
         $code     = $client['code'];

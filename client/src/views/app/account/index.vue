@@ -18,22 +18,22 @@
               </el-col>
 
               <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-                <el-form ref="basic_info_form" :model="formData" :rules="basic_info_form_rules" label-position="top" label-width="auto">
-                  <el-form-item label="中文名" prop="username">
-                    <el-input v-model="formData.username" class="w-40" clearable />
+                <el-form ref="basic_info_form" :model="formData" :rules="form_rules" label-position="top" label-width="auto">
+                  <el-form-item label="中文名" prop="username" class="w-40">
+                    <el-input v-model="formData.username" clearable />
                   </el-form-item>
-                  <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="formData.sex" class="w-40">
+                  <el-form-item label="性别" prop="sex" class="w-40">
+                    <el-radio-group v-model="formData.sex">
                       <el-radio label="0">男</el-radio>
                       <el-radio label="1">女</el-radio>
                     </el-radio-group>
                   </el-form-item>
-                  <el-form-item label="身份证号" prop="identity_document_number">
-                    <el-input v-model="formData.identity_document_number" class="w-40" clearable />
+                  <el-form-item label="身份证号" prop="identity_document_number" class="w-40">
+                    <el-input v-model="formData.identity_document_number" clearable />
                   </el-form-item>
 
                   <el-form-item label="政治面貌" prop="attr_03_id">
-                    <el-select v-model="formData.attr_03_id" class="w-40" placeholder="请选择">
+                    <el-select v-model="formData.attr_03_id" placeholder="请选择" class="w-40">
                       <el-option
                         v-for="item in politic_list"
                         :key="item.id"
@@ -44,16 +44,19 @@
                   </el-form-item>
 
                   <el-form-item label="部门" prop="attr_01_id">
-                    <tree-select
-                      :value.sync="formData.attr_01_id"
+                    <el-cascader
+                      v-model="formData.attr_01_id"
                       :options="dept_list"
-                      class="w-40"
+                      :props="{ value: 'id', emitPath: false }"
+                      :show-all-levels="true"
                       :placeholder="'请选择'"
+                      clearable
+                      class="w-40"
                     />
                   </el-form-item>
 
                   <el-form-item label="岗位" prop="attr_02_id">
-                    <el-select v-model="formData.attr_02_id" class="w-40" placeholder="请选择">
+                    <el-select v-model="formData.attr_02_id" placeholder="请选择" class="w-40">
                       <el-option
                         v-for="item in job_list"
                         :key="item.id"
@@ -64,7 +67,7 @@
                   </el-form-item>
 
                   <el-form-item label="职称" prop="attr_04_id">
-                    <el-select v-model="formData.attr_04_id" class="w-40" placeholder="请选择">
+                    <el-select v-model="formData.attr_04_id" placeholder="请选择" class="w-40">
                       <el-option
                         v-for="item in professional_title_list"
                         :key="item.id"
@@ -108,6 +111,7 @@
                   <td>
                     <ul>
                       <li><span class="pages-account-setting-text-dark">账号密码</span></li>
+                      <li><span class="pages-account-setting-text-light">********</span></li>
                     </ul>
                   </td>
                   <td class="td-button"><el-button type="text" @click="handleReqChangePwd()">修改</el-button></td>
@@ -143,7 +147,7 @@
           <van-field :value="user.email" name="email" label="邮箱" readonly @click="clickEmailField" />
 
           <van-form ref="vant_user_form">
-            <van-field v-model="formData.username" name="username" label="中文名" />
+            <van-field v-model="formData.username" name="username" label="中文名" :rules="form_rules.username" />
 
             <van-field name="sex" label="性别">
               <template #input>
@@ -154,7 +158,7 @@
               </template>
             </van-field>
 
-            <van-field v-model="formData.identity_document_number" name="identity_document_number" label="身份证号" />
+            <van-field v-model="formData.identity_document_number" name="identity_document_number" label="身份证号" :rules="form_rules.identity_document_number" />
 
             <app-vant-select-pop label="政治面貌" :value.sync="formData.attr_03_id" :list="politic_list" />
 
@@ -165,7 +169,7 @@
             <app-vant-select-pop label="职称" :value.sync="formData.attr_04_id" :list="professional_title_list" />
 
             <div style="margin: 16px;">
-              <van-button block type="info" :disabled="isUpdateBasicInfoBtnDisable" @click="handleUpdateUserBasicInfo2()">更新基本信息</van-button>
+              <van-button block type="info" native-type="button" :disabled="isUpdateBasicInfoBtnDisable" @click="handleUpdateUserBasicInfo2()">更新基本信息</van-button>
             </div>
           </van-form>
         </van-tab>
@@ -194,7 +198,6 @@
 
 <script>
 // 组件
-import TreeSelect from '@/components/app/TreeSelect/index'
 import AppAvatar from './components/avatar'
 import AppChangeProp from './components/AppChangeProp'
 import AppChangePwd from './components/AppChangePwd'
@@ -207,12 +210,11 @@ import { mapGetters } from 'vuex'
 // API
 import { apiGetBasicInfoFormListContent, apiReqVerificationCode, apiPostPassword } from '@/api/app/account/index'
 // Validate
-import { validChineseLetter, validIDNumber } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 
 export default {
   name: 'AccountSetting',
   components: {
-    'tree-select': TreeSelect,
     'app-avatar': AppAvatar,
     'app-change-prop': AppChangeProp,
     'app-change-pwd': AppChangePwd,
@@ -236,9 +238,9 @@ export default {
       politic_list: [],
       professional_title_list: [],
 
-      basic_info_form_rules: {
-        username: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
-        identity_document_number: [{ validator: validIDNumber, trigger: 'blur' }]
+      form_rules: {
+        username: [{ required: true, pattern: validator.chineseLetter.regex, message: validator.chineseLetter.msg }],
+        identity_document_number: [{ pattern: validator.idNumber.regex, message: validator.idNumber.msg }]
       },
 
       isVisibleChangePhone: false,
@@ -248,7 +250,6 @@ export default {
       // vant
       showPickerPolitical: false,
       politic_list2: []
-
     }
   },
   computed: {

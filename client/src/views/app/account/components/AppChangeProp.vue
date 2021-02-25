@@ -21,16 +21,21 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" tabindex="3" style="width:100%;" @click.native.prevent="handlePostBtn">提交</el-button>
+          <el-button type="primary" tabindex="3" style="width:100%;" @click.native.prevent="handlePostBtn">修 改</el-button>
         </el-form-item>
-        <p>验证码发送至绑定的邮箱!</p>
+        <div v-if="propName === 'phone'">
+          <p>验证码发送至绑定的邮箱，新的绑定手机号修改成功后，将自动退出当前的登录，请使用新手机号重新登录。</p>
+        </div>
+        <div v-if="propName === 'email'">
+          <p>验证码发送至绑定的邮箱。</p>
+        </div>
       </el-form>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { validPhone, validEmail, validVerificationCode } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 
 export default {
   name: 'AppChangeProp',
@@ -68,9 +73,9 @@ export default {
         code: ''
       },
       update_form_rules: {
-        phone: [{ required: true, trigger: 'change', validator: validPhone }],
-        email: [{ required: true, trigger: 'change', validator: validEmail }],
-        code: [{ required: true, trigger: 'change', validator: validVerificationCode }]
+        phone: [{ required: true, pattern: validator.phone.regex, message: validator.phone.msg }],
+        email: [{ required: true, pattern: validator.email.regex, message: validator.email.msg }],
+        code: [{ required: true, pattern: validator.verificationCode.regex, message: validator.verificationCode.msg }]
       }
     }
   },

@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:06:36
+ * @LastEditTime: 2021-02-24 20:47:09
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -71,8 +71,8 @@ class Dept extends APP_Rest_API
             $this->response($res, 200);
         }
 
-        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
-        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
+        $res['code'] = App_Code::REQ_DATA_NOT_EXIST;
+        $res['msg']  = App_Msg::REQ_DATA_NOT_EXIST;
         $this->response($res, 200);
     }
 

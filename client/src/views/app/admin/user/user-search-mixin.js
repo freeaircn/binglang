@@ -3,9 +3,9 @@
  * @Author: freeair
  * @Date: 2020-01-30 19:26:36
  * @LastEditors: freeair
- * @LastEditTime: 2020-06-02 10:41:47
+ * @LastEditTime: 2021-02-25 15:59:36
  */
-import { validChineseLetter, validEnglishChineseLetter, validSpecIndividual } from '@/utils/app/validator/search-com'
+import * as validator from '@/utils/app/validator/common'
 
 function searchOptionsConfig() {
   return {
@@ -64,11 +64,11 @@ function searchOptionsConfig() {
           }
         ],
         searchOptionsRules: {
-          individual: [{ validator: validSpecIndividual, trigger: 'blur' }],
-          dept: [{ validator: validEnglishChineseLetter, trigger: 'blur' }],
-          job: [{ validator: validEnglishChineseLetter, trigger: 'blur' }],
-          politic: [{ validator: validChineseLetter, trigger: 'blur' }],
-          professional_title: [{ validator: validEnglishChineseLetter, trigger: 'blur' }]
+          dept: [{ pattern: validator.englishChineseLetter.regex, message: validator.englishChineseLetter.msg }],
+          job: [{ pattern: validator.englishChineseLetter.regex, message: validator.englishChineseLetter.msg }],
+          politic: [{ pattern: validator.chineseLetter.regex, message: validator.chineseLetter.msg }],
+          professional_title: [{ pattern: validator.englishChineseLetter.regex, message: validator.englishChineseLetter.msg }]
+          // individual: [{ validator: validSpecIndividual, trigger: 'blur' }],
         }
       }
     }

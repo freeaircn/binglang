@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:08:13
+ * @LastEditTime: 2021-02-25 15:47:13
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -71,8 +71,8 @@ class Dict extends APP_Rest_API
             $this->response($res, 200);
         }
 
-        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
-        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
+        $res['code'] = App_Code::REQ_DATA_NOT_EXIST;
+        $res['msg']  = App_Msg::REQ_DATA_NOT_EXIST;
         $this->response($res, 200);
     }
 
@@ -157,10 +157,10 @@ class Dict extends APP_Rest_API
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_dict', 'index_delete');
+        $valid = $this->common_tools->check_client_data($client, ['id']);
         if ($valid !== true) {
             $res['code'] = App_Code::PARAMS_INVALID;
-            $res['msg']  = $valid;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
             $this->response($res, 200);
         }
 

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { validPhone, validVerificationCode, validPassword } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 import { apiReqVerificationCode, apiResetPassword } from '@/api/app/auth'
 
 export default {
@@ -64,9 +64,9 @@ export default {
         password2: ''
       },
       rules: {
-        phone: [{ required: true, trigger: 'change', validator: validPhone }],
-        code: [{ required: true, trigger: 'change', validator: validVerificationCode }],
-        password: [{ required: true, trigger: 'change', validator: validPassword }],
+        phone: [{ required: true, pattern: validator.phone.regex, message: validator.phone.msg }],
+        code: [{ required: true, pattern: validator.verificationCode.regex, message: validator.verificationCode.msg }],
+        password: [{ required: true, pattern: validator.password.regex, message: validator.password.msg }],
         password2: [{ required: true, trigger: 'change', validator: validatePassword2 }]
       },
       loading: false

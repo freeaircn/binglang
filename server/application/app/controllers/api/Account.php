@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-26 00:24:51
+ * @LastEditTime: 2021-02-25 11:07:02
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -31,8 +31,8 @@ class Account extends APP_Rest_API
     {
         $list = $this->account_model->get_form_list();
         if ($list === false) {
-            $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
-            $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
+            $res['code'] = App_Code::REQ_DATA_NOT_EXIST;
+            $res['msg']  = App_Msg::REQ_DATA_NOT_EXIST;
         } else {
             $res['code'] = App_Code::SUCCESS;
             $res['data'] = $list;
@@ -45,16 +45,16 @@ class Account extends APP_Rest_API
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        // $valid = $this->common_tools->valid_client_data($client, 'client_validation/api_user', 'index_post');
-        // if ($valid !== true) {
-        //     $res['code'] = App_Code::PARAMS_INVALID;
-        //     $res['msg']  = $valid;
-        //     $this->response($res, 200);
-        // }
-
         // 1 处理输入
         $user_prop_mask = $this->common_model->get_user_prop_by_mask($this->config->item('user_prop_edit_mask', 'app_config'));
         $data           = array_intersect_key($client, $user_prop_mask);
+
+        $valid = $this->common_tools->check_client_data($data, $user_prop_mask);
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+            $this->response($res, 200);
+        }
 
         // 2 非必填下拉表单项，例如job, 因为job_id是数据表的外键fk，外键不能为空字符串''
         // $data['attr_01_id'] = $client['attr_01_id'] === '' ? null : $client['attr_01_id'];
@@ -94,6 +94,13 @@ class Account extends APP_Rest_API
         $this->response($res, 200);
     }
 
+    /**
+     * @Description: 修改头像
+     * @Author: freeair
+     * @Date: 2021-02-24 21:31:25
+     * @param {*}
+     * @return {*}
+     */
     public function avatar_post()
     {
         $phone     = $this->session->userdata('phone');
@@ -184,8 +191,8 @@ class Account extends APP_Rest_API
         // 2 查询用户的email是否存在
         $email = $user['email'];
         if (empty($email)) {
-            $res['code'] = App_Code::ACCOUNT_GET_CODE_FAILED;
-            $res['msg']  = App_Msg::ACCOUNT_GET_CODE_FAILED;
+            $res['code'] = App_Code::USER_EMAIL_NOT_EXISTING;
+            $res['msg']  = App_Msg::USER_EMAIL_NOT_EXISTING;
             $this->common_tools->app_log('error', "user's email not existing.", 'account-verification_code');
 
             $this->response($res, 200);
@@ -212,23 +219,42 @@ class Account extends APP_Rest_API
             $res['data'] = ['email' => $email];
             $res['code'] = App_Code::SUCCESS;
         } else {
-            $res['code'] = App_Code::ACCOUNT_GET_CODE_FAILED;
-            $res['msg']  = App_Msg::ACCOUNT_GET_CODE_FAILED;
+            $res['code'] = App_Code::SYS_SEND_MAIL_FAILED;
+            $res['msg']  = App_Msg::SYS_SEND_MAIL_FAILED;
             $this->common_tools->app_log('error', "send mail failed.", 'account-verification_code');
         }
         $this->response($res, 200);
     }
 
-    // 提交修改安全设置，例如：绑定手机号，邮箱，密码
+    /**
+     * @Description: 提交修改安全设置，例如：绑定手机号，邮箱，密码
+     * @Author: freeair
+     * @Date: 2021-02-24 21:31:08
+     * @param {*}
+     * @return {*}
+     */
     public function security_setting_post()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
+        if (isset($client['prop'])) {
+            $valid = $this->common_tools->check_client_data($client, ['account_security_prop', 'verification_code', $client['prop']]);
+            if ($valid !== true) {
+                $res['code'] = App_Code::PARAMS_INVALID;
+                $res['msg']  = App_Msg::PARAMS_INVALID;
+                $this->response($res, 200);
+            }
+        } else {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+            $this->response($res, 200);
+        }
+
         $phone = $this->session->userdata('phone');
 
-        $code = $client['code'];
         $key  = $client['prop'];
+        $code = $client['code'];
 
         $data = [];
         foreach ($client as $index => $value) {
@@ -289,10 +315,24 @@ class Account extends APP_Rest_API
         $this->response($res, 200);
     }
 
+    /**
+     * @Description: 修改密码
+     * @Author: freeair
+     * @Date: 2021-02-24 21:31:39
+     * @param {*}
+     * @return {*}
+     */
     public function password_put()
     {
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
+
+        $valid = $this->common_tools->check_client_data($client, ['password']);
+        if ($valid !== true) {
+            $res['code'] = App_Code::PARAMS_INVALID;
+            $res['msg']  = App_Msg::PARAMS_INVALID;
+            $this->response($res, 200);
+        }
 
         $phone    = $this->session->userdata('phone');
         $password = $client['password'];

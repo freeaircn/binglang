@@ -47,13 +47,12 @@
 ---
 ### 2. 定义：页面url - API url - API权限字
 ```
-页面url                 API url                                       API 权限字
-/login                  /api/auth/login:post                          pass
-                        /api/auth/logout:post                         pass
-                        /api/auth/check_user:get                      pass
-/find_password          /api/auth/req_verification_code:get           pass
-                        /api/auth/valid_verification_code:post        pass
-                        /api/auth/req_reset_password:post             pass
+页面url                 API url                                       API 权限字                                 后端检查请求数据
+/login                  /api/auth/login:post                          pass                                          phone password
+                        /api/auth/logout:post                         pass                                          /
+                        /api/auth/check_user:get                      pass                                          /
+/forget_password        /api/auth/req_verification_code:get           pass                                          phone
+                        /api/auth/reset_password:post                 pass                                          phone code password
                         
 /admin/dept             /api/dept                                     dept:get  dept:post dept:put dept:delete
                   
@@ -71,13 +70,13 @@
       
 /admin/dict_data        /api/dict_data                                ...
       
-/account/setting        /api/account/basic_Info_form_list_content:get account:get
-                        /api/account/basic_info:put                   account:put
-                        /api/account/avatar:post                      account:post
-                        /api/account/verification_code:get            account:get
+/account/setting        /api/account/basic_Info_form_list_content:get account:get                                   /
+                        /api/account/basic_info:put                   account:put                                   user_prop_edit_mask
+                        /api/account/avatar:post                      account:post                                  ？
+                        /api/account/verification_code:get            account:get                                   /
                   
-                        /api/account/security_setting:put             account:put
-
+                        /api/account/security_setting:post            account:post                                  prop phone email code
+                        /api/account/password:put                     account:put                                   password
 
 ```
 

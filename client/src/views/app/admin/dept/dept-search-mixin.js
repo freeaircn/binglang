@@ -2,10 +2,10 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-30 19:26:36
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-06 21:48:57
+ * @LastEditors: freeair
+ * @LastEditTime: 2021-02-25 16:01:37
  */
-import { validEnglishChineseLetter } from '@/utils/app/validator/search-com'
+import * as validator from '@/utils/app/validator/common'
 
 function searchOptionsConfig() {
   return {
@@ -21,7 +21,7 @@ function searchOptionsConfig() {
           }
         ],
         searchOptionsRules: {
-          label: [{ validator: validEnglishChineseLetter, trigger: 'blur' }]
+          label: [{ pattern: validator.englishChineseLetter.regex, message: validator.englishChineseLetter.msg }]
         }
       }
     }

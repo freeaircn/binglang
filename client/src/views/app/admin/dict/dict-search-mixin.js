@@ -2,10 +2,10 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-30 19:26:36
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-02 16:06:22
+ * @LastEditors: freeair
+ * @LastEditTime: 2021-02-25 15:51:33
  */
-import { validChineseLetter, validLowerLetterUnderline } from '@/utils/app/validator/search-com'
+import * as validator from '@/utils/app/validator/common'
 
 function searchOptionsConfig() {
   return {
@@ -28,8 +28,8 @@ function searchOptionsConfig() {
           }
         ],
         searchOptionsRules: {
-          label: [{ validator: validChineseLetter, trigger: 'blur' }],
-          name: [{ validator: validLowerLetterUnderline, trigger: 'blur' }]
+          label: [{ pattern: validator.chineseLetter.regex, message: validator.chineseLetter.msg }],
+          name: [{ pattern: validator.lowerLetterUnderline.regex, message: validator.lowerLetterUnderline.msg }]
         }
       }
     }

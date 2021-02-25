@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-24 16:35:33
+ * @LastEditTime: 2021-02-24 20:46:52
  */
 namespace App_Settings;
 
@@ -13,7 +13,7 @@ class App_Code
     const SUCCESS = 0;
 
     const PARAMS_INVALID                = 100;
-    const GET_SOURCE_NOT_EXIST          = 110;
+    const REQ_DATA_NOT_EXIST            = 110;
     const PASSWORD_IS_EMPTY             = 120;
     const HASH_PASSWORD_FAILED          = 121;
     const SYS_SEND_MAIL_FAILED          = 130;
@@ -68,11 +68,12 @@ class App_Code
     const UPDATE_ROLE_FAILED       = 273;
     const DELETE_ROLE_FAILED       = 274;
     // api auth
-    const MAX_LOGIN_ATTEMPT_EXCEEDED = 280;
-    const USERNAME_OR_PASSWORD_WRONG = 281;
-    const PHONE_NOT_EXISTING         = 283;
-    const USER_NOT_ENABLED           = 282;
-    const USER_EMAIL_NOT_EXISTING    = 290;
+    const MAX_LOGIN_ATTEMPT_EXCEEDED   = 280;
+    const USERNAME_OR_PASSWORD_WRONG   = 281;
+    const PHONE_NOT_EXISTING           = 283;
+    const USER_NOT_ENABLED             = 282;
+    const USER_EMAIL_NOT_EXISTING      = 290;
+    const GEN_VERIFICATION_CODE_FAILED = 291;
     // api account
     const ACCOUNT_NEW_SECURITY_SETTING_EXISTING  = 300;
     const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = 302;

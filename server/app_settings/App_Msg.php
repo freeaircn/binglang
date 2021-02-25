@@ -4,25 +4,25 @@
  * @Author: freeair
  * @Date: 2019-12-24 10:07:44
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-24 16:36:09
+ * @LastEditTime: 2021-02-24 21:26:06
  */
 namespace App_Settings;
 
 class App_Msg
 {
-    const TEST_MSG = 'Hello World !';
+    const TEST_MSG = 'Hello World ！';
 
     const SUCCESS = '操作成功！';
 
-    const PARAMS_INVALID                = '请求参数非法！';
-    const GET_SOURCE_NOT_EXIST          = '请求的资源不存在！';
+    const PARAMS_INVALID                = '请求提交的数据有误！';
+    const REQ_DATA_NOT_EXIST            = '请求的数据不存在！';
     const PASSWORD_IS_EMPTY             = '密码不能为空！';
     const HASH_PASSWORD_FAILED          = '密码处理错误，请稍后重试！';
-    const SYS_SEND_MAIL_FAILED          = '系统发送邮件失败，请稍后重试！';
+    const SYS_SEND_MAIL_FAILED          = '发送邮件失败，请稍后重试！';
     const SYS_VERIFICATION_CODE_INVALID = '验证码错误！';
     const SYS_RESET_PASSWORD_FAILED     = '重置密码失败，请重试！';
 
-    const USER_NOT_LOGIN    = '用户未登陆，或登录已失效！';
+    const USER_NOT_LOGIN    = '用户未登录，或登录已失效！';
     const USER_NOT_APPROVED = '用户没有权限！';
 
     const GET_USER_FAILED                = '用户信息，查询失败，请稍后重试！';
@@ -68,18 +68,19 @@ class App_Msg
     const UPDATE_ROLE_FAILED       = '编辑角色，操作失败，请稍后重试！';
     const DELETE_ROLE_FAILED       = '删除角色，操作失败，请稍后重试！';
 
-    const MAX_LOGIN_ATTEMPT_EXCEEDED = '连续多次登陆尝试失败，请5分钟后再登陆！';
-    const USERNAME_OR_PASSWORD_WRONG = '账号或密码输入错误！';
-    const PHONE_NOT_EXISTING         = '用户手机号不存在！';
-    const USER_NOT_ENABLED           = '用户未激活，请联系管理员！';
-    const USER_EMAIL_NOT_EXISTING    = '用户未绑定电子邮箱!';
+    const MAX_LOGIN_ATTEMPT_EXCEEDED   = '连续多次登录失败，请5分钟后再尝试！';
+    const USERNAME_OR_PASSWORD_WRONG   = '账号或密码输入错误！';
+    const PHONE_NOT_EXISTING           = '用户输入的手机号不是注册绑定的手机号！';
+    const USER_NOT_ENABLED             = '用户未激活，请联系管理员！';
+    const USER_EMAIL_NOT_EXISTING      = '用户未绑定电子邮箱！';
+    const GEN_VERIFICATION_CODE_FAILED = '获取验证码失败，请稍后重试！';
     // api account
-    const ACCOUNT_NEW_SECURITY_SETTING_EXISTING  = ' 已被用户绑定!';
-    const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = '修改失败，请稍后重试!';
-    const ACCOUNT_CHANGE_PWD_FAILED              = '修改失败，请稍后重试!';
-    const ACCOUNT_UPDATE_AVATAR_FAILED           = '修改头像失败，请稍后重试!';
-    const ACCOUNT_UPDATE_USER_FAILED             = '修改失败，请稍后重试!';
-    const ACCOUNT_GET_CODE_FAILED                = '获取验证码失败，请稍后重试!';
+    const ACCOUNT_NEW_SECURITY_SETTING_EXISTING  = '已被用户绑定！';
+    const ACCOUNT_UPDATE_SECURITY_SETTING_FAILED = '修改失败，请稍后重试！';
+    const ACCOUNT_CHANGE_PWD_FAILED              = '修改失败，请稍后重试！';
+    const ACCOUNT_UPDATE_AVATAR_FAILED           = '修改头像失败，请稍后重试！';
+    const ACCOUNT_UPDATE_USER_FAILED             = '修改失败，请稍后重试！';
+    const ACCOUNT_GET_CODE_FAILED                = '获取验证码失败，请稍后重试！';
 
     // old
     const TBL_USER_CREATE_FAILED            = '数据表USER新加失败，请稍后重试！';

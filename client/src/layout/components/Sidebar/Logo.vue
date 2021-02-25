@@ -2,8 +2,8 @@
  * @Description:
  * @Author: freeair
  * @Date: 2020-01-31 09:11:33
- * @LastEditors  : freeair
- * @LastEditTime : 2020-02-13 23:39:22
+ * @LastEditors: freeair
+ * @LastEditTime: 2021-02-25 16:13:47
  -->
 <template>
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      title: 'Binglang Energy',
+      title: 'Binglang Pro',
       logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
     }
   }

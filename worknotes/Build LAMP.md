@@ -448,8 +448,53 @@
     （8）.QSA：此标记强制重写引擎在已有的替换串中追加一个请求串，而不是简单的替换。
 ```
 
+### 9 SELinux
+```
+  0 概述
+    # https://blog.csdn.net/weixin_41078837/article/details/80571065
+    SELinux则是基于MAC（强制访问机制），简单的说，就是程序和访问对象上都有一个安全标签（即selinux上下文）进行区分，只有对应的标签才能允许访问。否则即使权限是777，也是不能访问的。
+    
+    在SELinux中，访问控制属性叫做安全上下文。所有客体（文件、进程间通讯通道、套接字、网络主机等）和主体（进程）都有与其关联的安全上下文。
+    一个安全上下文由三部分组成：用户（u）、角色(r)和类型(t)标识符。但我们最关注的是第三个部分。
+    
+    
+  1 临时关闭：
+    getenforce
+    setenforce 0
 
-### 9 工具
+  2 永久关闭：
+    vi /etc/sysconfig/selinux
+    SELINUX=enforcing 改为 SELINUX=disabledcd
+
+  3 查看状态
+    sestatus
+    
+  4 apache 发送邮件 fsockopen() Permission denied
+    # https://blog.csdn.net/pennyliang/article/details/7342042
+    fsockopen()  unable to connect to 127.0.0.1:80 (Permission denied)" error 
+    
+    用以下命令，不需重启
+    setsebool -P httpd_can_network_connect 1
+    
+  5 apache php 上传文件，没有可写权限
+    chown -R apache:apache /var/www/html/binglang/server/resource/avatar
+    chmod -R 777 /var/www/html/binglang/server/resource/avatar
+
+    # https://blog.csdn.net/weixin_34014555/article/details/92025349
+    所有进程及文件都拥有一个 SELinux 的安全性脉络,可以用ls -Z查看
+    
+    把我准备写入的文件夹的权限角色从httpd_sys_content_t 改成httpd_sys_rw_content_t
+    chcon -R -t httpd_sys_rw_content_t  /var/www/html/binglang/server/resource/avatar
+    
+    用chcon你可以做一次暂时的变更，它在重启后消失；用followed by紧跟着的semanage，做永久的变更。
+    semanage fcontext -a -t httpd_sys_rw_content_t  /var/www/html/binglang/server/resource/avatar
+    cat /etc/selinux/targeted/contexts/files/file_contexts.local
+  
+
+```
+
+
+### 10 工具
 ```
   1 netstat
     1 安装
@@ -469,7 +514,7 @@
     
 ```
 
-### 10 串口
+### 11 串口
 ```
   1 检查系统是否支持串口，出现以上console  enabled表示支持
     dmesg |grep tty
@@ -485,7 +530,7 @@
     
 ```
 
-### 11 Python
+### 12 Python
 ```
   1 安装（centos 最小安装，需要另外单独再安装python），可选择安装的python版本，python2，python36
     yum install python
@@ -507,28 +552,6 @@
     pip3 install --user requests
     
 ```
-
-### 11 SELinux
-```
-  1 临时关闭：
-    getenforce
-    setenforce 0
-
-  2 永久关闭：
-    vi /etc/sysconfig/selinux
-    SELINUX=enforcing 改为 SELINUX=disabledcd
-
-  3 查看状态
-    sestatus
-    
-  4 fsockopen() Permission denied
-    # https://blog.csdn.net/pennyliang/article/details/7342042
-    fsockopen()  unable to connect to 127.0.0.1:80 (Permission denied)" error 
-    
-    用以下命令，不需重启
-    setsebool -P httpd_can_network_connect 1
-```
-
 
 ### APP Web
 ```

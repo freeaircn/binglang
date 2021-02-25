@@ -186,8 +186,7 @@ import hideColumns from '@/components/app/TableOptions/hide-columns'
 import SearchOptions from '@/components/app/SearchOptions/index'
 import searchOptionsConfig from '@/views/app/admin/user/user-search-mixin'
 
-// import utils
-import { validChineseLetter, validPhone, validEmail, validSort } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 
 // import api
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/api/app/admin/user'
@@ -243,10 +242,10 @@ export default {
       professional_title_list: [],
 
       rules_tab_one: {
-        sort: [{ required: true, validator: validSort, trigger: 'change' }],
-        username: [{ required: true, validator: validChineseLetter, trigger: 'change' }],
-        phone: [{ required: true, validator: validPhone, trigger: 'change' }],
-        email: [{ required: true, validator: validEmail, trigger: 'change' }]
+        sort: [{ required: true, pattern: validator.sort.regex, message: validator.sort.msg }],
+        username: [{ required: true, pattern: validator.chineseLetter.regex, message: validator.chineseLetter.msg }],
+        phone: [{ required: true, pattern: validator.phone.regex, message: validator.phone.msg }],
+        email: [{ required: true, pattern: validator.email.regex, message: validator.email.msg }]
       }
     }
   },

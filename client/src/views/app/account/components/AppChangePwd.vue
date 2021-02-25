@@ -3,7 +3,7 @@
  * @Author: freeair
  * @Date: 2021-01-18 09:35:37
  * @LastEditors: freeair
- * @LastEditTime: 2021-01-25 20:11:38
+ * @LastEditTime: 2021-01-31 15:04:50
 -->
 <template>
   <div>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { validPassword } from '@/utils/app/validator/common'
+import * as validator from '@/utils/app/validator/common'
 
 export default {
   name: 'AppChangePwd',
@@ -56,7 +56,7 @@ export default {
         new_pw2: ''
       },
       update_form_rules: {
-        new_pwd: [{ required: true, trigger: 'change', validator: validPassword }],
+        new_pwd: [{ required: true, pattern: validator.password.regex, message: validator.password.msg }],
         new_pwd2: [{ required: true, trigger: 'change', validator: validatePassword2 }]
       }
     }

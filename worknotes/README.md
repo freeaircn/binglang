@@ -562,7 +562,7 @@
           $client       = json_decode($stream_clean, true);
           
   12. 后端验证
-      1 CI库提供了form validation library，处于以下需求，手动修改了CI原生form validation适应GET,POST,PUT,DELETE请求数据，且检查数据为空数组。
+      1 CI库提供了form validation library，出于以下需求，手动修改了CI原生form validation适应GET,POST,PUT,DELETE请求数据，且检查数据为空数组。
         1 在前后端分离模式下，原生实现中判断了HTTP method post，导致相同输入数据，在post api和put api的验证输出不一致。
         2 当PUT数据为空数组时，比如PUT []，原生跳过验证。前后端分离和restful api场景，前端更新表单，PUT方法提交数据，需校验字段是否存在。
       2 修改form validation library

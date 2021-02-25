@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2020-11-13 21:11:04
+ * @LastEditTime: 2021-02-24 20:47:35
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -59,8 +59,8 @@ class Role extends APP_Rest_API
             $this->response($res, 200);
         }
 
-        $res['code'] = App_Code::GET_SOURCE_NOT_EXIST;
-        $res['msg']  = App_Msg::GET_SOURCE_NOT_EXIST;
+        $res['code'] = App_Code::REQ_DATA_NOT_EXIST;
+        $res['msg']  = App_Msg::REQ_DATA_NOT_EXIST;
         $this->response($res, 200);
 
         // $select_col = $this->get('select_col');
