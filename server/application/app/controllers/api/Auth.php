@@ -4,7 +4,7 @@
  * @Author: freeair
  * @Date: 2019-12-29 14:06:12
  * @LastEditors: freeair
- * @LastEditTime: 2021-02-24 20:42:46
+ * @LastEditTime: 2021-04-13 10:00:18
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -312,13 +312,21 @@ class Auth extends RestController
         $stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
         $client       = json_decode($stream_clean, true);
 
-        $meter_time = $client['metertime'];
-        // mktime(hour,minute,second,month,day,year)
-        $d = mktime($meter_time[1], $meter_time[0], 0, $meter_time[3], $meter_time[2], $meter_time[4]);
+        $meters = $client['meters'];
+        // // mktime(hour,minute,second,month,day,year)
+        // $d = mktime($meter_time[1], $meter_time[0], 0, $meter_time[3], $meter_time[2], $meter_time[4]);
+        //
+        // $res['data']      = $client['metervalue'];
+        // $res['date_time'] = date("Y-m-d H:i:s", $d);
 
-        $res['data']      = $client['metervalue'];
-        $res['date_time'] = date("Y-m-d H:i:s", $d);
-        $res['code']      = App_Code::SUCCESS;
+        $temp['d1'] = $meters[0];
+        $temp['d2'] = $meters[1];
+        $temp['d3'] = $meters[2];
+        $temp['d4'] = $meters[4];
+
+        $res['temp'] = $temp;
+        $res['tppe'] = gettype($meters);
+        $res['code'] = App_Code::SUCCESS;
         $this->response($res, 200);
     }
 }
